@@ -1,0 +1,5 @@
+# Hashes of file build rules.
+30aab0208031c435cd1619b62ea81fe5 CMakeFiles/MyJucePlugin_vst3_helper
+8b4e8981c7c362f6f20451d1557c4ae8 MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_AU/PkgInfo
+608e0b5a69f73721648ee598556af567 MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_Standalone/PkgInfo
+b803206e2cd3cb4e257198a6992180c3 MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_VST3/PkgInfo

@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
