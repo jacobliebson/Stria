@@ -247,32 +247,34 @@ MyJucePlugin_VST3_OBJECTS = \
 # External object files for target MyJucePlugin_VST3
 MyJucePlugin_VST3_EXTERNAL_OBJECTS =
 
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/build.make
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a
-MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX CFBundle shared module \"MyJucePlugin_artefacts/VST3/My Juce Plugin.vst3/Contents/MacOS/My Juce Plugin\""
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/build.make
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a
+MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_VST3.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX CFBundle shared module \"MyJucePlugin_artefacts/Debug/VST3/My Juce Plugin.vst3/Contents/MacOS/My Juce Plugin\""
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MyJucePlugin_VST3.dir/link.txt --verbose=$(VERBOSE)
-	/opt/homebrew/bin/cmake -E copy /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_VST3/PkgInfo "/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/VST3/My Juce Plugin.vst3/Contents"
-	/opt/homebrew/bin/cmake "-Dsrc=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/VST3/My Juce Plugin.vst3" -P /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/checkBundleSigning.cmake
+	/opt/homebrew/bin/cmake -E copy /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_VST3/PkgInfo "/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My Juce Plugin.vst3/Contents"
+	/opt/homebrew/bin/cmake "-Dsrc=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My Juce Plugin.vst3" -P /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/checkBundleSigning.cmake
 	/opt/homebrew/bin/cmake -E echo removing\ moduleinfo.json
-	/opt/homebrew/bin/cmake -E remove -f /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts//VST3/My\ Juce\ Plugin.vst3/Contents/moduleinfo.json /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts//VST3/My\ Juce\ Plugin.vst3/Contents/Resources/moduleinfo.json
-	/opt/homebrew/bin/cmake -E echo creating\ /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts//VST3/My\ Juce\ Plugin.vst3/Contents/Resources/moduleinfo.json
-	/opt/homebrew/bin/cmake -E make_directory /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts//VST3/My\ Juce\ Plugin.vst3/Contents/Resources
-	MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/vst3_helper > /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts//VST3/My\ Juce\ Plugin.vst3/Contents/Resources/moduleinfo.json
+	/opt/homebrew/bin/cmake -E remove -f /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/moduleinfo.json /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/Resources/moduleinfo.json
+	/opt/homebrew/bin/cmake -E echo creating\ /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/Resources/moduleinfo.json
+	/opt/homebrew/bin/cmake -E make_directory /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/Resources
+	MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/vst3_helper > /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/Resources/moduleinfo.json
+	/opt/homebrew/bin/cmake "-Dsrc=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My Juce Plugin.vst3" -P /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/checkBundleSigning.cmake
+	/opt/homebrew/bin/cmake "-Dsrc=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/VST3/My Juce Plugin.vst3" -Ddest=/Users/jacobliebson/Library/Audio/Plug-Ins/VST3 -P /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/copyDir.cmake
 
 # Rule to build all files generated by this target.
-CMakeFiles/MyJucePlugin_VST3.dir/build: MyJucePlugin_artefacts/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin
+CMakeFiles/MyJucePlugin_VST3.dir/build: MyJucePlugin_artefacts/Debug/VST3/My\ Juce\ Plugin.vst3/Contents/MacOS/My\ Juce\ Plugin
 .PHONY : CMakeFiles/MyJucePlugin_VST3.dir/build
 
 CMakeFiles/MyJucePlugin_VST3.dir/clean:

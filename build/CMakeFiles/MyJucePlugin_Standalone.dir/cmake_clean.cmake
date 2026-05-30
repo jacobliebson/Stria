@@ -21,10 +21,10 @@ file(REMOVE_RECURSE
   "CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o.d"
   "CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o"
   "CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o.d"
+  "MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.app/Contents/MacOS/My Juce Plugin"
+  "MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib"
+  "MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.pdb"
   "MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_Standalone/PkgInfo"
-  "MyJucePlugin_artefacts/Standalone/My Juce Plugin.app/Contents/MacOS/My Juce Plugin"
-  "MyJucePlugin_artefacts/Standalone/My Juce Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib"
-  "MyJucePlugin_artefacts/Standalone/My Juce Plugin.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

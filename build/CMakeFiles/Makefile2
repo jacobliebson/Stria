@@ -208,9 +208,9 @@ CMakeFiles/MyJucePlugin.dir/clean:
 # Target rules for target CMakeFiles/MyJucePlugin_All.dir
 
 # All Build rule for target.
+CMakeFiles/MyJucePlugin_All.dir/all: CMakeFiles/MyJucePlugin_Standalone.dir/all
 CMakeFiles/MyJucePlugin_All.dir/all: CMakeFiles/MyJucePlugin_AU.dir/all
 CMakeFiles/MyJucePlugin_All.dir/all: CMakeFiles/MyJucePlugin_VST3.dir/all
-CMakeFiles/MyJucePlugin_All.dir/all: CMakeFiles/MyJucePlugin_Standalone.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyJucePlugin_All.dir/build.make CMakeFiles/MyJucePlugin_All.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyJucePlugin_All.dir/build.make CMakeFiles/MyJucePlugin_All.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num= "Built target MyJucePlugin_All"
@@ -228,9 +228,9 @@ MyJucePlugin_All: CMakeFiles/MyJucePlugin_All.dir/rule
 .PHONY : MyJucePlugin_All
 
 # codegen rule for target.
+CMakeFiles/MyJucePlugin_All.dir/codegen: CMakeFiles/MyJucePlugin_Standalone.dir/all
 CMakeFiles/MyJucePlugin_All.dir/codegen: CMakeFiles/MyJucePlugin_AU.dir/all
 CMakeFiles/MyJucePlugin_All.dir/codegen: CMakeFiles/MyJucePlugin_VST3.dir/all
-CMakeFiles/MyJucePlugin_All.dir/codegen: CMakeFiles/MyJucePlugin_Standalone.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyJucePlugin_All.dir/build.make CMakeFiles/MyJucePlugin_All.dir/codegen
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num= "Finished codegen for target MyJucePlugin_All"
 .PHONY : CMakeFiles/MyJucePlugin_All.dir/codegen
@@ -308,8 +308,8 @@ CMakeFiles/MyJucePlugin_AU.dir/clean:
 # Target rules for target CMakeFiles/MyJucePlugin_VST3.dir
 
 # All Build rule for target.
-CMakeFiles/MyJucePlugin_VST3.dir/all: CMakeFiles/MyJucePlugin_vst3_helper.dir/all
 CMakeFiles/MyJucePlugin_VST3.dir/all: CMakeFiles/MyJucePlugin.dir/all
+CMakeFiles/MyJucePlugin_VST3.dir/all: CMakeFiles/MyJucePlugin_vst3_helper.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyJucePlugin_VST3.dir/build.make CMakeFiles/MyJucePlugin_VST3.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyJucePlugin_VST3.dir/build.make CMakeFiles/MyJucePlugin_VST3.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=51,52,53,54,55,56,57,58,59,60,61,62,63 "Built target MyJucePlugin_VST3"

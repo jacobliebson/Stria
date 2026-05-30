@@ -21,8 +21,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/MyJucePlugin_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o.d"
   "CMakeFiles/MyJucePlugin_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o"
   "CMakeFiles/MyJucePlugin_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o.d"
-  "MyJucePlugin_artefacts/AU/My Juce Plugin.component/Contents/MacOS/My Juce Plugin"
-  "MyJucePlugin_artefacts/AU/My Juce Plugin.component/Contents/MacOS/My Juce Plugin.pdb"
+  "MyJucePlugin_artefacts/Debug/AU/My Juce Plugin.component/Contents/MacOS/My Juce Plugin"
+  "MyJucePlugin_artefacts/Debug/AU/My Juce Plugin.component/Contents/MacOS/My Juce Plugin.pdb"
   "MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_AU/PkgInfo"
 )
 

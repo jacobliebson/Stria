@@ -1,0 +1,13 @@
+# CMake build directories
+/build/
+/.cmake/
+
+# IDE files
+/.vscode/
+/.idea/
+/*.user
+/cmake-build-*/
+
+# OS-specific clutter
+.DS_Store
+Thumbs.db

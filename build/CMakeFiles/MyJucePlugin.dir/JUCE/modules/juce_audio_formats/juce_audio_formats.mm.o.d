@@ -2336,6 +2336,7 @@ CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.m
   /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/native/juce_CoreAudioLayouts_mac.h \
   /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/native/juce_CFHelpers_mac.h \
   /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.cpp \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
   /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/codecs/flac/all.h \
   /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/codecs/flac/export.h \
   /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/codecs/flac/assert.h \

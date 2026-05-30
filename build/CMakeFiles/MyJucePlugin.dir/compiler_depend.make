@@ -5367,6 +5367,7 @@ CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.m
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arpa/inet.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/bsm/audit.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/adjacent_find.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/all_of.h \
@@ -39209,8 +39210,6 @@ CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o: /Users/jacobliebson/Ju
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cfloat:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h:
-
 /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp:
 
 /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/unicode/sheenbidi/Headers/SheenBidi/SheenBidi.h:
@@ -46688,6 +46687,8 @@ CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o: /Users/jacobliebson/Ju
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/xlocale/_stdio.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/remove_if.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFURLAccess.h:
 

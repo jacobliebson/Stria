@@ -423,37 +423,37 @@ MyJucePlugin_OBJECTS = \
 # External object files for target MyJucePlugin
 MyJucePlugin_EXTERNAL_OBJECTS =
 
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/build.make
-MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Linking CXX static library \"MyJucePlugin_artefacts/libMy Juce Plugin_SharedCode.a\""
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/build.make
+MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a: CMakeFiles/MyJucePlugin.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Linking CXX static library \"MyJucePlugin_artefacts/Debug/libMy Juce Plugin_SharedCode.a\""
 	$(CMAKE_COMMAND) -P CMakeFiles/MyJucePlugin.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MyJucePlugin.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-CMakeFiles/MyJucePlugin.dir/build: MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a
+CMakeFiles/MyJucePlugin.dir/build: MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a
 .PHONY : CMakeFiles/MyJucePlugin.dir/build
 
 CMakeFiles/MyJucePlugin.dir/clean:

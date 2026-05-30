@@ -76,9 +76,9 @@ MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_Standalone/PkgInfo:
 CMakeFiles/MyJucePlugin_Standalone.dir/codegen:
 .PHONY : CMakeFiles/MyJucePlugin_Standalone.dir/codegen
 
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib: /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content MyJucePlugin_artefacts/Standalone/My Juce Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib"
-	$(CMAKE_COMMAND) -E copy /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib "MyJucePlugin_artefacts/Standalone/My Juce Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib"
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib: /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib"
+	$(CMAKE_COMMAND) -E copy /Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib "MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib"
 
 CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o: CMakeFiles/MyJucePlugin_Standalone.dir/flags.make
 CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp
@@ -251,27 +251,27 @@ MyJucePlugin_Standalone_OBJECTS = \
 # External object files for target MyJucePlugin_Standalone
 MyJucePlugin_Standalone_EXTERNAL_OBJECTS =
 
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/build.make
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: MyJucePlugin_artefacts/libMy\ Juce\ Plugin_SharedCode.a
-MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable \"MyJucePlugin_artefacts/Standalone/My Juce Plugin.app/Contents/MacOS/My Juce Plugin\""
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/build.make
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: MyJucePlugin_artefacts/Debug/libMy\ Juce\ Plugin_SharedCode.a
+MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin: CMakeFiles/MyJucePlugin_Standalone.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable \"MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.app/Contents/MacOS/My Juce Plugin\""
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MyJucePlugin_Standalone.dir/link.txt --verbose=$(VERBOSE)
-	/opt/homebrew/bin/cmake -E copy /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_Standalone/PkgInfo "/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Standalone/My Juce Plugin.app/Contents"
+	/opt/homebrew/bin/cmake -E copy /Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/MyJucePlugin_Standalone/PkgInfo "/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/Debug/Standalone/My Juce Plugin.app/Contents"
 
 # Rule to build all files generated by this target.
-CMakeFiles/MyJucePlugin_Standalone.dir/build: MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin
-CMakeFiles/MyJucePlugin_Standalone.dir/build: MyJucePlugin_artefacts/Standalone/My\ Juce\ Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib
+CMakeFiles/MyJucePlugin_Standalone.dir/build: MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/MacOS/My\ Juce\ Plugin
+CMakeFiles/MyJucePlugin_Standalone.dir/build: MyJucePlugin_artefacts/Debug/Standalone/My\ Juce\ Plugin.app/Contents/Resources/RecentFilesMenuTemplate.nib
 .PHONY : CMakeFiles/MyJucePlugin_Standalone.dir/build
 
 CMakeFiles/MyJucePlugin_Standalone.dir/clean:

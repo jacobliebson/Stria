@@ -232,10 +232,10 @@ juce_vst3_manifest_helper_IS_TOP_LEVEL:STATIC=ON
 juce_vst3_manifest_helper_SOURCE_DIR:STATIC=/Users/jacobliebson/Juce_template_blank/JUCE/extras/Build/CMake/juce_vst3_helper
 
 //No help, variable specified on the command line.
-shared_defs_file:UNINITIALIZED=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/shared_defs_.txt
+shared_defs_file:UNINITIALIZED=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/shared_defs_Debug.txt
 
 //No help, variable specified on the command line.
-shared_incs_file:UNINITIALIZED=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/shared_incs_.txt
+shared_incs_file:UNINITIALIZED=/Users/jacobliebson/Juce_template_blank/build/MyJucePlugin_artefacts/JuceLibraryCode/vst3_helper/shared_incs_Debug.txt
 
 //No help, variable specified on the command line.
 source_file:UNINITIALIZED=/Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp

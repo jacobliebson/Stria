@@ -45,8 +45,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o.d"
   "CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o"
   "CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o.d"
-  "MyJucePlugin_artefacts/libMy Juce Plugin_SharedCode.a"
-  "MyJucePlugin_artefacts/libMy Juce Plugin_SharedCode.pdb"
+  "MyJucePlugin_artefacts/Debug/libMy Juce Plugin_SharedCode.a"
+  "MyJucePlugin_artefacts/Debug/libMy Juce Plugin_SharedCode.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

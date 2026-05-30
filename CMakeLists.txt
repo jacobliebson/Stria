@@ -18,7 +18,10 @@ juce_add_plugin(MyJucePlugin
     # Formats to build (VST3, AU, Standalone, etc.)
     FORMATS                     VST3 AU Standalone
     PRODUCT_NAME                "My Juce Plugin"
+    COPY_PLUGIN_AFTER_BUILD TRUE
 )
+
+
 
 # 3. Add Source Files
 target_sources(MyJucePlugin PRIVATE
