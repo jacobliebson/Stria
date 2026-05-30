@@ -30,4 +30,7 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
+
+    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 };
