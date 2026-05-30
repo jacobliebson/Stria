@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.22)
 # Define your project
 project(AUDIO_PLUGIN_TEMPLATE VERSION 1.0.0 LANGUAGES C CXX)
 
+#0. Resolve intellisense desync
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # 1. Enable CPM (CMake Package Manager) or FetchContent to grab JUCE
 add_subdirectory(JUCE)
 

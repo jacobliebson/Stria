@@ -76,323 +76,323 @@ CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o: CMakeFiles/MyJucePlugi
 CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o: /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp
 CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o -MF CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o -c /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o -MF CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.o -c /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp
 
 CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp > CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp > CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp -o CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/Source/PluginProcessor.cpp -o CMakeFiles/MyJucePlugin.dir/Source/PluginProcessor.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o: /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp
 CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o -MF CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o -c /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o -MF CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.o -c /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp
 
 CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp > CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp > CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp -o CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/Source/PluginEditor.cpp -o CMakeFiles/MyJucePlugin.dir/Source/PluginEditor.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors/juce_audio_processors.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_extra/juce_gui_extra.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_gui_basics/juce_gui_basics.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_graphics/juce_graphics.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_graphics/juce_graphics.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_events/juce_events.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_events/juce_events.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core_CompilationTime.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_core/juce_core.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_core/juce_core.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_data_structures/juce_data_structures.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_basics/juce_audio_basics.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_utils/juce_audio_utils.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_formats/juce_audio_formats.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.s
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o: CMakeFiles/MyJucePlugin.dir/flags.make
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o: /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o: CMakeFiles/MyJucePlugin.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/jacobliebson/Juce_template_blank/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o -MF CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o.d -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o -c /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm > CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.i
 
 CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/jacobliebson/Juce_template_blank/JUCE/modules/juce_audio_devices/juce_audio_devices.mm -o CMakeFiles/MyJucePlugin.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.s
 
 # Object files for target MyJucePlugin
 MyJucePlugin_OBJECTS = \

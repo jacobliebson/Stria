@@ -1,0 +1,172 @@
+{
+	"abstract" : true,
+	"backtrace" : 4,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"_juce_add_interface_library",
+			"juce_add_module",
+			"juce_add_modules",
+			"target_link_libraries",
+			"_juce_link_frameworks"
+		],
+		"files" : 
+		[
+			"JUCE/extras/Build/CMake/JUCEModuleSupport.cmake",
+			"JUCE/modules/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 33,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 674,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 493,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 98,
+				"parent" : 3
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 509,
+				"parent" : 2
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 6
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 10
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 12
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 10
+	},
+	"id" : "juce_core::@fa2799be4f27ec528a31",
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "juce_atomic_wrapper::@b2264a885a0e6308e827"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "juce_atomic_wrapper::@b2264a885a0e6308e827"
+		},
+		{
+			"backtrace" : 7,
+			"fragment" : "-framework Cocoa"
+		},
+		{
+			"backtrace" : 9,
+			"fragment" : "-framework Foundation"
+		},
+		{
+			"backtrace" : 11,
+			"fragment" : "-framework IOKit"
+		},
+		{
+			"backtrace" : 13,
+			"fragment" : "-framework Security"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"path" : "JUCE/modules/juce_core/juce_core_CompilationTime.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"path" : "JUCE/modules/juce_core/juce_core.mm",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"name" : "juce_core",
+	"paths" : 
+	{
+		"build" : "JUCE/modules",
+		"source" : "JUCE/modules"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"interfaceSourceIndexes" : 
+			[
+				0,
+				1
+			],
+			"name" : "Source Files",
+			"sourceIndexes" : []
+		}
+	],
+	"sources" : [],
+	"type" : "INTERFACE_LIBRARY"
+}

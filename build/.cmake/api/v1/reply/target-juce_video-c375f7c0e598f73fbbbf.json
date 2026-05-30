@@ -1,0 +1,151 @@
+{
+	"abstract" : true,
+	"backtrace" : 4,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"_juce_add_interface_library",
+			"juce_add_module",
+			"juce_add_modules",
+			"target_link_libraries",
+			"_juce_link_frameworks"
+		],
+		"files" : 
+		[
+			"JUCE/extras/Build/CMake/JUCEModuleSupport.cmake",
+			"JUCE/modules/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 33,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 674,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 493,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 98,
+				"parent" : 3
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 5
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 7
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 330,
+				"parent" : 9
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 647,
+				"parent" : 2
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 10
+	},
+	"id" : "juce_video::@fa2799be4f27ec528a31",
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 11,
+			"id" : "juce_gui_extra::@fa2799be4f27ec528a31"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 6,
+			"fragment" : "-framework AVKit"
+		},
+		{
+			"backtrace" : 8,
+			"fragment" : "-framework AVFoundation"
+		},
+		{
+			"backtrace" : 10,
+			"fragment" : "-framework CoreMedia"
+		},
+		{
+			"backtrace" : 11,
+			"id" : "juce_gui_extra::@fa2799be4f27ec528a31"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"path" : "JUCE/modules/juce_video/juce_video.mm",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"name" : "juce_video",
+	"paths" : 
+	{
+		"build" : "JUCE/modules",
+		"source" : "JUCE/modules"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"interfaceSourceIndexes" : 
+			[
+				0
+			],
+			"name" : "Source Files",
+			"sourceIndexes" : []
+		}
+	],
+	"sources" : [],
+	"type" : "INTERFACE_LIBRARY"
+}
