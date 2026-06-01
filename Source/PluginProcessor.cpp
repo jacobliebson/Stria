@@ -1,10 +1,28 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+// 1. Implement the parameter layout helper function
+juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    // Add a default placeholder parameter so the layout isn't completely empty
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("master_gain", 1), // Parameter ID and version
+        "Master Gain",                        // Parameter name shown in DAW
+        0.0f,                                 // Minimum value
+        1.0f,                                 // Maximum value
+        0.5f                                  // Default value
+    ));
+
+    return layout;
+}
+
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+        apvts (*this, nullptr, "PARAMETERS", createParameterLayout())
 {}
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
