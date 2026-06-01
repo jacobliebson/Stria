@@ -1,4 +1,5 @@
 #pragma once
+#include "FFTProcessor.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
 class AudioPluginAudioProcessor  : public juce::AudioProcessor
@@ -33,4 +34,7 @@ private:
 
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    FFTProcessor leftFFTProcessor;
+    FFTProcessor rightFFTProcessor;
 };

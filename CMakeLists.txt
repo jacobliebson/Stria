@@ -29,6 +29,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginEditor.h
     Source/PluginEditor.cpp
+    Source/FFTProcessor.h
+    Source/FFTProcessor.cpp
 )
 
 # 4. Compile Features and Definitions
@@ -41,6 +43,7 @@ target_compile_definitions(MyJucePlugin PRIVATE
 # 5. Link JUCE Modules
 target_link_libraries(MyJucePlugin PRIVATE
     juce::juce_audio_utils
+    juce::juce_dsp
     PUBLIC
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
