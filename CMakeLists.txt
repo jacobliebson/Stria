@@ -12,7 +12,7 @@ add_subdirectory(JUCE)
 # 2. Create the JUCE Plugin Target
 juce_add_plugin(MyJucePlugin
     # Set your unique Plugin Code and Manufacturer Code (4 characters each)
-    PLUGIN_MANUFACTURER_CODE    Blnk
+    PLUGIN_MANUFACTURER_CODE    Abcd
     PLUGIN_CODE                1234
     
     # Formats to build (VST3, AU, Standalone, etc.)

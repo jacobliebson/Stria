@@ -35,7 +35,7 @@
         <key>factoryFunction</key>
         <string>My_Juce_PluginAUFactory</string>
         <key>manufacturer</key>
-        <string>Blnk</string>
+        <string>Abcd</string>
         <key>type</key>
         <string>aufx</string>
         <key>subtype</key>
