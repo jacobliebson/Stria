@@ -1,2 +1,2 @@
 To clone, use: 
-git clone --recurse-submodules --shallow-submodules <your-template-repo-url> <your-new-project-name>
+git clone --recurse-submodules --shallow-submodules git@github.com:jacobliebson/Juce-fft-template.git <your-new-project-name>
