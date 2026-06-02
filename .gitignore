@@ -2,6 +2,9 @@
 /build/
 /.cmake/
 
+# Language Server Caches
+.cache/
+
 # IDE files
 /.vscode/
 /.idea/

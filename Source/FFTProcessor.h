@@ -8,8 +8,6 @@ class FFTProcessor
 {
 public:
     void orderChanged (int newFFTOrder, double newSampleRate);
-    void setCutoffFrequency (float frequencyInHz);
-    void setDeltaMode (bool shouldBeDelta);
     
     void pushSample (float sample);
     float popSample();
@@ -38,7 +36,6 @@ private:
     std::vector<float> fftData; // Size: fftSize * 2 for complex interleaving
 
     double sampleRate = 44100.0;
-    float targetCutoffHz = 1000.0f;
 
     void processFrame();
 };

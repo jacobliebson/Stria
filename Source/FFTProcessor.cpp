@@ -28,16 +28,6 @@ void FFTProcessor::orderChanged (int newFFTOrder, double newSampleRate)
     pos = 0;
 }
 
-void FFTProcessor::setCutoffFrequency (float frequencyInHz)
-{
-    targetCutoffHz = juce::jlimit (20.0f, static_cast<float> (sampleRate / 2.0), frequencyInHz);
-}
-
-void FFTProcessor::setDeltaMode (bool shouldBeDelta)
-{
-    isDeltaModeActive = shouldBeDelta;
-}
-
 void FFTProcessor::pushSample (float sample)
 {
     if (inputFifo.size() == 0) return;
@@ -142,21 +132,7 @@ void FFTProcessor::processFrequencyDomain()
         float magnitude = std::abs (complexValue);
         float phase     = std::arg (complexValue);
         
-        // Normalize the relationship: 0.0 at 0Hz, 1.0 at the cutoff frequency
-        float normalizedDistance = binFrequencyHz / targetCutoffHz;
-
-        // Ensure we clamp it between 0.0 and 1.0 so we don't take sqrt of a negative,
-        // and frequencies ABOVE the cutoff remain completely untouched (multiplied by 1.0)
-        normalizedDistance = juce::jlimit (0.0f, 1.0f, normalizedDistance);
-
-        // Apply the square-root scaling curve
-        float mag1 = magnitude * std::pow (normalizedDistance, 0.5f);
-
-        if (isDeltaModeActive) {
-            magnitude -= mag1;
-        } else {
-            magnitude = mag1;
-        }
+        // Spectral processing goes
 
        
         // =================================================================

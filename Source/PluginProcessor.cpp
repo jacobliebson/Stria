@@ -6,20 +6,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    juce::NormalisableRange<float> cutoffRange (20.0f, 20000.0f, 1.0f, 0.3f);
+    juce::NormalisableRange<float> outputGainRange (-12.0f, 12.0f, 0.1f, 1.0f);
 
     layout.add (std::make_unique<juce::AudioParameterFloat> (
-        juce::ParameterID ("fft_cutoff", 1), // Parameter ID
-        "Filter Cutoff",                     // UI Name
-        cutoffRange,                         // Range configuration
-        1000.0f                              // Default value (1 kHz)
+        juce::ParameterID ("output_gain", 1), // Parameter ID
+        "Output gain",                     // UI Name
+        outputGainRange,                         // Range configuration
+        0.0f                              // Default value
     ));
 
-    layout.add (std::make_unique<juce::AudioParameterBool> (
-        juce::ParameterID ("fft_delta", 1), // Parameter ID
-        "Delta Mode",                       // UI Name
-        false                               // Default state (Off)
-    ));
+
 
     return layout;
 }
@@ -45,16 +41,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 {
     juce::ScopedNoDenormals noDenormals;
     
-    // Read your parameters atomically
-    float currentCutoff = *apvts.getRawParameterValue ("fft_cutoff");
-    bool currentDelta   = *apvts.getRawParameterValue ("fft_delta") > 0.5f; // Cast float to bool
+    // Read your parameters here 
+
     
-    // Update both channel processors
-    leftFFTProcessor.setCutoffFrequency (currentCutoff);
-    leftFFTProcessor.setDeltaMode (currentDelta);
-    
-    rightFFTProcessor.setCutoffFrequency (currentCutoff);
-    rightFFTProcessor.setDeltaMode (currentDelta);
+    // Update both channel processors here
+
 
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
