@@ -87,7 +87,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
         }   
     }
 
-    activeMidiNotes.fill(-1);
+    midiNotes.fill(-1);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {}
@@ -108,21 +108,40 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     float currentDamping = damping->load();
     float currentMix = mix->load() / 100.0f;
 
-    
-
+    // read live midi inputs
     for (const auto metadata: midiMessages) {
         auto message = metadata.getMessage();
         if (message.isNoteOn()) {
             int note = message.getNoteNumber();
-            activeMidiNotes[nextVoiceToAssign] = note;
-            nextVoiceToAssign = (nextVoiceToAssign + 1) % numVoices;
+
+            // find the first free voice
+            for (int voice = 0; voice < numVoices; ++voice) {
+                if (midiNotes[voice] == -1) {
+                    midiNotes[voice] = note;
+                    break;
+                }
+            }
+        } else if (message.isNoteOff()) {
+            int note = message.getNoteNumber();
+
+            // find voice playing note and mark as unused
+            for (int voice = 0; voice < numVoices; ++voice) {
+                if (midiNotes[voice] == note) {
+                    midiNotes[voice] = -1;
+                    break;
+                }
+            }
         }
         
     }
 
     std::array<float, numVoices> voiceFrequencies;
     for (int voice = 0; voice < numVoices; ++voice) {
-        voiceFrequencies[voice] = midiToHz(activeMidiNotes[voice]);
+        float nextFreq = -1;
+        if (midiNotes[voice] != -1) {
+            nextFreq = midiToHz(midiNotes[voice]);
+        }
+        voiceFrequencies[voice] = nextFreq;
     }
 
     // Push the updated frequencies directly into the filter configurations
@@ -130,9 +149,16 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     {
         for (int voice = 0; voice < numVoices; ++voice) {
             CombFilter& filter = filterBank[channel][voice];
-            filter.setFeedback (currentFeedback);
+
+            float nextFreq = voiceFrequencies[voice];
+            if (nextFreq == -1) {
+                filter.setFeedback (0);
+            } else {
+                filter.setFeedback (currentFeedback);
+            }
             filter.setDamping (currentDamping);
-            filter.setTargetFrequency(voiceFrequencies[voice]);
+            filter.setTargetFrequency(nextFreq);
+            
         }   
     }
 
@@ -151,10 +177,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
             // Only run the processing if the filter has a valid target frequency
             for (int voice = 0; voice < numVoices; ++voice) {
-                if (voiceFrequencies[voice] >= 0.0f) {
-                    CombFilter& filter = filterBank[channel][voice];
-                    summedWetOutput += filter.processSample(inputSample);
-                }
+                CombFilter& filter = filterBank[channel][voice];
+                summedWetOutput += filter.processSample(inputSample);    
             }
 
             float scaleFactor = 1.0f / static_cast<float>(numVoices);
@@ -184,6 +208,13 @@ inline float AudioPluginAudioProcessor::midiToHz (int midiNote) {
     return 440.0f * std::pow (2.0f, (static_cast<float> (midiNote) - 69.0f) / 12.0f);
 }
 
-std::array<int, 3> AudioPluginAudioProcessor::getActiveMidiNotes () {
-    return activeMidiNotes;
+std::array<int, 5> AudioPluginAudioProcessor::getActiveMidiNotes() 
+{
+    // If you are using std::atomic for midiNotes, load them here.
+    // If it's a plain array, we can return a direct copy for local diagnostic view:
+    std::array<int, 5> snapshot;
+    for (int i = 0; i < 5; ++i) {
+        snapshot[i] = midiNotes[i];
+    }
+    return snapshot;
 }
