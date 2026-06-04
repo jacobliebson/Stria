@@ -17,7 +17,7 @@ public:
     bool hasEditor() const override { return true; }
 
     const juce::String getName() const override { return JucePlugin_Name; }
-    bool acceptsMidi() const override { return false; }
+    bool acceptsMidi() const override { return true; }
     bool producesMidi() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
 
@@ -29,6 +29,7 @@ public:
 
     void getStateInformation (juce::MemoryBlock& destData) override {}
     void setStateInformation (const void* data, int sizeInBytes) override {}
+    std::array<int, 3> getActiveMidiNotes();
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
@@ -41,7 +42,12 @@ private:
 
     static constexpr int numVoices = 3;
     static constexpr int numChannels = 2;
-    std::array<std::array<CombFilter, numVoices>, 2> filterBank;
+
+    std::array<std::array<CombFilter, numVoices>, numChannels> filterBank;
+    
+    std::array<int, numVoices> activeMidiNotes;
+    int nextVoiceToAssign = 0;
+
     std::atomic<float>* feedback;
     std::atomic<float>* mix;
     std::atomic<float>* damping;

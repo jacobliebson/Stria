@@ -12,13 +12,18 @@ add_subdirectory(JUCE)
 # 2. Create the JUCE Plugin Target
 juce_add_plugin(MyJucePlugin
     # Set your unique Plugin Code and Manufacturer Code (4 characters each)
-    PLUGIN_MANUFACTURER_CODE    Abcd
-    PLUGIN_CODE                1234
+    PLUGIN_MANUFACTURER_CODE    Jclb
+    PLUGIN_CODE                Rest
     
     # Formats to build (VST3, AU, Standalone, etc.)
     FORMATS                     VST3 AU Standalone
-    PRODUCT_NAME                "My Juce Plugin"
-    COPY_PLUGIN_AFTER_BUILD TRUE
+    PRODUCT_NAME                "Resonator test"
+    COMPANY_NAME                "Jacob Liebson"
+    COPY_PLUGIN_AFTER_BUILD     TRUE
+
+    IS_SYNTH                    TRUE
+    NEEDS_MIDI_INPUT            TRUE
+    NEEDS_MIDI_OUTPUT           FALSE
 )
 
 
@@ -40,6 +45,7 @@ target_compile_features(MyJucePlugin PRIVATE cxx_std_20)
 
 target_compile_definitions(MyJucePlugin PRIVATE
     JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
+    JucePlugin_WantsMidiInput=1
 )
 
 # 5. Link JUCE Modules

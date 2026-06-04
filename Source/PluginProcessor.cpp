@@ -12,7 +12,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         juce::ParameterID ("FEEDBACK", 1), // Parameter ID
         "Feedback",                     // UI Name
         feedbackRange,                         // Range configuration
-        0.5f                              // Default value
+        0.8f                              // Default value
     ));
 
     juce::NormalisableRange<float> dampingRange (0.0f, 1.0f, 0.01f, 1.0f);
@@ -53,9 +53,12 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
         apvts (*this, nullptr, "PARAMETERS", createParameterLayout())
-{}
+{
+    
+}
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
+
 
 void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
@@ -83,6 +86,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
             filter.reset(); 
         }   
     }
+
+    activeMidiNotes.fill(-1);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {}
@@ -91,41 +96,36 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 {
     juce::ScopedNoDenormals noDenormals;
     
-   
-    // clear unused channels
+    // Clear unused output channels
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
         buffer.clear (i, 0, buffer.getNumSamples());
     }     
     
-     // Read your parameters here 
+    // Read your non-pitch parameters
     float currentFeedback = feedback->load();
     float currentDamping = damping->load();
-    int noteIndex = static_cast<int>(note->load());
-    int currentOctave = static_cast<int>(octave->load());
     float currentMix = mix->load() / 100.0f;
 
-    // Calculate the target frequency
-    // (octaveValue + 1) aligns Octave 4 to Middle C (MIDI Note 60) when Note is 0 (C)
-    int absoluteMidiNote = ((currentOctave + 1) * 12) + noteIndex;
-
-    int root = absoluteMidiNote;
-    int third = absoluteMidiNote + 4;
-    int fifth = absoluteMidiNote + 7;
     
-    // Standard MIDI to Frequency formula: 440.0 * pow(2.0, (midiNote - 69) / 12.0)
-    float rootFrequency = midiToHz(root);
-    float thirdFrequency = midiToHz(third);
-    float fifthFrequency = midiToHz(fifth);
 
-    std::array<float, 3> voiceFrequencies;
-    voiceFrequencies[0] = rootFrequency;
-    voiceFrequencies[1] = thirdFrequency;
-    voiceFrequencies[2] = fifthFrequency;
+    for (const auto metadata: midiMessages) {
+        auto message = metadata.getMessage();
+        if (message.isNoteOn()) {
+            int note = message.getNoteNumber();
+            activeMidiNotes[nextVoiceToAssign] = note;
+            nextVoiceToAssign = (nextVoiceToAssign + 1) % numVoices;
+        }
+        
+    }
 
+    std::array<float, numVoices> voiceFrequencies;
+    for (int voice = 0; voice < numVoices; ++voice) {
+        voiceFrequencies[voice] = midiToHz(activeMidiNotes[voice]);
+    }
 
+    // Push the updated frequencies directly into the filter configurations
     for (int channel = 0; channel < numChannels; ++channel)
     {
         for (int voice = 0; voice < numVoices; ++voice) {
@@ -136,39 +136,37 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         }   
     }
 
-
-    // 4. Process the audio data sample-by-sample
+    // =================================================================
+    // MAIN AUDIO PROCESSING LOOP
+    // =================================================================
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        // Get a direct pointer to the audio data for this specific channel
         auto* channelData = buffer.getWritePointer (channel);
-
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
-            
             float inputSample = channelData[sample];
-
-
-
 
             float summedWetOutput = 0.0f;
 
+            // Only run the processing if the filter has a valid target frequency
             for (int voice = 0; voice < numVoices; ++voice) {
-                CombFilter& filter = filterBank[channel][voice];
-                summedWetOutput += filter.processSample(inputSample);
+                if (voiceFrequencies[voice] >= 0.0f) {
+                    CombFilter& filter = filterBank[channel][voice];
+                    summedWetOutput += filter.processSample(inputSample);
+                }
             }
 
             float scaleFactor = 1.0f / static_cast<float>(numVoices);
             float wetSample = summedWetOutput * scaleFactor;
 
-
-
             float blendedOutput = (inputSample * (1.0f - currentMix)) + (wetSample * currentMix);
             channelData[sample] = blendedOutput;
-            
         }
     }
+    
+    // Clear the MIDI buffer at the end of the block so messages don't pile up or repeat
+    midiMessages.clear();
 }
 
 juce::AudioProcessorEditor* AudioPluginAudioProcessor::createEditor()
@@ -184,4 +182,8 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 inline float AudioPluginAudioProcessor::midiToHz (int midiNote) {
     return 440.0f * std::pow (2.0f, (static_cast<float> (midiNote) - 69.0f) / 12.0f);
+}
+
+std::array<int, 3> AudioPluginAudioProcessor::getActiveMidiNotes () {
+    return activeMidiNotes;
 }
