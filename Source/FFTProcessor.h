@@ -8,14 +8,16 @@ class FFTProcessor
 {
 public:
     void orderChanged (int newFFTOrder, double newSampleRate);
+    void setSpecThresh (float newSpecThresh);
     
     void pushSample (float sample);
     float popSample();
 
     void processFrequencyDomain();
+    int getFFTSize();
 
 private:
-    bool isDeltaModeActive = false;
+    float specThresh;
     int fftOrder = 11; 
     int fftSize  = 2048;
     int numBins  = 1025;
@@ -25,7 +27,8 @@ private:
     int hopSize = 512;
     
     int count = 0;
-    int pos = 0;
+    int writeIndex = 0;
+    int readIndex = 0;
 
     std::unique_ptr<juce::dsp::FFT> fftEngine;
     std::unique_ptr<juce::dsp::WindowingFunction<float>> windowEngine;

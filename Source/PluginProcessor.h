@@ -1,5 +1,6 @@
 #pragma once
 #include "FFTProcessor.h"
+#include "CombFilter.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
 class AudioPluginAudioProcessor  : public juce::AudioProcessor
@@ -35,6 +36,15 @@ private:
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    FFTProcessor leftFFTProcessor;
-    FFTProcessor rightFFTProcessor;
+
+    inline float midiToHz (int midiNote);
+
+    static constexpr int numVoices = 3;
+    static constexpr int numChannels = 2;
+    std::array<std::array<CombFilter, numVoices>, 2> filterBank;
+    std::atomic<float>* feedback;
+    std::atomic<float>* mix;
+    std::atomic<float>* damping;
+    std::atomic<float>* note;
+    std::atomic<float>* octave;
 };

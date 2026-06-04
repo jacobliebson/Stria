@@ -25,17 +25,27 @@ void FFTProcessor::orderChanged (int newFFTOrder, double newSampleRate)
     fftData.assign ((size_t)(fftSize * 2), 0.0f);
     
     count = 0;
-    pos = 0;
+    writeIndex = 0;
+    readIndex = 0;
+}
+
+void FFTProcessor::setSpecThresh(float newSpecThresh) {
+    specThresh = newSpecThresh;
+}
+
+int FFTProcessor::getFFTSize() {
+    return fftSize;
 }
 
 void FFTProcessor::pushSample (float sample)
 {
     if (inputFifo.size() == 0) return;
 
-    // 1. Push sample into the circular input buffer
-    inputFifo[(size_t)pos] = sample;
+    // Write strictly to the write tracker
+    inputFifo[(size_t)writeIndex] = sample;
+    writeIndex = (writeIndex + 1) % fftSize;
     
-    // 2. Count ticks up toward our Hop Size boundary (75% overlap threshold)
+    // Count hop blocks independently of the raw pointer address
     count += 1;
     if (count >= hopSize)
     {
@@ -48,58 +58,53 @@ float FFTProcessor::popSample()
 {
     if (outputFifo.size() == 0) return 0.0f;
 
-    // 3. Extract sample from the output circular canvas
-    float outputSample = outputFifo[(size_t)pos];
+    // Read strictly from the read tracker
+    float outputSample = outputFifo[(size_t)readIndex];
     
-    // Clear out stale values so they don't corrupt subsequent accumulations
-    outputFifo[(size_t)pos] = 0.0f;
+    // Clear the canvas tail
+    outputFifo[(size_t)readIndex] = 0.0f;
     
-    // 4. Advance both FIFOs simultaneously using the unified circular tracker
-    pos = (pos + 1) % fftSize;
+    readIndex = (readIndex + 1) % fftSize;
     
     return outputSample;
 }
 
 void FFTProcessor::processFrame()
 {
-    // Clear the complex working workspace entirely
     std::fill (fftData.begin(), fftData.end(), 0.0f);
 
-    // 5. Unwrap circular buffer chronologically into the front half of the FFT array
     float* fftPtr = fftData.data();
     const float* inputPtr = inputFifo.data();
     
-    std::memcpy (fftPtr, inputPtr + pos, (size_t)(fftSize - pos) * sizeof (float));
-    if (pos > 0)
+    // Snapshot the current write pointer position for this frame calculation
+    int fftStartPos = writeIndex; 
+
+    // Unwrap circular buffer using the frozen snapshot
+    std::memcpy (fftPtr, inputPtr + fftStartPos, (size_t)(fftSize - fftStartPos) * sizeof (float));
+    if (fftStartPos > 0)
     {
-        std::memcpy (fftPtr + (fftSize - pos), inputPtr, (size_t)pos * sizeof (float));
+        std::memcpy (fftPtr + (fftSize - fftStartPos), inputPtr, (size_t)fftStartPos * sizeof (float));
     }
 
-    // 6. Apply Analysis Windowing Function
+    // Window -> FFT -> Gate -> iFFT -> Window
     windowEngine->multiplyWithWindowingTable (fftPtr, (size_t)fftSize);
-
-    // 7. Execute Real Forward FFT
     fftEngine->performRealOnlyForwardTransform (fftPtr, true);
-
-    // 8. Process Spectral Filtering Block
+    
     processFrequencyDomain();
-
-    // 9. Execute Real Inverse Transform (JUCE scales this natively by 1/N)
+    
     fftEngine->performRealOnlyInverseTransform (fftPtr);
-
-    // 10. Apply Synthesis Windowing Function
     windowEngine->multiplyWithWindowingTable (fftPtr, (size_t)fftSize);
 
-    // 11. Accumulate back into Circular Output Buffer with COLA Amplitude Correction
-    const float windowCorrection = 2.0f / 3.0f; // Eliminates 1.5x gain of 75% Hann Overlap
+    // Accumulate back into circular buffer using the isolated snapshot
+    const float windowCorrection = 2.0f / 3.0f; 
     
-    for (int i = 0; i < pos; ++i) 
+    for (int i = 0; i < fftStartPos; ++i) 
     {
-        outputFifo[(size_t)i] += fftPtr[i + fftSize - pos] * windowCorrection;
+        outputFifo[(size_t)i] += fftPtr[i + fftSize - fftStartPos] * windowCorrection;
     }
-    for (int i = 0; i < fftSize - pos; ++i) 
+    for (int i = 0; i < fftSize - fftStartPos; ++i) 
     {
-        outputFifo[(size_t)(i + pos)] += fftPtr[i] * windowCorrection;
+        outputFifo[(size_t)(i + fftStartPos)] += fftPtr[i] * windowCorrection;
     }
 }
 
@@ -131,8 +136,12 @@ void FFTProcessor::processFrequencyDomain()
         // Extract amplitude/magnitude and phase angle
         float magnitude = std::abs (complexValue);
         float phase     = std::arg (complexValue);
+
+        float specThreshLinear = juce::Decibels::decibelsToGain(specThresh);
         
-        // Spectral processing goes
+        if (magnitude < specThreshLinear) {
+            magnitude = 0.0f;
+        }
 
        
         // =================================================================

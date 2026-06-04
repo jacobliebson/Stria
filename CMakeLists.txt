@@ -31,6 +31,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/PluginEditor.cpp
     Source/FFTProcessor.h
     Source/FFTProcessor.cpp
+    Source/CombFilter.h
+    Source/CombFilter.cpp
 )
 
 # 4. Compile Features and Definitions
