@@ -6,7 +6,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    juce::NormalisableRange<float> feedbackRange (0.0f, 1.0f, 0.01f, 1.0f);
+    juce::NormalisableRange<float> feedbackRange (-1.0f, 1.0f, 0.01f, 1.0f);
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID ("FEEDBACK", 1), 
         "Feedback",                     
@@ -27,7 +27,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         juce::ParameterID ("MIX", 1), 
         "Mix",                     
         mixRange,                  
-        50.0f                      
+        80.0f                      
     ));
 
     // 1. Attack Range: 0.1ms to 100ms, skewed heavily toward the low end (0.35)
@@ -57,7 +57,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         juce::ParameterID ("THRESHOLD", 1), 
         "Threshold",                     
         thresholdRange,                  
-        6.0f                            
+        0.0f                            
     ));
 
     return layout;
@@ -168,6 +168,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         voiceFrequencies[voice] = nextFreq;
     }
 
+
+
     // Push the updated frequencies directly into the filter configurations
     for (int channel = 0; channel < numChannels; ++channel)
     {
@@ -255,10 +257,10 @@ float AudioPluginAudioProcessor::calculateCoef(float timeMs, double sampleRate)
     return std::exp(-1.0f / (static_cast<float>(sampleRate) * (timeMs / 1000.0f)));
 }
 
-std::array<int, 5> AudioPluginAudioProcessor::getActiveMidiNotes() 
+std::array<int, 8> AudioPluginAudioProcessor::getActiveMidiNotes() 
 {
-    std::array<int, 5> snapshot;
-    for (int i = 0; i < 5; ++i) {
+    std::array<int, 8> snapshot;
+    for (int i = 0; i < 8; ++i) {
         snapshot[i] = midiNotes[i];
     }
     return snapshot;

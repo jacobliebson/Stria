@@ -31,7 +31,7 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override {}
     void setStateInformation (const void* data, int sizeInBytes) override {}
 
-    std::array<int, 5> getActiveMidiNotes();
+    std::array<int, 8> getActiveMidiNotes();
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
@@ -41,7 +41,7 @@ private:
 
     inline float midiToHz (int midiNote);
 
-    static constexpr int numVoices = 5;
+    static constexpr int numVoices = 8;
     static constexpr int numChannels = 2;
 
     std::array<std::array<CombFilter, numVoices>, numChannels> filterBank;
