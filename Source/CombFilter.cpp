@@ -72,7 +72,7 @@ float CombFilter::processSample(float input)
     feedbackSignal = std::tanh(feedbackSignal);
 
     float internalLoopSignal = input + feedbackSignal;
-    float currentOutput = (mFeedback == 0.0f) ? 0.0f : feedbackSignal;
+    float currentOutput = feedbackSignal;
 
     // 5. NEW: Apply a final DC Blocker to the output to clean up saturation asymmetry
     float finalOutput = currentOutput - mX1_out + (R * mY1_out);

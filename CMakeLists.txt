@@ -55,6 +55,3 @@ target_link_libraries(MyJucePlugin PRIVATE
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags
 )
-
-# 6. Suppress signedness conversion warnings (Placed here to override JUCE warning flags)
-target_compile_options(MyJucePlugin PRIVATE -Wno-sign-conversion)

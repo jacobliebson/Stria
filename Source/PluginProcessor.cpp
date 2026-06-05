@@ -30,6 +30,36 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         50.0f                      
     ));
 
+    // 1. Attack Range: 0.1ms to 100ms, skewed heavily toward the low end (0.35)
+    juce::NormalisableRange<float> attackRange (0.1f, 100.0f, 0.1f);
+    attackRange.setSkewForCentre(5.0f); // Centers the slider physically around 5.0ms
+
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("ATTACK", 1),
+        "Transient Attack",
+        attackRange,
+        5.0f // Default 5ms
+    ));
+
+    // 2. Release Range: 10ms to 2000ms, skewed toward the low end (0.4)
+    juce::NormalisableRange<float> releaseRange (10.0f, 2000.0f, 1.0f);
+    releaseRange.setSkewForCentre(250.0f); // Centers the slider physically around 250ms
+
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("RELEASE", 1),
+        "Transient Release",
+        releaseRange,
+        250.0f // Default 250ms
+    ));
+
+    juce::NormalisableRange<float> thresholdRange (0.0f, 24.0f, 0.01f, 1.0f);
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("THRESHOLD", 1), 
+        "Threshold",                     
+        thresholdRange,                  
+        6.0f                            
+    ));
+
     return layout;
 }
 
@@ -60,6 +90,9 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     feedback = apvts.getRawParameterValue("FEEDBACK");
     damping = apvts.getRawParameterValue("DAMPING");
     mix = apvts.getRawParameterValue("MIX");
+    attack = apvts.getRawParameterValue("ATTACK");
+    release = apvts.getRawParameterValue("RELEASE");
+    thresh = apvts.getRawParameterValue("THRESHOLD");
 
     juce::dsp::ProcessSpec filterSpec;
     filterSpec.sampleRate = sampleRate;
@@ -93,6 +126,12 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     float currentFeedback = feedback->load();
     float currentDamping = damping->load();
     float currentMix = mix->load() / 100.0f;
+    float attackMs = attack->load();
+    float releaseMs = release->load();
+    float currentThresh = thresh->load();
+
+    float attackCoef = calculateCoef(attackMs, getSampleRate());
+    float releaseCoef = calculateCoef(releaseMs, getSampleRate());
 
     // Read live MIDI inputs
     for (const auto metadata: midiMessages) {
@@ -148,10 +187,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     }
 
     // Transient configuration variables
-    const float attackCoef = 0.99f;   
-    const float releaseCoef = 0.999f; 
-    const float thresholddB = 6.0f;   
-    float thresholdLinear = juce::Decibels::decibelsToGain(thresholddB);
+    
+    float thresholdLinear = juce::Decibels::decibelsToGain(currentThresh);
 
     // Create a safe snapshot of the incoming buffer for envelope tracking and clean dry signals
     juce::AudioBuffer<float> dryCopy;
@@ -169,10 +206,13 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         bool isTransientActive = (envFast > (envSlow * thresholdLinear));
 
+        float envelopeRatio = (envSlow > 0.0001f) ? (envFast / envSlow) : 0.0f;
+        float envelopeGain = std::fmax(0.0f, std::fmin((envelopeRatio - thresholdLinear), 1.0f));
+
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
             float rawDrySample = dryCopy.getSample(channel % numChannels, sample);
-            float filterExcitation = isTransientActive ? rawDrySample : 0.0f;
+            float filterExcitation = rawDrySample * envelopeGain;
             float summedWetOutput = 0.0f;
 
             if (channel < numChannels)
@@ -207,6 +247,12 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 inline float AudioPluginAudioProcessor::midiToHz (int midiNote) {
     return 440.0f * std::pow (2.0f, (static_cast<float> (midiNote) - 69.0f) / 12.0f);
+}
+
+float AudioPluginAudioProcessor::calculateCoef(float timeMs, double sampleRate)
+{
+    if (timeMs <= 0.0f) return 0.0f;
+    return std::exp(-1.0f / (static_cast<float>(sampleRate) * (timeMs / 1000.0f)));
 }
 
 std::array<int, 5> AudioPluginAudioProcessor::getActiveMidiNotes() 

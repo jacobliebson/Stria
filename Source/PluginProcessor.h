@@ -53,4 +53,9 @@ private:
 
     float envFast = 0.0f;
     float envSlow = 0.0f;
+    std::atomic<float>* attack = nullptr;
+    std::atomic<float>* release = nullptr;
+    std::atomic<float>* thresh = nullptr;
+
+    float calculateCoef (float timeMs, double sampleRate);
 };
