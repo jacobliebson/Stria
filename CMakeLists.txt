@@ -36,6 +36,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/ResonatorVoice.cpp
     Source/CombFilter.h
     Source/CombFilter.cpp
+    Source/CustomADSR.h
+    Source/CustomADSR.cpp
 )
 
 # 4. Compile Features and Definitions
@@ -43,6 +45,7 @@ target_compile_features(MyJucePlugin PRIVATE cxx_std_20)
 
 target_compile_definitions(MyJucePlugin PRIVATE
     JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
+    JUCE_VST3_EMULATE_MIDI_CC_WITH_PARAMETERS=0
     JucePlugin_WantsMidiInput=1
 )
 

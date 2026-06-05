@@ -1,6 +1,7 @@
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "CombFilter.h"
+#include "CustomADSR.h"
 
 // JUCE Synthesizer requires a sound definition to match voices against
 class ResonatorSound : public juce::SynthesiserSound
@@ -29,7 +30,7 @@ public:
 
     void prepare (const juce::dsp::ProcessSpec& spec);
     // In Source/ResonatorVoice.h
-    void updateParameters (float feedback, float damping, const juce::ADSR::Parameters& envParams);
+    void updateParameters (float feedback, float damping, const CustomADSR::Parameters& envParams);
     void processExcitation (float inputL, float inputR, float& outputL, float& outputR);
 
     void renderNextBlock (juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
@@ -37,5 +38,5 @@ public:
 private:
     CombFilter leftFilter;
     CombFilter rightFilter;
-    juce::ADSR adsr;
+    CustomADSR adsr;
 };

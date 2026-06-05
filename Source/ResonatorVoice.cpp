@@ -1,12 +1,14 @@
+// Source/ResonatorVoice.cpp
 #include "ResonatorVoice.h"
 
 ResonatorVoice::ResonatorVoice()
 {
-    juce::ADSR::Parameters params;
-    params.attack  = 0.01f; // Fast transient response
+    // 1. Initialize your custom parameters mapping layout
+    CustomADSR::Parameters params;
+    params.attack  = 0.01f; 
     params.decay   = 0.1f;
     params.sustain = 1.0f;
-    params.release = 1.5f;  // Long resonant tail
+    params.release = 1.5f;  
     adsr.setParameters (params);
 }
 
@@ -48,37 +50,38 @@ void ResonatorVoice::prepare (const juce::dsp::ProcessSpec& spec)
     adsr.setSampleRate (spec.sampleRate);
 }
 
-// In Source/ResonatorVoice.cpp
-void ResonatorVoice::updateParameters (float feedback, float damping, const juce::ADSR::Parameters& envParams)
+// 2. Change the incoming argument to match your custom parameter struct definition
+void ResonatorVoice::updateParameters (float feedback, float damping, const CustomADSR::Parameters& envParams)
 {
     leftFilter.setFeedback (feedback);
     rightFilter.setFeedback (feedback);
     leftFilter.setDamping (damping);
     rightFilter.setDamping (damping);
     
-    // Smoothly sets the updated envelope targets
     adsr.setParameters (envParams);
 }
 
 void ResonatorVoice::processExcitation (float inputL, float inputR, float& outputL, float& outputR)
 {
+    // 3. Read the sample value exactly as before from your custom tracker clock loop
+    float envelopeGain = adsr.getNextSample();
+
     if (!adsr.isActive())
     {
         clearCurrentNote();
         return;
     }
 
-    float envelopeGain = adsr.getNextSample();
-
+    // 4. Modulate ONLY the input excitation (your mallet impulse)
     float wetL = leftFilter.processSample (inputL * envelopeGain);
     float wetR = rightFilter.processSample (inputR * envelopeGain);
 
-    outputL += wetL * envelopeGain;
-    outputR += wetR * envelopeGain;
+    // 5. Let the waveguide strings ring out freely and smoothly!
+    outputL += wetL;
+    outputR += wetR;
 }
 
 void ResonatorVoice::renderNextBlock (juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
-    // Left blank intentionally because we use custom sample-accurate 
-    // excitation streaming via processExcitation()
+    // Intentionally left blank to preserve your precise custom processing loop
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include "FFTProcessor.h"
 #include "CombFilter.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -15,6 +14,7 @@ public:
 
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
+
 
     const juce::String getName() const override { return JucePlugin_Name; }
     bool acceptsMidi() const override { return true; }
@@ -47,15 +47,17 @@ private:
     juce::Synthesiser synth;
 
     std::atomic<float>* feedback = nullptr;
-    std::atomic<float>* mix = nullptr;
     std::atomic<float>* damping = nullptr;
+    std::atomic<float>* mix = nullptr;
+    std::atomic<float>* wetGainDB = nullptr;
 
     float envFast = 0.0f;
     float envSlow = 0.0f;
+    float smoothedGate = 0.0f;
 
-    std::atomic<float>* trigAttackMS = nullptr;
     std::atomic<float>* trigReleaseMS = nullptr;
     std::atomic<float>* trigThreshDB = nullptr;
+    std::atomic<float>* trigSoftness = nullptr;
 
     std::atomic<float>* envAttackS = nullptr;
     std::atomic<float>* envDecayS = nullptr;
