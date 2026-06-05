@@ -20,6 +20,7 @@ public:
     bool acceptsMidi() const override { return true; }
     bool producesMidi() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
+    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
 
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
@@ -30,8 +31,7 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override {}
     void setStateInformation (const void* data, int sizeInBytes) override {}
 
-    std::array<int, 5> getActiveMidiNotes() ;
-
+    std::array<int, 5> getActiveMidiNotes();
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
@@ -39,19 +39,18 @@ private:
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-
     inline float midiToHz (int midiNote);
 
     static constexpr int numVoices = 5;
     static constexpr int numChannels = 2;
 
     std::array<std::array<CombFilter, numVoices>, numChannels> filterBank;
-    
     std::array<int, numVoices> midiNotes;
 
-    std::atomic<float>* feedback;
-    std::atomic<float>* mix;
-    std::atomic<float>* damping;
-    std::atomic<float>* note;
-    std::atomic<float>* octave;
+    std::atomic<float>* feedback = nullptr;
+    std::atomic<float>* mix = nullptr;
+    std::atomic<float>* damping = nullptr;
+
+    float envFast = 0.0f;
+    float envSlow = 0.0f;
 };

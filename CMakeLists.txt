@@ -21,12 +21,10 @@ juce_add_plugin(MyJucePlugin
     COMPANY_NAME                "Jacob Liebson"
     COPY_PLUGIN_AFTER_BUILD     TRUE
 
-    IS_SYNTH                    TRUE
+    IS_SYNTH                    FALSE
     NEEDS_MIDI_INPUT            TRUE
     NEEDS_MIDI_OUTPUT           FALSE
 )
-
-
 
 # 3. Add Source Files
 target_sources(MyJucePlugin PRIVATE
@@ -57,3 +55,6 @@ target_link_libraries(MyJucePlugin PRIVATE
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags
 )
+
+# 6. Suppress signedness conversion warnings (Placed here to override JUCE warning flags)
+target_compile_options(MyJucePlugin PRIVATE -Wno-sign-conversion)
