@@ -44,8 +44,7 @@ private:
     static constexpr int numVoices = 8;
     static constexpr int numChannels = 2;
 
-    std::array<std::array<CombFilter, numVoices>, numChannels> filterBank;
-    std::array<int, numVoices> midiNotes;
+    juce::Synthesiser synth;
 
     std::atomic<float>* feedback = nullptr;
     std::atomic<float>* mix = nullptr;
@@ -53,9 +52,15 @@ private:
 
     float envFast = 0.0f;
     float envSlow = 0.0f;
-    std::atomic<float>* attack = nullptr;
-    std::atomic<float>* release = nullptr;
-    std::atomic<float>* thresh = nullptr;
+
+    std::atomic<float>* trigAttackMS = nullptr;
+    std::atomic<float>* trigReleaseMS = nullptr;
+    std::atomic<float>* trigThreshDB = nullptr;
+
+    std::atomic<float>* envAttackS = nullptr;
+    std::atomic<float>* envDecayS = nullptr;
+    std::atomic<float>* envSustainLinear = nullptr;
+    std::atomic<float>* envReleaseS = nullptr;
 
     float calculateCoef (float timeMs, double sampleRate);
 };

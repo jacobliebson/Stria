@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "CombFilter.h"
+#include "ResonatorVoice.h"
 #include "PluginEditor.h"
 
 juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameterLayout()
@@ -30,35 +31,66 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         80.0f                      
     ));
 
-    // 1. Attack Range: 0.1ms to 100ms, skewed heavily toward the low end (0.35)
-    juce::NormalisableRange<float> attackRange (0.1f, 100.0f, 0.1f);
-    attackRange.setSkewForCentre(5.0f); // Centers the slider physically around 5.0ms
-
+    // 1. Trigger Attack: 0.1ms to 100ms
+    juce::NormalisableRange<float> trigAttackRange (0.1f, 100.0f, 0.1f);
+    trigAttackRange.setSkewForCentre (10.0f); // 10ms center
     layout.add (std::make_unique<juce::AudioParameterFloat> (
-        juce::ParameterID ("ATTACK", 1),
-        "Transient Attack",
-        attackRange,
-        5.0f // Default 5ms
-    ));
+        juce::ParameterID ("TRIG_ATTACK", 1), 
+        "Trigger Attack", 
+        trigAttackRange, 
+        1.0f));
 
-    // 2. Release Range: 10ms to 2000ms, skewed toward the low end (0.4)
-    juce::NormalisableRange<float> releaseRange (10.0f, 2000.0f, 1.0f);
-    releaseRange.setSkewForCentre(250.0f); // Centers the slider physically around 250ms
-
+    // 2. Trigger Release: 1.0ms to 500ms
+    juce::NormalisableRange<float> trigReleaseRange (1.0f, 500.0f, 0.1f);
+    trigReleaseRange.setSkewForCentre (50.0f); // 50ms center
     layout.add (std::make_unique<juce::AudioParameterFloat> (
-        juce::ParameterID ("RELEASE", 1),
-        "Transient Release",
-        releaseRange,
-        250.0f // Default 250ms
-    ));
+        juce::ParameterID ("TRIG_RELEASE", 1), 
+        "Trigger Release", 
+        trigReleaseRange, 
+        100.0f));
 
-    juce::NormalisableRange<float> thresholdRange (0.0f, 24.0f, 0.01f, 1.0f);
+    // 3. Trigger Sensitivity / Threshold Ratio (Linear dB scale)
     layout.add (std::make_unique<juce::AudioParameterFloat> (
-        juce::ParameterID ("THRESHOLD", 1), 
-        "Threshold",                     
-        thresholdRange,                  
-        0.0f                            
-    ));
+        juce::ParameterID ("TRIG_THRESHOLD", 1), 
+        "Trigger Sensitivity", 
+        0.0f, 
+        24.0f, 
+        6.0f));
+
+    // Env Attack: 0.001s (1ms) to 2.0s
+    juce::NormalisableRange<float> attackRange (0.001f, 2.0f, 0.001f);
+    attackRange.setSkewForCentre (0.1f);
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("ENV_ATTACK", 1), 
+        "Env Attack", 
+        attackRange, 
+        0.01f));
+
+    // Env Decay: 0.01s to 3.0s
+    juce::NormalisableRange<float> decayRange (0.01f, 3.0f, 0.01f);
+    decayRange.setSkewForCentre (0.3f);
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("ENV_DECAY", 1), 
+        "Env Decay", 
+        decayRange, 
+        0.1f));
+
+    // Env Sustain: 0.0 to 1.0 (Linear amplitude scale)
+    juce::NormalisableRange<float> sustainRange (0.0f, 1.0f, 0.01f);
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("ENV_SUSTAIN", 1), 
+        "Env Sustain", 
+        sustainRange,
+        1.0f));
+
+    // Env Release: 0.01s to 5.0s
+    juce::NormalisableRange<float> releaseRange (0.01f, 5.0f, 0.01f);
+    releaseRange.setSkewForCentre (1.0f);
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID ("ENV_RELEASE", 1), 
+        "Env Release", 
+        releaseRange, 
+        1.5f));
 
     return layout;
 }
@@ -69,6 +101,12 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
         apvts (*this, nullptr, "PARAMETERS", createParameterLayout())
 {
+    for (int i = 0; i < 5; ++i)
+    {
+        synth.addVoice (new ResonatorVoice());
+    }
+
+    synth.addSound (new ResonatorSound());
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
@@ -90,25 +128,30 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     feedback = apvts.getRawParameterValue("FEEDBACK");
     damping = apvts.getRawParameterValue("DAMPING");
     mix = apvts.getRawParameterValue("MIX");
-    attack = apvts.getRawParameterValue("ATTACK");
-    release = apvts.getRawParameterValue("RELEASE");
-    thresh = apvts.getRawParameterValue("THRESHOLD");
+    
+    trigAttackMS = apvts.getRawParameterValue("TRIG_ATTACK");
+    trigReleaseMS = apvts.getRawParameterValue("TRIG_RELEASE");
+    trigThreshDB = apvts.getRawParameterValue("TRIG_THRESHOLD");
 
-    juce::dsp::ProcessSpec filterSpec;
-    filterSpec.sampleRate = sampleRate;
-    filterSpec.maximumBlockSize = static_cast<juce::uint32> (samplesPerBlock);
-    filterSpec.numChannels = 1; 
+    envAttackS = apvts.getRawParameterValue("ENV_ATTACK");
+    envDecayS = apvts.getRawParameterValue("ENV_DECAY");
+    envSustainLinear = apvts.getRawParameterValue("ENV_SUSTAIN");
+    envReleaseS = apvts.getRawParameterValue("ENV_RELEASE");
+    
 
-    for (int channel = 0; channel < numChannels; ++channel)
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = static_cast<juce::uint32> (samplesPerBlock);
+    spec.numChannels = 1;
+
+    // Loop through the manager's registered voices to prepare them
+    for (int i = 0; i < synth.getNumVoices(); ++i)
     {
-        for (int voice = 0; voice < numVoices; ++voice) {
-            CombFilter& filter = filterBank[channel][voice];
-            filter.prepare (filterSpec); 
-            filter.reset(); 
-        }   
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (synth.getVoice(i)))
+        {
+            voice->prepare(spec);
+        }
     }
-
-    midiNotes.fill(-1);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {}
@@ -121,116 +164,115 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
         buffer.clear (i, 0, buffer.getNumSamples());
-    }     
+    }    
+
+    double sampleRate = getSampleRate();
     
     float currentFeedback = feedback->load();
     float currentDamping = damping->load();
     float currentMix = mix->load() / 100.0f;
-    float attackMs = attack->load();
-    float releaseMs = release->load();
-    float currentThresh = thresh->load();
 
-    float attackCoef = calculateCoef(attackMs, getSampleRate());
-    float releaseCoef = calculateCoef(releaseMs, getSampleRate());
+    // 2. Prepare & Snapshot Voice ADSR Structural Parameters
+    juce::ADSR::Parameters envParams;
+    envParams.attack  = envAttackS->load();
+    envParams.decay   = envDecayS->load();
+    envParams.sustain = envSustainLinear->load();
+    envParams.release = envReleaseS->load();
 
-    // Read live MIDI inputs
-    for (const auto metadata: midiMessages) {
-        auto message = metadata.getMessage();
-        if (message.isNoteOn()) {
-            int note = message.getNoteNumber();
-
-            // Find the first free voice
-            for (int voice = 0; voice < numVoices; ++voice) {
-                if (midiNotes[voice] == -1) {
-                    midiNotes[voice] = note;
-                    break;
-                }
-            }
-        } else if (message.isNoteOff()) {
-            int note = message.getNoteNumber();
-
-            // Find voice playing note and mark as unused
-            for (int voice = 0; voice < numVoices; ++voice) {
-                if (midiNotes[voice] == note) {
-                    midiNotes[voice] = -1;
-                    break;
-                }
-            }
-        }
-    }
-
-    std::array<float, numVoices> voiceFrequencies;
-    for (int voice = 0; voice < numVoices; ++voice) {
-        float nextFreq = -1;
-        if (midiNotes[voice] != -1) {
-            nextFreq = midiToHz(midiNotes[voice]);
-        }
-        voiceFrequencies[voice] = nextFreq;
-    }
-
-
-
-    // Push the updated frequencies directly into the filter configurations
-    for (int channel = 0; channel < numChannels; ++channel)
+    // Broadcast filter and envelope configurations down to all synth voices
+    for (int i = 0; i < synth.getNumVoices(); ++i)
     {
-        for (int voice = 0; voice < numVoices; ++voice) {
-            CombFilter& filter = filterBank[channel][voice];
-
-            float nextFreq = voiceFrequencies[voice];
-            if (nextFreq == -1) {
-                filter.setFeedback (0);
-                filter.setTargetFrequency(440.0f);
-            } else {
-                filter.setFeedback (currentFeedback);
-                filter.setTargetFrequency(nextFreq);
-            }
-            filter.setDamping (currentDamping);
-        }   
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (synth.getVoice(i)))
+        {
+            voice->updateParameters (currentFeedback, currentDamping, envParams);
+        }
     }
 
-    // Transient configuration variables
-    
-    float thresholdLinear = juce::Decibels::decibelsToGain(currentThresh);
+    float attackTau = trigAttackMS->load() / 1000.0f;
+    float attackCoef = std::exp (-1.0f / (sampleRate * attackTau));
 
-    // Create a safe snapshot of the incoming buffer for envelope tracking and clean dry signals
+    float releaseTau = trigReleaseMS->load() / 1000.0f;
+    float releaseCoef = std::exp (-1.0f / (sampleRate * releaseTau));
+
+    // 3. Convert threshold dB to a linear ratio multiplier
+    float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshDB->load());
+
+    // Safe read snapshot of original block
     juce::AudioBuffer<float> dryCopy;
     dryCopy.makeCopyOf(buffer);
 
+    // Create a dynamic iterator to read MIDI timestamps sample-by-sample
+    auto midiIterator = midiMessages.begin();
+    auto midiEnd = midiMessages.end();
+
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
+        // 1. Process any MIDI events occurring precisely at this sample index
+        while (midiIterator != midiEnd && (*midiIterator).samplePosition == sample)
+        {
+            auto message = (*midiIterator).getMessage();
+            
+            if (message.isNoteOn())
+            {
+                // Tell the synth manager to find a free voice and start it
+                synth.noteOn(message.getChannel(), message.getNoteNumber(), message.getFloatVelocity());
+            }
+            else if (message.isNoteOff())
+            {
+                // Tell the synth manager to release the active voice
+                synth.noteOff(message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
+            }
+            else if (message.isAllNotesOff())
+            {
+                synth.allNotesOff(false, true);
+            }
+            
+            midiIterator++;
+        }
+
+        // 2. Calculate your tracking envelope values as normal
         float inputL = dryCopy.getSample(0, sample);
+        float inputR = (totalNumInputChannels > 1) ? dryCopy.getSample(1, sample) : inputL;
         float absInput = std::abs(inputL);
 
+        // [Your existing transient follower envelope calculations here...]
         envFast = (absInput > envFast) ? (attackCoef * envFast) + ((1.0f - attackCoef) * absInput) 
-                                       : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
-                                       
+                                    : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
+                                    
         envSlow = (releaseCoef * envSlow) + ((1.0f - releaseCoef) * absInput);
+        
+        bool isTransientActive = (envFast > (envSlow * thresholdLinear)); // (Using dummy placeholder logic)
+        
+        // Apply transient excitation gating
+        float excitationL = isTransientActive ? inputL : 0.0f;
+        float excitationR = isTransientActive ? inputR : 0.0f;
 
-        bool isTransientActive = (envFast > (envSlow * thresholdLinear));
+        // 3. Accumulate wet outputs from all currently playing/ringing synthesizer voices
+        float summedWetL = 0.0f;
+        float summedWetR = 0.0f;
 
-        float envelopeRatio = (envSlow > 0.0001f) ? (envFast / envSlow) : 0.0f;
-        float envelopeGain = std::fmax(0.0f, std::fmin((envelopeRatio - thresholdLinear), 1.0f));
-
-        for (int channel = 0; channel < totalNumInputChannels; ++channel)
+        for (int i = 0; i < synth.getNumVoices(); ++i)
         {
-            float rawDrySample = dryCopy.getSample(channel % numChannels, sample);
-            float filterExcitation = rawDrySample * envelopeGain;
-            float summedWetOutput = 0.0f;
-
-            if (channel < numChannels)
+            if (auto* voice = dynamic_cast<ResonatorVoice*> (synth.getVoice(i)))
             {
-                for (int voice = 0; voice < numVoices; ++voice) 
+                if (voice->isVoiceActive())
                 {
-                    summedWetOutput += filterBank[channel][voice].processSample(filterExcitation);
+                    voice->processExcitation(excitationL, excitationR, summedWetL, summedWetR);
                 }
             }
+        }
 
-            float scaleFactor = 1.0f / static_cast<float>(numVoices);
-            float wetSample = summedWetOutput * scaleFactor;
+        // 4. Mix blend and output assignment
+        float scaleFactor = 1.0f / static_cast<float>(synth.getNumVoices());
+        float finalWetL = summedWetL * scaleFactor;
+        float finalWetR = summedWetR * scaleFactor;
 
-            float blendedOutput = (rawDrySample * (1.0f - currentMix)) + (wetSample * currentMix);
-            
-            buffer.setSample(channel, sample, blendedOutput);
+        float blendedL = (inputL * (1.0f - currentMix)) + (finalWetL * currentMix);
+        float blendedR = (inputR * (1.0f - currentMix)) + (finalWetR * currentMix);
+
+        buffer.setSample(0, sample, blendedL);
+        if (totalNumInputChannels > 1) {
+            buffer.setSample(1, sample, blendedR);
         }
     }
 
@@ -257,11 +299,3 @@ float AudioPluginAudioProcessor::calculateCoef(float timeMs, double sampleRate)
     return std::exp(-1.0f / (static_cast<float>(sampleRate) * (timeMs / 1000.0f)));
 }
 
-std::array<int, 8> AudioPluginAudioProcessor::getActiveMidiNotes() 
-{
-    std::array<int, 8> snapshot;
-    for (int i = 0; i < 8; ++i) {
-        snapshot[i] = midiNotes[i];
-    }
-    return snapshot;
-}

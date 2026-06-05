@@ -32,8 +32,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginEditor.h
     Source/PluginEditor.cpp
-    Source/FFTProcessor.h
-    Source/FFTProcessor.cpp
+    Source/ResonatorVoice.h
+    Source/ResonatorVoice.cpp
     Source/CombFilter.h
     Source/CombFilter.cpp
 )

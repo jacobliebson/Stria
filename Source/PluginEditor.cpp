@@ -20,14 +20,14 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 void AudioPluginAudioProcessorEditor::timerCallback()
 {
     // Grab the live snapshot from the processor
-    auto currentNotes = audioProcessor.getActiveMidiNotes();
+    // auto currentNotes = audioProcessor.getActiveMidiNotes();
     
-    // If the data has changed since the last frame, force a visual repaint
-    if (currentNotes != localMidiNotes)
-    {
-        localMidiNotes = currentNotes;
-        repaint(); 
-    }
+    // // If the data has changed since the last frame, force a visual repaint
+    // if (currentNotes != localMidiNotes)
+    // {
+    //     localMidiNotes = currentNotes;
+    //     repaint(); 
+    // }
 }
 
 void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
