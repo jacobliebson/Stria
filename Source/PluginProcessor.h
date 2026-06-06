@@ -26,12 +26,12 @@ public:
 
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
-    void setCurrentProgram (int index) override {}
-    const juce::String getProgramName (int index) override { return {}; }
-    void changeProgramName (int index, const juce::String& newName) override {}
+    void setCurrentProgram (int index) override {juce::ignoreUnused(index);}
+    const juce::String getProgramName (int index) override {juce::ignoreUnused(index); return {}; }
+    void changeProgramName (int index, const juce::String& newName) override {juce::ignoreUnused(index); juce::ignoreUnused(newName);}
 
-    void getStateInformation (juce::MemoryBlock& destData) override {}
-    void setStateInformation (const void* data, int sizeInBytes) override {}
+    void getStateInformation (juce::MemoryBlock& destData) override {juce::ignoreUnused(destData);}
+    void setStateInformation (const void* data, int sizeInBytes) override {juce::ignoreUnused(data); juce::ignoreUnused(sizeInBytes);}
     
     static constexpr int numVoices = 32;
 
