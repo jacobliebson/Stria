@@ -1,195 +1,265 @@
 // Source/Arpeggiator.cpp
 #include "Arpeggiator.h"
+#include <cstddef>
 
 void Arpeggiator::prepare (double newSampleRate)
 {
-    sampleRate = newSampleRate;
+    // Reserved for future sample-accurate event placement
+    juce::ignoreUnused (newSampleRate);
     reset();
 }
 
 void Arpeggiator::reset()
 {
-    lastStepIndex = -1;
-    currentPoolIndex = 0;
     heldNotes.clear();
     activeNotes.clear();
+    lastPPQ           = -1.0;
+    nextTargetPPQ     = -1.0;
+    pendingStepLength = -1.0;
+    nextStepIndex     = 0;
+    poolIndex         = 0;
 }
 
-void Arpeggiator::updateSettings (float subdivision, float gateLength, int mode)
+Arpeggiator::ArpMode Arpeggiator::modeFromIndex (int index)
 {
-    // Convert musical subdivision (e.g., 0.25 for 1/16th note) to beats
-    stepLengthInBeats = subdivision; 
+    if (index >= 0 && index < static_cast<int>(Arpeggiator::ArpMode::Count))
+        return static_cast<Arpeggiator::ArpMode>(index);
+
+    jassertfalse;
+    return Arpeggiator::ArpMode::Up;
+}
+
+void Arpeggiator::updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter)
+{
+    // Rate changes are applied in processMidiBlock where currentPPQ is available,
+    // so we can reschedule nextTargetPPQ correctly from the actual playhead position.
+    if (subdivision != stepLengthInBeats)
+        pendingStepLength = subdivision;
+
     gateLengthPercent = gateLength;
-    currentMode = mode;
+    currentMode       = mode;
+    currentScatter    = scatter;
 }
 
-void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, 
-                                     juce::AudioPlayHead* playHead, 
-                                     int numSamples)
+//==============================================================================
+void Arpeggiator::scheduleNextTrigger()
 {
-    handleIncomingMidi (midiMessages);
+    double gridBoundaryPPQ = nextStepIndex * stepLengthInBeats;
+    double maxScatterBeats = stepLengthInBeats * currentScatter;
+    double scatterOffset   = randomEngine.nextDouble() * maxScatterBeats;
+    nextTargetPPQ          = gridBoundaryPPQ + scatterOffset;
+}
 
-    juce::MidiBuffer incomingMidiCopy = midiMessages; 
-    midiMessages.clear();
-
+void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead)
+{
     if (playHead == nullptr)
+        return;
+
+    auto positionInfo = playHead->getPosition();
+    if (! positionInfo.hasValue())
+        return;
+
+    auto optionalPpq = positionInfo->getPpqPosition();
+    if (! optionalPpq.hasValue())
+        return;
+
+    double currentPPQ = *optionalPpq;
+    bool   isPlaying  = positionInfo->getIsPlaying();
+
+    if (! isPlaying)
     {
-        lastStepIndex = -1; 
-        lastPPQ = -1.0; // Reset tracking here too
+        // Transport stopped: pass MIDI through and reset sequencing state
+        releaseAllActiveNotes (midiMessages);
+        updateHeldNotes (midiMessages);
+        lastPPQ           = -1.0;
+        nextTargetPPQ     = -1.0;
+        pendingStepLength = -1.0;
         return;
     }
 
-    auto positionInfo = playHead->getPosition();
-    if (positionInfo.hasValue())
+    // Detect a DAW loop / rewind
+    if (lastPPQ >= 0.0 && currentPPQ < lastPPQ)
     {
-        auto optionalPpq = positionInfo->getPpqPosition();
-        bool isPlaying = positionInfo->getIsPlaying();
-
-        if (optionalPpq.hasValue())
-        {
-            double currentPPQ = *optionalPpq;
-
-            // --- DAW LOOP DETECTION CATCH ---
-            // If the current time is suddenly less than our last recorded time,
-            // the user has either hit a loop point or jumped the timeline cursor backwards.
-            if (isPlaying && lastPPQ >= 0.0 && currentPPQ < lastPPQ)
-            {
-                // Forcefully kill all currently sustaining virtual notes immediately
-                for (const auto& note : activeNotes)
-                {
-                    midiMessages.addEvent (juce::MidiMessage::noteOff (1, note.midiNoteNumber), 0);
-                }
-                activeNotes.clear();
-                lastStepIndex = -1; // Reset step tracking so it catches the next grid line correctly
-            }
-            
-            // Store the current timeline position for comparison on the next block
-            lastPPQ = currentPPQ;
-
-// Only step forward if the transport timeline is actively rolling
-            if (isPlaying)
-            {
-                // TRANSITION DETECTED: The user just hit Play!
-                if (!wasPlayingLastBlock)
-                {
-                    wasPlayingLastBlock = true;
-                    
-                    // ONLY reset timing states. Do NOT clear or alter the MIDI buffer here!
-                    lastStepIndex = -1; 
-                    lastPPQ = currentPPQ;
-                    activeNotes.clear();
-                }
-
-                // 1. Parse the incoming keys to maintain our sorted chord pool uniformly
-                handleIncomingMidi (midiMessages);
-
-                // 2. Clear out the original incoming MIDI buffer completely
-                midiMessages.clear();
-
-                if (heldNotes.empty())
-                {
-                    lastStepIndex = -1;
-                }
-                else
-                {
-                    int currentStepIndex = std::floor (currentPPQ / stepLengthInBeats);
-
-                    if (currentStepIndex != lastStepIndex)
-                    {
-                        lastStepIndex = currentStepIndex;
-                        checkAndTriggerNewSteps (midiMessages, currentPPQ);
-                    }
-                }
-            }
-            else
-            {
-                wasPlayingLastBlock = false;
-                lastStepIndex = -1;
-                lastPPQ = -1.0;
-            }
-
-            checkScheduledNoteOffs (midiMessages, currentPPQ);
-        }
+        releaseAllActiveNotes (midiMessages);
+        nextTargetPPQ = -1.0;
     }
+
+    lastPPQ = currentPPQ;
+
+    // Apply a pending rate change now that we have currentPPQ. Recompute
+    // nextStepIndex and nextTargetPPQ from scratch against the new step length
+    // so the target always lands in the near future regardless of direction.
+    if (pendingStepLength > 0.0)
+    {
+        stepLengthInBeats = pendingStepLength;
+        pendingStepLength = -1.0;
+
+        nextStepIndex = static_cast<int> (std::floor (currentPPQ / stepLengthInBeats)) + 1;
+        scheduleNextTrigger();
+    }
+
+    // Update heldNotes from incoming MIDI, stripping note events from the
+    // output buffer so they don't bleed through as raw notes while playing.
+    consumeIncomingMidi (midiMessages);
+
+    if (heldNotes.empty())
+    {
+        nextTargetPPQ = -1.0;
+        return;
+    }
+
+    // On the very first block (or after a reset), schedule the first trigger
+    if (nextTargetPPQ < 0.0)
+    {
+        nextStepIndex = static_cast<int> (std::floor (currentPPQ / stepLengthInBeats)) + 1;
+        scheduleNextTrigger();
+    }
+
+    // Edge-trigger: has the playhead crossed the scattered target time?
+    if (currentPPQ >= nextTargetPPQ)
+    {
+        triggerNextNote (midiMessages, currentPPQ);
+
+        nextStepIndex++;
+        scheduleNextTrigger();
+    }
+
+    checkScheduledNoteOffs (midiMessages, currentPPQ);
 }
 
-void Arpeggiator::handleIncomingMidi (juce::MidiBuffer& incomingMidi)
+//==============================================================================
+void Arpeggiator::updateHeldNotes (const juce::MidiBuffer& incomingMidi)
 {
-    // Listen to the incoming MIDI messages to maintain our chord pool
     for (const auto metadata : incomingMidi)
     {
         auto message = metadata.getMessage();
 
         if (message.isNoteOn())
         {
-            int noteNumber = message.getNoteNumber();
-            
-            // Only add the note if it isn't already in our held pool
-            if (std::find (heldNotes.begin(), heldNotes.end(), noteNumber) == heldNotes.end())
-            {
-                heldNotes.push_back (noteNumber);
-            }
+            int note = message.getNoteNumber();
+
+            if (std::find (heldNotes.begin(), heldNotes.end(), note) == heldNotes.end())
+                heldNotes.push_back (note);
         }
         else if (message.isNoteOff())
         {
-            int noteNumber = message.getNoteNumber();
-            
-            // Remove the note from our pool when the user lifts their finger
-            auto it = std::find (heldNotes.begin(), heldNotes.end(), noteNumber);
+            int note = message.getNoteNumber();
+            auto it  = std::find (heldNotes.begin(), heldNotes.end(), note);
+
             if (it != heldNotes.end())
-            {
                 heldNotes.erase (it);
-            }
         }
     }
 
-    // Always keep the note array sorted lowest-to-highest pitch 
-    // so our Up/Down sorting algorithms have a predictable base.
+    // Keep sorted lowest-to-highest so Up/Down modes have a predictable base
     std::sort (heldNotes.begin(), heldNotes.end());
 }
 
-void Arpeggiator::checkAndTriggerNewSteps (juce::MidiBuffer& outputMidi, double currentPPQ)
+void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi)
 {
-    if (heldNotes.empty()) return;
+    juce::MidiBuffer filteredMidi;
 
-    // Wrap the pool index back around if it exceeds our held chord size
-    if (currentPoolIndex >= static_cast<int> (heldNotes.size()))
+    for (const auto metadata : incomingMidi)
     {
-        currentPoolIndex = 0;
+        auto message = metadata.getMessage();
+
+        if (message.isNoteOn())
+        {
+            int note = message.getNoteNumber();
+
+            if (std::find (heldNotes.begin(), heldNotes.end(), note) == heldNotes.end())
+                heldNotes.push_back (note);
+        }
+        else if (message.isNoteOff())
+        {
+            int note = message.getNoteNumber();
+            auto it  = std::find (heldNotes.begin(), heldNotes.end(), note);
+
+            if (it != heldNotes.end())
+                heldNotes.erase (it);
+        }
+        else
+        {
+            // Non-note events (CC, pitch bend, etc.) always pass through
+            filteredMidi.addEvent (message, metadata.samplePosition);
+        }
     }
 
-    // Pick our note from our sorted collection
-    int noteToPlay = heldNotes[currentPoolIndex];
-    int velocity = 90; // Default nominal velocity
+    incomingMidi.swapWith (filteredMidi);
 
-    // Calculate exactly when this note needs to turn off based on Gate Length
-    // e.g., if step length is 0.25 beats and gate is 150% (1.5), it lasts 0.375 beats.
-    double durationInBeats = stepLengthInBeats * gateLengthPercent;
-    double offPPQ = currentPPQ + durationInBeats;
+    // Keep sorted lowest-to-highest so Up/Down modes have a predictable base
+    std::sort (heldNotes.begin(), heldNotes.end());
+}
 
-    // 1. Add this note to our active tracking queue so we can kill it later
+int Arpeggiator::selectNextNote()
+{
+    const int size = static_cast<int> (heldNotes.size());
+
+    switch (currentMode)
+    {
+        case ArpMode::Down:
+        {
+            if (poolIndex < 0 || poolIndex >= size)
+                poolIndex = size - 1;
+
+            return heldNotes[static_cast<size_t>(poolIndex--)];
+        }
+
+        case ArpMode::Random:
+            return heldNotes[static_cast<size_t>(randomEngine.nextInt (size))];
+
+        case ArpMode::Up:
+        default:
+        {
+            if (poolIndex < 0 || poolIndex >= size)
+                poolIndex = 0;
+
+            return heldNotes[static_cast<size_t>(poolIndex++)];
+        }
+    }
+}
+
+void Arpeggiator::triggerNextNote (juce::MidiBuffer& outputMidi, double currentPPQ)
+{
+    if (heldNotes.empty())
+        return;
+
+    int noteToPlay = selectNextNote();
+    int velocity   = 90;
+
+    double offPPQ = currentPPQ + (stepLengthInBeats * gateLengthPercent);
+
+    // If this note is already sounding, retire it before retriggering
+    for (int i = static_cast<int> (activeNotes.size()) - 1; i >= 0; --i)
+    {
+        if (activeNotes[static_cast<size_t>(i)].midiNoteNumber == noteToPlay)
+        {
+            outputMidi.addEvent (juce::MidiMessage::noteOff (1, noteToPlay), 0);
+            activeNotes.erase (activeNotes.begin() + i);
+        }
+    }
+
     activeNotes.push_back ({ noteToPlay, velocity, offPPQ });
-
-    // 2. Inject the Note On event into our output buffer at sample 0 (instant)
-    outputMidi.addEvent (juce::MidiMessage::noteOn (1, noteToPlay, static_cast<juce::uint8> (velocity)), 0);
-
-    // 3. Advance our sequence counter to the next note for the next clock tick!
-    currentPoolIndex++;
+    outputMidi.addEvent (juce::MidiMessage::noteOn (1, noteToPlay,
+                                                     static_cast<juce::uint8> (velocity)), 0);
 }
 
 void Arpeggiator::checkScheduledNoteOffs (juce::MidiBuffer& outputMidi, double currentPPQ)
 {
-    // Loop backwards through our active notes vector so we can safely erase items
     for (int i = static_cast<int> (activeNotes.size()) - 1; i >= 0; --i)
     {
-        // Has the DAW timeline passed this specific note's expiration mark?
-        if (currentPPQ >= activeNotes[i].targetOffPPQ)
+        if (currentPPQ >= activeNotes[static_cast<size_t>(i)].targetOffPPQ)
         {
-            // Inject the Note Off message into the output buffer at sample 0
             outputMidi.addEvent (juce::MidiMessage::noteOff (1, activeNotes[i].midiNoteNumber), 0);
-            
-            // Remove it from our active tracker
             activeNotes.erase (activeNotes.begin() + i);
         }
     }
+}
+
+void Arpeggiator::releaseAllActiveNotes (juce::MidiBuffer& outputMidi)
+{
+    for (const auto& note : activeNotes)
+        outputMidi.addEvent (juce::MidiMessage::noteOff (1, note.midiNoteNumber), 0);
+
+    activeNotes.clear();
 }

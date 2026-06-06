@@ -8,47 +8,63 @@
 class Arpeggiator
 {
 public:
+    enum class ArpMode { Up, Down, Random, Count };
+    static ArpMode modeFromIndex (int index);
+
     Arpeggiator() = default;
     ~Arpeggiator() = default;
 
     void reset();
 
     // Called during your plugin's prepareToPlay
-    void prepare (double sampleRate);
-    
+    void prepare (double newSampleRate);
+
     // Updates the settings from your UI sliders/menus
-    void updateSettings (float subdivision, float gateLength, int mode);
+    void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter);
 
     // The main processing pipeline called at the top of PluginProcessor::processBlock
-    void processMidiBlock (juce::MidiBuffer& midiMessages, 
-                           juce::AudioPlayHead* playHead, 
-                           int numSamples);
+    void processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead);
 
 private:
     struct ActiveNote
     {
-        int midiNoteNumber;
-        int velocity;
+        int    midiNoteNumber;
+        int    velocity;
         double targetOffPPQ;
     };
 
-    // Helper functions to keep code modular
-    void handleIncomingMidi (juce::MidiBuffer& incomingMidi);
-    void checkAndTriggerNewSteps (juce::MidiBuffer& outputMidi, double currentPPQ);
+    // Schedules the next trigger time relative to nextStepIndex and the current grid
+    void scheduleNextTrigger();
+
+    // Updates heldNotes from all note-on/off events in the buffer
+    void updateHeldNotes (const juce::MidiBuffer& incomingMidi);
+
+    // Reads note events into heldNotes and rebuilds the buffer with them stripped,
+    // so they don't bleed through to the output as raw notes
+    void consumeIncomingMidi (juce::MidiBuffer& incomingMidi);
+
+    void triggerNextNote (juce::MidiBuffer& outputMidi, double currentPPQ);
     void checkScheduledNoteOffs (juce::MidiBuffer& outputMidi, double currentPPQ);
+    void releaseAllActiveNotes (juce::MidiBuffer& outputMidi);
 
-    // Timing tracking
-    double sampleRate = 44100.0;
-    double stepLengthInBeats = 0.25; // Default to 1/16th notes (0.25 of a quarter note)
-    float gateLengthPercent = 0.8f;   // 80% of step length
-    int currentMode = 0;              // 0 = Up, 1 = Down, etc.
-    bool wasPlayingLastBlock = false;
+    int selectNextNote();
 
-    int lastStepIndex = -1;
-    int currentPoolIndex = 0;
-    double lastPPQ = -1.0;
+    // Step settings
+    double  stepLengthInBeats = 0.25;          // Default: 1/16th note
+    float   gateLengthPercent = 0.8f;
+    ArpMode currentMode       = ArpMode::Up;
+    float   currentScatter    = 0.0f;
 
-    // Note storage collections
-    std::vector<int> heldNotes;          // The physical keys currently down
-    std::vector<ActiveNote> activeNotes; // The virtual keys currently ringing out
+    // Transport / sequencing state
+    double lastPPQ           = -1.0;
+    double nextTargetPPQ     = -1.0;  // Scattered trigger time for the upcoming step
+    double pendingStepLength = -1.0;  // Rate change staged by updateSettings, applied in processMidiBlock
+    int    nextStepIndex     = 0;     // Grid step index of the next note to fire
+    int    poolIndex         = 0;     // Position within heldNotes for Up/Down modes
+
+    juce::Random randomEngine;
+
+    // Note pools
+    std::vector<int>        heldNotes;   // MIDI note numbers of physically held keys
+    std::vector<ActiveNote> activeNotes; // Notes currently sounding
 };

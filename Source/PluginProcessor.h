@@ -53,6 +53,7 @@ private:
     std::atomic<float>* arpRateIndex = nullptr;
     std::atomic<float>* arpGateParam = nullptr;
     std::atomic<float>* arpModeParam = nullptr;
+    std::atomic<float>* arpScatter = nullptr;
 
     std::atomic<float>* feedback = nullptr;
     std::atomic<float>* damping = nullptr;

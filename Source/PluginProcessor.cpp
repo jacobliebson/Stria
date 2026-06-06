@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 
+#include "Arpeggiator.h"
 #include "CombFilter.h"
 
 #include "ResonatorVoice.h"
@@ -204,6 +205,14 @@ AudioPluginAudioProcessor::createParameterLayout()
         0 // Default to "Up"
     ));
 
+    // Inside createParameterLayout()
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { "ARP_SCATTER", 1 },
+        "Scatter",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.01f), // 0% to 100%
+        0.0f // Default to perfectly quantized
+    ));
+
   return layout;
 }
 
@@ -272,6 +281,7 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate,
   arpRateIndex = apvts.getRawParameterValue("ARP_RATE");
   arpGateParam = apvts.getRawParameterValue ("ARP_GATE");
   arpModeParam = apvts.getRawParameterValue("ARP_MODE");
+  arpScatter = apvts.getRawParameterValue("ARP_SCATTER");
 
   juce::dsp::ProcessSpec spec;
 
@@ -362,7 +372,10 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     // (Replace these with your actual parameter lookup variables!)
 
     float gateLength = arpGateParam->load();
-    int mode = static_cast<int>(arpModeParam->load());   
+    Arpeggiator::ArpMode mode = Arpeggiator::modeFromIndex(static_cast<int>(arpModeParam->load()));   
+
+    
+    float scatter = arpScatter->load();
 
     float subdivisionInBeats = 0.25f; // Default fallback (1/16th)
     switch (static_cast<int>(arpRateIndex->load()))
@@ -379,11 +392,11 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
     
     // 2. Push the UI choices directly into your module
-    arp.updateSettings (subdivisionInBeats, gateLength, mode);
+    arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter);
 
     // 3. INTERCEPT: Pass the midiMessages and DAW playhead into the arpeggiator.
     // This swallows your held chords and replaces them with sequential, overlapping notes.
-    arp.processMidiBlock (midiMessages, getPlayHead(), buffer.getNumSamples());
+    arp.processMidiBlock (midiMessages, getPlayHead());
 
   // Create a dynamic iterator to read MIDI timestamps sample-by-sample
 
@@ -452,8 +465,6 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                   : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
 
     envSlow = (releaseCoef * envSlow) + ((1.0f - releaseCoef) * absInput);
-
-    bool isTransientActive = (envFast > (envSlow * thresholdLinear));
 
     float smoothCoef =
         currentSoftness <= 0.0f
