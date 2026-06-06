@@ -145,9 +145,9 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   }
 
   float attackTau = 0.00001f;
-  float attackCoef = std::exp(-1.0f / (sampleRate * attackTau));
+  float attackCoef = static_cast<float>(std::exp(-1.0f / (sampleRate * attackTau)));
   float releaseTau = trigReleaseMS->load() / 1000.0f;
-  float releaseCoef = std::exp(-1.0f / (sampleRate * releaseTau));
+  float releaseCoef = static_cast<float>(std::exp(-1.0f / (sampleRate * releaseTau)));
 
   // 3. Convert threshold dB to a linear ratio multiplier
 
@@ -262,7 +262,7 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     float smoothCoef =
         currentSoftness <= 0.0f
             ? 0.0f
-            : std::exp(-1.0f / (getSampleRate() * (currentSoftness / 1000.0f)));
+            : static_cast<float>(std::exp(-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
 
     float punchAmount = envFast - (envSlow * thresholdLinear);
 
