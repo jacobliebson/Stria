@@ -1,6 +1,7 @@
 // Source/Arpeggiator.h
 #pragma once
 
+#include <cstddef>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <vector>
 #include <algorithm>
@@ -60,7 +61,7 @@ private:
     double nextTargetPPQ     = -1.0;  // Scattered trigger time for the upcoming step
     double pendingStepLength = -1.0;  // Rate change staged by updateSettings, applied in processMidiBlock
     int    nextStepIndex     = 0;     // Grid step index of the next note to fire
-    int    poolIndex         = 0;     // Position within heldNotes for Up/Down modes
+    size_t    poolIndex         = 0;     // Position within heldNotes for Up/Down modes
 
     juce::Random randomEngine;
 
