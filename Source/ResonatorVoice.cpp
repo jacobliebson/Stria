@@ -19,6 +19,10 @@ bool ResonatorVoice::canPlaySound (juce::SynthesiserSound* sound)
 
 void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
+    juce::ignoreUnused(velocity);
+    juce::ignoreUnused(sound);
+    juce::ignoreUnused(currentPitchWheelPosition);
+
     float freq = 440.0f * std::pow (2.0f, (static_cast<float> (midiNoteNumber) - 69.0f) / 12.0f);
     
     leftFilter.setTargetFrequency (freq);
@@ -29,6 +33,8 @@ void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::Synthe
 
 void ResonatorVoice::stopNote (float velocity, bool allowTailOff)
 {
+    juce::ignoreUnused(velocity);
+
     if (allowTailOff)
     {
         adsr.noteOff();
@@ -40,8 +46,13 @@ void ResonatorVoice::stopNote (float velocity, bool allowTailOff)
     }
 }
 
-void ResonatorVoice::pitchWheelMoved (int newPitchWheelValue) {}
-void ResonatorVoice::controllerMoved (int controllerNumber, int newControllerValue) {}
+void ResonatorVoice::pitchWheelMoved (int newPitchWheelValue) {
+    juce::ignoreUnused(newPitchWheelValue);
+}
+void ResonatorVoice::controllerMoved (int controllerNumber, int newControllerValue) {
+    juce::ignoreUnused(controllerNumber);
+    juce::ignoreUnused(newControllerValue);
+}
 
 void ResonatorVoice::prepare (const juce::dsp::ProcessSpec& spec)
 {
@@ -83,5 +94,7 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
 
 void ResonatorVoice::renderNextBlock (juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
-    // Intentionally left blank to preserve your precise custom processing loop
+    juce::ignoreUnused(outputBuffer);
+    juce::ignoreUnused(startSample);
+    juce::ignoreUnused(numSamples);
 }

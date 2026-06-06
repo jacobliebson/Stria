@@ -8,10 +8,10 @@ class ResonatorSound : public juce::SynthesiserSound
 {
 public:
     // Returns true if this sound should play when a given MIDI note is pressed
-    bool appliesToNote (int midiNoteNumber) override { return true; }
+    bool appliesToNote (int midiNoteNumber) override { juce::ignoreUnused(midiNoteNumber); return true; }
     
     // Returns true if the sound should be triggered by MIDI events on this channel
-    bool appliesToChannel (int midiChannel) override { return true; }
+    bool appliesToChannel (int midiChannel) override { juce::ignoreUnused(midiChannel); return true; }
 };
 
 class ResonatorVoice : public juce::SynthesiserVoice
