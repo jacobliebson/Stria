@@ -53,7 +53,7 @@ AudioPluginAudioProcessor::createParameterLayout()
 
       wetGainRange,
 
-      0.0f // Default to 0 dB (no change)
+      6.0f // Default to 0 dB (no change)
 
       ));
 
@@ -67,7 +67,7 @@ AudioPluginAudioProcessor::createParameterLayout()
 
       mixRange,
 
-      80.0f
+      100.0f
 
       ));
 
@@ -159,7 +159,7 @@ AudioPluginAudioProcessor::createParameterLayout()
 
       sustainRange,
 
-      1.0f));
+      0.0f));
 
   // Env Release: 0.01s to 5.0s
 
@@ -175,7 +175,34 @@ AudioPluginAudioProcessor::createParameterLayout()
 
       releaseRange,
 
-      1.5f));
+      0.5f));
+
+
+    // 1. Arpeggiator Rate / Subdivision Choice
+    juce::StringArray rateChoices { "1/4", "1/4 Triplet", "1/8", "1/8 Triplet", "1/16", "1/16 Triplet", "1/32" };
+    layout.add (std::make_unique<juce::AudioParameterChoice> (
+        juce::ParameterID { "ARP_RATE", 1 },
+        "Arp Rate",
+        rateChoices,
+        4 // Default index pointing to "1/16"
+    ));
+
+    // 2. Arpeggiator Gate Length Slider (from 10% to 400% to allow deep overlapping!)
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { "ARP_GATE", 1 },
+        "Arp Gate Length",
+        juce::NormalisableRange<float> (0.10f, 4.00f, 0.01f), // 10% to 400%
+        0.80f // Default to 80% (standard non-overlapping)
+    ));
+
+    // 3. Arpeggiator Pattern Mode Choice
+    juce::StringArray modeChoices { "Up", "Down", "Random" };
+    layout.add (std::make_unique<juce::AudioParameterChoice> (
+        juce::ParameterID { "ARP_MODE", 1 },
+        "Arp Mode",
+        modeChoices,
+        0 // Default to "Up"
+    ));
 
   return layout;
 }
@@ -193,7 +220,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 
 {
 
-  for (int i = 0; i < 5; ++i)
+  for (int i = 0; i < numVoices; ++i)
 
   {
 
@@ -229,26 +256,22 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate,
 {
 
   feedback = apvts.getRawParameterValue("FEEDBACK");
-
   damping = apvts.getRawParameterValue("DAMPING");
-
   mix = apvts.getRawParameterValue("MIX");
-
   wetGainDB = apvts.getRawParameterValue("WET_GAIN");
 
   trigReleaseMS = apvts.getRawParameterValue("TRIG_RELEASE");
-
   trigThreshDB = apvts.getRawParameterValue("TRIG_THRESHOLD");
-
   trigSoftness = apvts.getRawParameterValue("TRIG_SOFTNESS");
 
   envAttackS = apvts.getRawParameterValue("ENV_ATTACK");
-
   envDecayS = apvts.getRawParameterValue("ENV_DECAY");
-
   envSustainLinear = apvts.getRawParameterValue("ENV_SUSTAIN");
-
   envReleaseS = apvts.getRawParameterValue("ENV_RELEASE");
+
+  arpRateIndex = apvts.getRawParameterValue("ARP_RATE");
+  arpGateParam = apvts.getRawParameterValue ("ARP_GATE");
+  arpModeParam = apvts.getRawParameterValue("ARP_MODE");
 
   juce::dsp::ProcessSpec spec;
 
@@ -271,6 +294,8 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate,
       voice->prepare(spec);
     }
   }
+
+  arp.prepare(sampleRate);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {}
@@ -292,13 +317,9 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   }
 
   double sampleRate = getSampleRate();
-
   float currentFeedback = feedback->load();
-
   float currentDamping = damping->load();
-
   float currentMix = mix->load() / 100.0f;
-
   float wetGainLinear = juce::Decibels::decibelsToGain(wetGainDB->load());
 
   // 2. Prepare & Snapshot Voice ADSR Structural Parameters
@@ -306,39 +327,28 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   CustomADSR::Parameters envParams;
 
   envParams.attack = envAttackS->load();
-
   envParams.decay = envDecayS->load();
-
   envParams.sustain = envSustainLinear->load();
-
   envParams.release = envReleaseS->load();
 
   // Broadcast filter and envelope configurations down to all synth voices
 
   for (int i = 0; i < synth.getNumVoices(); ++i)
-
   {
-
     if (auto *voice = dynamic_cast<ResonatorVoice *>(synth.getVoice(i)))
-
     {
-
       voice->updateParameters(currentFeedback, currentDamping, envParams);
     }
   }
 
   float attackTau = 0.00001f;
-
   float attackCoef = std::exp(-1.0f / (sampleRate * attackTau));
-
   float releaseTau = trigReleaseMS->load() / 1000.0f;
-
   float releaseCoef = std::exp(-1.0f / (sampleRate * releaseTau));
 
   // 3. Convert threshold dB to a linear ratio multiplier
 
   float thresholdLinear = juce::Decibels::decibelsToGain(trigThreshDB->load());
-
   float currentSoftness = trigSoftness->load();
 
   // Safe read snapshot of original block
@@ -346,6 +356,34 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   juce::AudioBuffer<float> dryCopy;
 
   dryCopy.makeCopyOf(buffer);
+
+  // Run arpeggiator on the midi buffer before processing
+  // 1. Snapshot your UI parameters from your APVTS layout
+    // (Replace these with your actual parameter lookup variables!)
+
+    float gateLength = arpGateParam->load();
+    int mode = static_cast<int>(arpModeParam->load());   
+
+    float subdivisionInBeats = 0.25f; // Default fallback (1/16th)
+    switch (static_cast<int>(arpRateIndex->load()))
+    {
+        case 0: subdivisionInBeats = 1.0f;       break; // 1/4 note
+        case 1: subdivisionInBeats = 2.0f / 3.0f; break; // 1/4 triplet
+        case 2: subdivisionInBeats = 0.5f;       break; // 1/8 note
+        case 3: subdivisionInBeats = 1.0f / 3.0f; break; // 1/8 triplet
+        case 4: subdivisionInBeats = 0.25f;      break; // 1/16 note
+        case 5: subdivisionInBeats = 1.0f / 6.0f; break; // 1/16 triplet
+        case 6: subdivisionInBeats = 0.125f;     break; // 1/32 note
+    }
+
+
+    
+    // 2. Push the UI choices directly into your module
+    arp.updateSettings (subdivisionInBeats, gateLength, mode);
+
+    // 3. INTERCEPT: Pass the midiMessages and DAW playhead into the arpeggiator.
+    // This swallows your held chords and replaces them with sequential, overlapping notes.
+    arp.processMidiBlock (midiMessages, getPlayHead(), buffer.getNumSamples());
 
   // Create a dynamic iterator to read MIDI timestamps sample-by-sample
 

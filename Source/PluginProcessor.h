@@ -1,4 +1,5 @@
 #pragma once
+#include "Arpeggiator.h"
 #include "CombFilter.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -30,8 +31,10 @@ public:
 
     void getStateInformation (juce::MemoryBlock& destData) override {}
     void setStateInformation (const void* data, int sizeInBytes) override {}
+    
+    static constexpr int numVoices = 32;
 
-    std::array<int, 8> getActiveMidiNotes();
+    std::array<int, numVoices> getActiveMidiNotes();
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
@@ -41,10 +44,15 @@ private:
 
     inline float midiToHz (int midiNote);
 
-    static constexpr int numVoices = 8;
+
     static constexpr int numChannels = 2;
 
     juce::Synthesiser synth;
+    
+    Arpeggiator arp;
+    std::atomic<float>* arpRateIndex = nullptr;
+    std::atomic<float>* arpGateParam = nullptr;
+    std::atomic<float>* arpModeParam = nullptr;
 
     std::atomic<float>* feedback = nullptr;
     std::atomic<float>* damping = nullptr;

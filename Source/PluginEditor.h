@@ -18,7 +18,7 @@ private:
     AudioPluginAudioProcessor& audioProcessor;
     
     // 3. Keep a local copy of the notes to check for visual changes
-    std::array<int, 8> localMidiNotes { -1, -1, -1 };
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

@@ -38,6 +38,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/CombFilter.cpp
     Source/CustomADSR.h
     Source/CustomADSR.cpp
+    Source/Arpeggiator.h
+    Source/Arpeggiator.cpp
 )
 
 # 4. Compile Features and Definitions
