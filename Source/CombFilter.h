@@ -43,6 +43,6 @@ private:
 
     // Circular buffer structures
     std::vector<float> mBuffer;
-    int mBufferSize = 0;
-    int mWriteIndex = 0;
+    size_t mBufferSize = 0;
+    size_t mWriteIndex = 0;
 };

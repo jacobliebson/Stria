@@ -6,7 +6,7 @@ void CombFilter::prepare (const juce::dsp::ProcessSpec& spec)
     mSampleRate = spec.sampleRate;
     
     // Set a maximum delay time (e.g., matching the lowest note you want, like 20 Hz)
-    int maxDelaySamples = static_cast<int>(mSampleRate / 20.0f);
+    size_t maxDelaySamples = static_cast<size_t>(mSampleRate / 20.0f);
     
     mBufferSize = maxDelaySamples + 2;
     mBuffer.assign (mBufferSize, 0.0f);
@@ -49,10 +49,10 @@ float CombFilter::processSample(float input)
     if (mBufferSize == 0) return input;
 
     // 1. Calculate indices and interpolate (Keep your existing working code here)
-    int delayInt = static_cast<int>(mDelayInSamples);
+    size_t delayInt = static_cast<size_t>(mDelayInSamples);
     float fraction = mDelayInSamples - static_cast<float>(delayInt);
-    int indexA = (mWriteIndex - delayInt + mBufferSize) % mBufferSize; // Safe wrap
-    int indexB = (indexA + 1) % mBufferSize;
+    size_t indexA = (mWriteIndex - delayInt + mBufferSize) % mBufferSize; // Safe wrap
+    size_t indexB = (indexA + 1) % mBufferSize;
     float interpolatedDelayedSample = mBuffer[indexA] + fraction * (mBuffer[indexB] - mBuffer[indexA]);
 
     // 2. Apply Damping Low-Pass
