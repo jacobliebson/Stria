@@ -157,7 +157,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     ));
 
     // Arpeggiator mode
-    juce::StringArray modeChoices { "Up", "Down", "Random" };
+    // When adding new mode, update enum class in Arpeggiator.h in exact order
+    juce::StringArray modeChoices { "Up", "Down", "Up-down", "Random" };
     layout.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "ARP_MODE", 1 },
         "Arp Mode",

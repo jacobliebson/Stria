@@ -9,7 +9,7 @@
 class Arpeggiator
 {
 public:
-    enum class ArpMode { Up, Down, Random, Count };
+    enum class ArpMode { Up, Down, Updown, Random, Count };
     static ArpMode modeFromIndex (int index);
 
     Arpeggiator() = default;
@@ -61,7 +61,8 @@ private:
     double nextTargetPPQ     = -1.0;  // Scattered trigger time for the upcoming step
     double pendingStepLength = -1.0;  // Rate change staged by updateSettings, applied in processMidiBlock
     int    nextStepIndex     = 0;     // Grid step index of the next note to fire
-    size_t    poolIndex         = 0;     // Position within heldNotes for Up/Down modes
+    size_t    poolIndex      = 0;     // Position within heldNotes for Up/Down modes
+    bool goingUp             = false; 
 
     juce::Random randomEngine;
 

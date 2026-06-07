@@ -1,5 +1,6 @@
 // Source/Arpeggiator.cpp
 #include "Arpeggiator.h"
+#include <algorithm>
 #include <cstddef>
 
 void Arpeggiator::prepare (double newSampleRate)
@@ -18,6 +19,7 @@ void Arpeggiator::reset()
     pendingStepLength = -1.0;
     nextStepIndex     = 0;
     poolIndex         = 0;
+    goingUp           = true;
 }
 
 Arpeggiator::ArpMode Arpeggiator::modeFromIndex (int index)
@@ -211,14 +213,43 @@ int Arpeggiator::selectNextNote()
             return heldNotes[static_cast<size_t>(randomEngine.nextInt (static_cast<int>(size)))];
 
         case ArpMode::Up:
-        default:
         {
             if (poolIndex < 0 || poolIndex >= size)
                 poolIndex = 0;
 
             return heldNotes[poolIndex++];
         }
+        case ArpMode::Updown:
+        {
+            if (size == 1)
+                return heldNotes[0];
+
+            // Clamp index into valid range on entry
+            poolIndex = std::clamp(poolIndex, static_cast<size_t>(0), size - 1);
+            int note = heldNotes[poolIndex];
+
+            if (goingUp) {
+                if (poolIndex >= size - 1) {
+                    goingUp = false;
+                    poolIndex--;
+                }
+                else {
+                    poolIndex++;
+                }
+            } else {
+                if (poolIndex <= 0) {
+                    goingUp = true;
+                    poolIndex++;
+                } else {
+                    poolIndex--;
+                }
+            }
+
+            return note;
+        }
+
         case ArpMode::Count:
+        default:
             return -1;
     }
 }
