@@ -5,6 +5,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     juce::NormalisableRange<float> feedbackRange(-1.0f, 1.0f, 0.01f, 1.0f);
 
+    
+    
+    // ============================================= RESONATOR =============================================
+
     // Resonator feedback
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("FEEDBACK", 1),
@@ -21,6 +25,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         dampingRange,
         0.5f
     ));
+
+    
+    
+    // ============================================= OUTPUT BALANCE =============================================
 
     // Arp gain
     juce::NormalisableRange<float> arpGainRange(-60.0f, 24.0f, 0.1f);
@@ -51,6 +59,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         100.0f
     ));
 
+    
+    
+    // ============================================= TRIGGER ENVELOPE ============================================
+
     // Trigger release
     juce::NormalisableRange<float> trigReleaseRange(1.0f, 500.0f, 0.1f);
     trigReleaseRange.setSkewForCentre(50.0f); // 50ms center
@@ -79,6 +91,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         24.0f,
         6.0f
     ));
+
+    
+    
+    // ============================================= SYNTH ENVELOPE =============================================
 
     // Voice attack
     juce::NormalisableRange<float> attackRange(0.001f, 2.0f, 0.001f);
@@ -118,6 +134,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         releaseRange,
         0.5f
     ));
+
+    
+    
+    // ============================================= ARP CONTROLS =============================================
 
     // Arpeggiator subdivision
     juce::StringArray rateChoices { "1/4", "1/4 Triplet", "1/8", "1/8 Triplet", "1/16", "1/16 Triplet", "1/32" };
