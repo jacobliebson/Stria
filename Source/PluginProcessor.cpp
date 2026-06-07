@@ -4,358 +4,286 @@
 
 juce::AudioProcessorValueTreeState::ParameterLayout
 AudioPluginAudioProcessor::createParameterLayout()
-
 {
     return Parameters::configureParameters();
 }
 
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
-
-    : AudioProcessor(
+    : AudioProcessor (
           BusesProperties()
-
-              .withInput("Input", juce::AudioChannelSet::stereo(), true)
-
-              .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-
-      apvts(*this, nullptr, "PARAMETERS", createParameterLayout())
-
+              .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+              .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+      apvts (*this, nullptr, "PARAMETERS", createParameterLayout())
 {
+    for (int i = 0; i < numArpVoices; ++i)
+        arpSynth.addVoice (new ResonatorVoice());
 
-  for (int i = 0; i < numVoices; ++i)
+    for (int i = 0; i < numChordVoices; ++i)
+        chordSynth.addVoice (new ResonatorVoice());
 
-  {
-
-    synth.addVoice(new ResonatorVoice());
-  }
-
-  synth.addSound(new ResonatorSound());
+    arpSynth.addSound   (new ResonatorSound());
+    chordSynth.addSound (new ResonatorSound());
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
 
-bool AudioPluginAudioProcessor::isBusesLayoutSupported(
-    const BusesLayout &layouts) const
-
+bool AudioPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
+    if (layouts.getMainInputChannelSet() != layouts.getMainOutputChannelSet())
+        return false;
 
-  if (layouts.getMainInputChannelSet() != layouts.getMainOutputChannelSet())
+    if (layouts.getMainInputChannelSet() != juce::AudioChannelSet::mono() &&
+        layouts.getMainInputChannelSet() != juce::AudioChannelSet::stereo())
+        return false;
 
-    return false;
-
-  if (layouts.getMainInputChannelSet() != juce::AudioChannelSet::mono() &&
-
-      layouts.getMainInputChannelSet() != juce::AudioChannelSet::stereo())
-
-    return false;
-
-  return true;
+    return true;
 }
 
-void AudioPluginAudioProcessor::prepareToPlay(double sampleRate,
-                                              int samplesPerBlock)
-
+void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    feedback         = apvts.getRawParameterValue ("FEEDBACK");
+    damping          = apvts.getRawParameterValue ("DAMPING");
+    mix              = apvts.getRawParameterValue ("MIX");
+    arpGainDB        = apvts.getRawParameterValue ("ARP_GAIN");
+    chordGainDB        = apvts.getRawParameterValue ("CHORD_GAIN");
 
-  feedback = apvts.getRawParameterValue("FEEDBACK");
-  damping = apvts.getRawParameterValue("DAMPING");
-  mix = apvts.getRawParameterValue("MIX");
-  wetGainDB = apvts.getRawParameterValue("WET_GAIN");
+    trigReleaseMS    = apvts.getRawParameterValue ("TRIG_RELEASE");
+    trigThreshDB     = apvts.getRawParameterValue ("TRIG_THRESHOLD");
+    trigSoftness     = apvts.getRawParameterValue ("TRIG_SOFTNESS");
 
-  trigReleaseMS = apvts.getRawParameterValue("TRIG_RELEASE");
-  trigThreshDB = apvts.getRawParameterValue("TRIG_THRESHOLD");
-  trigSoftness = apvts.getRawParameterValue("TRIG_SOFTNESS");
+    envAttackS       = apvts.getRawParameterValue ("ENV_ATTACK");
+    envDecayS        = apvts.getRawParameterValue ("ENV_DECAY");
+    envSustainLinear = apvts.getRawParameterValue ("ENV_SUSTAIN");
+    envReleaseS      = apvts.getRawParameterValue ("ENV_RELEASE");
 
-  envAttackS = apvts.getRawParameterValue("ENV_ATTACK");
-  envDecayS = apvts.getRawParameterValue("ENV_DECAY");
-  envSustainLinear = apvts.getRawParameterValue("ENV_SUSTAIN");
-  envReleaseS = apvts.getRawParameterValue("ENV_RELEASE");
+    arpRateIndex     = apvts.getRawParameterValue ("ARP_RATE");
+    arpGateParam     = apvts.getRawParameterValue ("ARP_GATE");
+    arpModeParam     = apvts.getRawParameterValue ("ARP_MODE");
+    arpScatter       = apvts.getRawParameterValue ("ARP_SCATTER");
 
-  arpRateIndex = apvts.getRawParameterValue("ARP_RATE");
-  arpGateParam = apvts.getRawParameterValue ("ARP_GATE");
-  arpModeParam = apvts.getRawParameterValue("ARP_MODE");
-  arpScatter = apvts.getRawParameterValue("ARP_SCATTER");
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate       = sampleRate;
+    spec.maximumBlockSize = static_cast<juce::uint32> (samplesPerBlock);
+    spec.numChannels      = 1;
 
-  juce::dsp::ProcessSpec spec;
+    for (int i = 0; i < arpSynth.getNumVoices(); ++i)
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
+            voice->prepare (spec);
 
-  spec.sampleRate = sampleRate;
+    for (int i = 0; i < chordSynth.getNumVoices(); ++i)
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
+            voice->prepare (spec);
 
-  spec.maximumBlockSize = static_cast<juce::uint32>(samplesPerBlock);
-
-  spec.numChannels = 1;
-
-  // Loop through the manager's registered voices to prepare them
-
-  for (int i = 0; i < synth.getNumVoices(); ++i)
-
-  {
-
-    if (auto *voice = dynamic_cast<ResonatorVoice *>(synth.getVoice(i)))
-
-    {
-
-      voice->prepare(spec);
-    }
-  }
-
-  arp.prepare(sampleRate);
+    arp.prepare (sampleRate);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {}
 
-void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
-                                             juce::MidiBuffer &midiMessages)
-
+void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
+                                               juce::MidiBuffer& midiMessages)
 {
+    juce::ScopedNoDenormals noDenormals;
 
-  juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-  auto totalNumInputChannels = getTotalNumInputChannels();
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+        buffer.clear (i, 0, buffer.getNumSamples());
 
-  auto totalNumOutputChannels = getTotalNumOutputChannels();
+    // Snapshot parameters
+    double sampleRate      = getSampleRate();
+    float currentFeedback  = feedback->load();
+    float currentDamping   = damping->load();
+    float currentMix       = mix->load() / 100.0f;
+    
+    float currentArpGainDB   = arpGainDB->load();
+    float currentChordGainDB = chordGainDB->load();
 
-  for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+    static constexpr float silenceThresholdDB = -60.0f;
+    float arpGainLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f : juce::Decibels::decibelsToGain (currentArpGainDB);
+    float chordGainLinear = (currentChordGainDB <= silenceThresholdDB )? 0.0f : juce::Decibels::decibelsToGain (currentChordGainDB);
 
-    buffer.clear(i, 0, buffer.getNumSamples());
-  }
+    CustomADSR::Parameters envParams;
+    envParams.attack  = envAttackS->load();
+    envParams.decay   = envDecayS->load();
+    envParams.sustain = envSustainLinear->load();
+    envParams.release = envReleaseS->load();
 
-  double sampleRate = getSampleRate();
-  float currentFeedback = feedback->load();
-  float currentDamping = damping->load();
-  float currentMix = mix->load() / 100.0f;
-  float wetGainLinear = juce::Decibels::decibelsToGain(wetGainDB->load());
+    // Broadcast parameters to both voice pools
+    // NOTE: When independent envelopes are added, pass VoiceRole here to route
+    // different envParams to arpSynth vs chordSynth voices.
+    for (int i = 0; i < arpSynth.getNumVoices(); ++i)
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
+            voice->updateParameters (currentFeedback, currentDamping, envParams);
 
-  // 2. Prepare & Snapshot Voice ADSR Structural Parameters
+    for (int i = 0; i < chordSynth.getNumVoices(); ++i)
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
+            voice->updateParameters (currentFeedback, currentDamping, envParams);
 
-  CustomADSR::Parameters envParams;
+    // Snapshot transient follower parameters
+    float attackTau    = 0.00001f;
+    float attackCoef   = static_cast<float> (std::exp (-1.0f / (sampleRate * attackTau)));
+    float releaseTau   = trigReleaseMS->load() / 1000.0f;
+    float releaseCoef  = static_cast<float> (std::exp (-1.0f / (sampleRate * releaseTau)));
+    float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshDB->load());
+    float currentSoftness = trigSoftness->load();
 
-  envParams.attack = envAttackS->load();
-  envParams.decay = envDecayS->load();
-  envParams.sustain = envSustainLinear->load();
-  envParams.release = envReleaseS->load();
+    // Safe read snapshot of dry input
+    juce::AudioBuffer<float> dryCopy;
+    dryCopy.makeCopyOf (buffer);
 
-  // Broadcast filter and envelope configurations down to all synth voices
+    // Build the chord MIDI stream: a copy of the raw input, untouched by the arpeggiator.
+    // This always reflects what the user is physically holding.
+    juce::MidiBuffer chordMidi;
+    chordMidi.addEvents (midiMessages, 0, -1, 0);
 
-  for (int i = 0; i < synth.getNumVoices(); ++i)
-  {
-    if (auto *voice = dynamic_cast<ResonatorVoice *>(synth.getVoice(i)))
-    {
-      voice->updateParameters(currentFeedback, currentDamping, envParams);
-    }
-  }
-
-  float attackTau = 0.00001f;
-  float attackCoef = static_cast<float>(std::exp(-1.0f / (sampleRate * attackTau)));
-  float releaseTau = trigReleaseMS->load() / 1000.0f;
-  float releaseCoef = static_cast<float>(std::exp(-1.0f / (sampleRate * releaseTau)));
-
-  // 3. Convert threshold dB to a linear ratio multiplier
-
-  float thresholdLinear = juce::Decibels::decibelsToGain(trigThreshDB->load());
-  float currentSoftness = trigSoftness->load();
-
-  // Safe read snapshot of original block
-
-  juce::AudioBuffer<float> dryCopy;
-
-  dryCopy.makeCopyOf(buffer);
-
-  // Run arpeggiator on the midi buffer before processing
-  // 1. Snapshot your UI parameters from your APVTS layout
-    // (Replace these with your actual parameter lookup variables!)
-
+    // Build the arp MIDI stream: the arpeggiator consumes note events from
+    // midiMessages and replaces them with sequential arp notes.
     float gateLength = arpGateParam->load();
-    Arpeggiator::ArpMode mode = Arpeggiator::modeFromIndex(static_cast<int>(arpModeParam->load()));   
+    Arpeggiator::ArpMode mode = Arpeggiator::modeFromIndex (static_cast<int> (arpModeParam->load()));
+    float scatter    = arpScatter->load();
 
-    
-    float scatter = arpScatter->load();
-
-    float subdivisionInBeats = 0.25f; // Default fallback (1/16th)
-    switch (static_cast<int>(arpRateIndex->load()))
+    double subdivisionInBeats = 0.25; // Default fallback (1/16th)
+    int rateIndex = static_cast<int> (arpRateIndex->load());
+    switch (rateIndex)
     {
-        case 0: subdivisionInBeats = 1.0f;       break; // 1/4 note
-        case 1: subdivisionInBeats = 2.0f / 3.0f; break; // 1/4 triplet
-        case 2: subdivisionInBeats = 0.5f;       break; // 1/8 note
-        case 3: subdivisionInBeats = 1.0f / 3.0f; break; // 1/8 triplet
-        case 4: subdivisionInBeats = 0.25f;      break; // 1/16 note
-        case 5: subdivisionInBeats = 1.0f / 6.0f; break; // 1/16 triplet
-        case 6: subdivisionInBeats = 0.125f;     break; // 1/32 note
+        case 0: subdivisionInBeats = 1.0;       break; // 1/4 note
+        case 1: subdivisionInBeats = 2.0 / 3.0; break; // 1/4 triplet
+        case 2: subdivisionInBeats = 0.5;       break; // 1/8 note
+        case 3: subdivisionInBeats = 1.0 / 3.0; break; // 1/8 triplet
+        case 4: subdivisionInBeats = 0.25;      break; // 1/16 note
+        case 5: subdivisionInBeats = 1.0 / 6.0; break; // 1/16 triplet
+        case 6: subdivisionInBeats = 0.125;     break; // 1/32 note
+        default:                                break;   
     }
 
-
-    
-    // 2. Push the UI choices directly into your module
-    arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter);
-
-    // 3. INTERCEPT: Pass the midiMessages and DAW playhead into the arpeggiator.
-    // This swallows your held chords and replaces them with sequential, overlapping notes.
-    arp.processMidiBlock (midiMessages, getPlayHead());
-
-  // Create a dynamic iterator to read MIDI timestamps sample-by-sample
-
-  auto midiIterator = midiMessages.begin();
-
-  auto midiEnd = midiMessages.end();
-
-  for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-
-  {
-
-    // 1. Process any MIDI events occurring precisely at this sample index
-
-    while (midiIterator != midiEnd && (*midiIterator).samplePosition == sample)
-
+    if (rateIndex < 7)
     {
-
-      auto message = (*midiIterator).getMessage();
-
-      if (message.isNoteOn())
-
-      {
-
-        // Tell the synth manager to find a free voice and start it
-
-        synth.noteOn(message.getChannel(), message.getNoteNumber(),
-                     message.getFloatVelocity());
-
-      }
-
-      else if (message.isNoteOff())
-
-      {
-
-        // Tell the synth manager to release the active voice
-
-        synth.noteOff(message.getChannel(), message.getNoteNumber(),
-                      message.getFloatVelocity(), true);
-
-      }
-
-      else if (message.isAllNotesOff())
-
-      {
-
-        synth.allNotesOff(false, true);
-      }
-
-      midiIterator++;
+        arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter);
+        arp.processMidiBlock (midiMessages, getPlayHead());
     }
 
-    // 2. Calculate your tracking envelope values as normal
+    // midiMessages now contains arp notes; chordMidi contains raw held notes.
+    // Both iterators advance independently through the same sample range below.
+    auto arpMidiIt    = midiMessages.begin();
+    auto arpMidiEnd   = midiMessages.end();
+    auto chordMidiIt  = chordMidi.begin();
+    auto chordMidiEnd = chordMidi.end();
 
-    float inputL = dryCopy.getSample(0, sample);
-
-    float inputR =
-        (totalNumInputChannels > 1) ? dryCopy.getSample(1, sample) : inputL;
-
-    float absInput = std::abs(inputL);
-
-    // [Your existing transient follower envelope calculations here...]
-
-    envFast = (absInput > envFast)
-                  ? (attackCoef * envFast) + ((1.0f - attackCoef) * absInput)
-
-                  : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
-
-    envSlow = (releaseCoef * envSlow) + ((1.0f - releaseCoef) * absInput);
-
-    float smoothCoef =
-        currentSoftness <= 0.0f
-            ? 0.0f
-            : static_cast<float>(std::exp(-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
-
-    float punchAmount = envFast - (envSlow * thresholdLinear);
-
-    float rawGate = juce::jlimit(0.0f, 1.0f, punchAmount * 10.0f);
-
-    // 2. Run the raw gate through a low-pass smoothing filter
-
-    // This slows down the attack and release time of the gate itself!
-
-    smoothedGate =
-        (smoothCoef * smoothedGate) + ((1.0f - smoothCoef) * rawGate);
-
-    // 3. Apply the perfectly smoothed envelope
-
-    float excitationL = inputL * smoothedGate;
-
-    float excitationR = inputR * smoothedGate;
-
-    // 3. Accumulate wet outputs from all currently playing/ringing synthesizer
-    // voices
-
-    float summedWetL = 0.0f;
-
-    float summedWetR = 0.0f;
-
-    for (int i = 0; i < synth.getNumVoices(); ++i)
-
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-
-      if (auto *voice = dynamic_cast<ResonatorVoice *>(synth.getVoice(i)))
-
-      {
-
-        if (voice->isVoiceActive())
-
+        // Drive arpSynth from the arpeggiator MIDI stream
+        while (arpMidiIt != arpMidiEnd && (*arpMidiIt).samplePosition == sample)
         {
+            auto message = (*arpMidiIt).getMessage();
 
-          voice->processExcitation(excitationL, excitationR, summedWetL,
-                                   summedWetR);
+            if (message.isNoteOn())
+                arpSynth.noteOn (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity());
+            else if (message.isNoteOff())
+                arpSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
+            else if (message.isAllNotesOff())
+                arpSynth.allNotesOff (false, true);
+
+            ++arpMidiIt;
         }
-      }
+
+        // Drive chordSynth from the raw chord MIDI stream
+        while (chordMidiIt != chordMidiEnd && (*chordMidiIt).samplePosition == sample)
+        {
+            auto message = (*chordMidiIt).getMessage();
+
+            if (message.isNoteOn())
+                chordSynth.noteOn (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity());
+            else if (message.isNoteOff())
+                chordSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
+            else if (message.isAllNotesOff())
+                chordSynth.allNotesOff (false, true);
+
+            ++chordMidiIt;
+        }
+
+        // Transient follower
+        float inputL   = dryCopy.getSample (0, sample);
+        float inputR   = (totalNumInputChannels > 1) ? dryCopy.getSample (1, sample) : inputL;
+        float absInput = std::abs (inputL);
+
+        envFast = (absInput > envFast)
+                      ? (attackCoef * envFast) + ((1.0f - attackCoef) * absInput)
+                      : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
+
+        envSlow = (releaseCoef * envSlow) + ((1.0f - releaseCoef) * absInput);
+
+        float smoothCoef = currentSoftness <= 0.0f
+                               ? 0.0f
+                               : static_cast<float> (std::exp (-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
+
+        float punchAmount = envFast - (envSlow * thresholdLinear);
+        float rawGate     = juce::jlimit (0.0f, 1.0f, punchAmount * 10.0f);
+        smoothedGate      = (smoothCoef * smoothedGate) + ((1.0f - smoothCoef) * rawGate);
+
+        float excitationL = inputL * smoothedGate;
+        float excitationR = inputR * smoothedGate;
+
+        // Accumulate wet output from both voice pools
+        float summedArpL = 0.0f;
+        float summedArpR = 0.0f;
+
+        for (int i = 0; i < arpSynth.getNumVoices(); ++i)
+            if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
+                if (voice->isVoiceActive())
+                    voice->processExcitation (excitationL, excitationR, summedArpL, summedArpR);
+   
+        float summedChordsL = 0.0f;
+        float summedChordsR = 0.0f;
+
+        for (int i = 0; i < chordSynth.getNumVoices(); ++i)
+            if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
+                if (voice->isVoiceActive())
+                    voice->processExcitation (excitationL, excitationR, summedChordsL, summedChordsR);
+
+        // Scale each by voice count so summed output stays at a consistent level
+        float scaleFactorArp = 1.0f / static_cast<float> (arpSynth.getNumVoices());
+        float finalArpL = summedArpL * scaleFactorArp * arpGainLinear;
+        float finalArpR = summedArpR * scaleFactorArp * arpGainLinear;
+
+        float scaleFactorChords = 1.0f / static_cast<float> (chordSynth.getNumVoices());
+        float finalChordsL = summedChordsL * scaleFactorChords * chordGainLinear;
+        float finalChordsR = summedChordsR * scaleFactorChords * chordGainLinear;
+
+        float finalWetL = finalArpL + finalChordsL;
+        float finalWetR = finalArpR + finalChordsR;
+        
+        float blendedL = (inputL * (1.0f - currentMix)) + (finalWetL * currentMix);
+        float blendedR = (inputR * (1.0f - currentMix)) + (finalWetR * currentMix);
+
+        buffer.setSample (0, sample, blendedL);
+
+        if (totalNumInputChannels > 1)
+            buffer.setSample (1, sample, blendedR);
     }
 
-    // 4. Mix blend and output assignment
-
-    float scaleFactor = 1.0f / static_cast<float>(synth.getNumVoices());
-
-    float finalWetL = summedWetL * scaleFactor * wetGainLinear;
-
-    float finalWetR = summedWetR * scaleFactor * wetGainLinear;
-
-    float blendedL = (inputL * (1.0f - currentMix)) + (finalWetL * currentMix);
-
-    float blendedR = (inputR * (1.0f - currentMix)) + (finalWetR * currentMix);
-
-    buffer.setSample(0, sample, blendedL);
-
-    if (totalNumInputChannels > 1) {
-
-      buffer.setSample(1, sample, blendedR);
-    }
-  }
-
-  midiMessages.clear();
+    midiMessages.clear();
 }
 
-juce::AudioProcessorEditor *AudioPluginAudioProcessor::createEditor()
-
+juce::AudioProcessorEditor* AudioPluginAudioProcessor::createEditor()
 {
-
-  return new AudioPluginAudioProcessorEditor(*this);
+    return new AudioPluginAudioProcessorEditor (*this);
 }
 
-juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
-
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-
-  return new AudioPluginAudioProcessor();
+    return new AudioPluginAudioProcessor();
 }
 
-inline float AudioPluginAudioProcessor::midiToHz(int midiNote) {
-
-  return 440.0f *
-         std::pow(2.0f, (static_cast<float>(midiNote) - 69.0f) / 12.0f);
-}
-
-float AudioPluginAudioProcessor::calculateCoef(float timeMs, double sampleRate)
-
+inline float AudioPluginAudioProcessor::midiToHz (int midiNote)
 {
+    return 440.0f * std::pow (2.0f, (static_cast<float> (midiNote) - 69.0f) / 12.0f);
+}
 
-  if (timeMs <= 0.0f)
-    return 0.0f;
+float AudioPluginAudioProcessor::calculateCoef (float timeMs, double sampleRate)
+{
+    if (timeMs <= 0.0f)
+        return 0.0f;
 
-  return std::exp(-1.0f /
-                  (static_cast<float>(sampleRate) * (timeMs / 1000.0f)));
+    return std::exp (-1.0f / (static_cast<float> (sampleRate) * (timeMs / 1000.0f)));
 }

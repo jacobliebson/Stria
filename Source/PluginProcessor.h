@@ -17,7 +17,6 @@ public:
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
 
-
     const juce::String getName() const override { return JucePlugin_Name; }
     bool acceptsMidi() const override { return true; }
     bool producesMidi() const override { return false; }
@@ -26,16 +25,17 @@ public:
 
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
-    void setCurrentProgram (int index) override {juce::ignoreUnused(index);}
-    const juce::String getProgramName (int index) override {juce::ignoreUnused(index); return {}; }
-    void changeProgramName (int index, const juce::String& newName) override {juce::ignoreUnused(index); juce::ignoreUnused(newName);}
+    void setCurrentProgram (int index) override { juce::ignoreUnused (index); }
+    const juce::String getProgramName (int index) override { juce::ignoreUnused (index); return {}; }
+    void changeProgramName (int index, const juce::String& newName) override { juce::ignoreUnused (index); juce::ignoreUnused (newName); }
 
-    void getStateInformation (juce::MemoryBlock& destData) override {juce::ignoreUnused(destData);}
-    void setStateInformation (const void* data, int sizeInBytes) override {juce::ignoreUnused(data); juce::ignoreUnused(sizeInBytes);}
-    
-    static constexpr int numVoices = 32;
+    void getStateInformation (juce::MemoryBlock& destData) override { juce::ignoreUnused (destData); }
+    void setStateInformation (const void* data, int sizeInBytes) override { juce::ignoreUnused (data); juce::ignoreUnused (sizeInBytes); }
 
-    std::array<int, numVoices> getActiveMidiNotes();
+    static constexpr int numArpVoices   = 32;
+    static constexpr int numChordVoices = 16;
+
+    std::array<int, numArpVoices + numChordVoices> getActiveMidiNotes();
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
@@ -45,34 +45,38 @@ private:
 
     inline float midiToHz (int midiNote);
 
-
     static constexpr int numChannels = 2;
 
-    juce::Synthesiser synth;
-    
+    // Separate voice pools for arp and chord streams.
+    // NOTE: When independent envelopes are added, pass a VoiceRole to
+    // updateParameters so each pool can receive different envParams.
+    juce::Synthesiser arpSynth;
+    juce::Synthesiser chordSynth;
+
     Arpeggiator arp;
     std::atomic<float>* arpRateIndex = nullptr;
     std::atomic<float>* arpGateParam = nullptr;
     std::atomic<float>* arpModeParam = nullptr;
-    std::atomic<float>* arpScatter = nullptr;
+    std::atomic<float>* arpScatter   = nullptr;
 
-    std::atomic<float>* feedback = nullptr;
-    std::atomic<float>* damping = nullptr;
-    std::atomic<float>* mix = nullptr;
-    std::atomic<float>* wetGainDB = nullptr;
+    std::atomic<float>* feedback         = nullptr;
+    std::atomic<float>* damping          = nullptr;
+    std::atomic<float>* mix              = nullptr;
+    std::atomic<float>* arpGainDB        = nullptr;
+    std::atomic<float>* chordGainDB        = nullptr;
 
-    float envFast = 0.0f;
-    float envSlow = 0.0f;
+    float envFast      = 0.0f;
+    float envSlow      = 0.0f;
     float smoothedGate = 0.0f;
 
-    std::atomic<float>* trigReleaseMS = nullptr;
-    std::atomic<float>* trigThreshDB = nullptr;
-    std::atomic<float>* trigSoftness = nullptr;
+    std::atomic<float>* trigReleaseMS    = nullptr;
+    std::atomic<float>* trigThreshDB     = nullptr;
+    std::atomic<float>* trigSoftness     = nullptr;
 
-    std::atomic<float>* envAttackS = nullptr;
-    std::atomic<float>* envDecayS = nullptr;
+    std::atomic<float>* envAttackS       = nullptr;
+    std::atomic<float>* envDecayS        = nullptr;
     std::atomic<float>* envSustainLinear = nullptr;
-    std::atomic<float>* envReleaseS = nullptr;
+    std::atomic<float>* envReleaseS      = nullptr;
 
     float calculateCoef (float timeMs, double sampleRate);
 };
