@@ -124,9 +124,13 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float attackTau    = 0.00001f;
     float attackCoef   = static_cast<float> (std::exp (-1.0f / (sampleRate * attackTau)));
     float releaseTau   = trigReleaseMS->load() / 1000.0f;
+     float currentSoftness = trigSoftness->load();
     float releaseCoef  = static_cast<float> (std::exp (-1.0f / (sampleRate * releaseTau)));
+    float smoothCoef = currentSoftness <= 0.0f
+                               ? 0.0f
+                               : static_cast<float> (std::exp (-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
     float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshDB->load());
-    float currentSoftness = trigSoftness->load();
+   
 
     // Safe read snapshot of dry input
     juce::AudioBuffer<float> dryCopy;
@@ -212,10 +216,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                       : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
 
         envSlow = (releaseCoef * envSlow) + ((1.0f - releaseCoef) * absInput);
-
-        float smoothCoef = currentSoftness <= 0.0f
-                               ? 0.0f
-                               : static_cast<float> (std::exp (-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
 
         float punchAmount = envFast - (envSlow * thresholdLinear);
         float rawGate     = juce::jlimit (0.0f, 1.0f, punchAmount * 10.0f);

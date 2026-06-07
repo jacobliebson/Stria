@@ -106,6 +106,7 @@ void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioP
     if (heldNotes.empty())
     {
         nextTargetPPQ = -1.0;
+        checkScheduledNoteOffs (midiMessages, currentPPQ);
         return;
     }
 
