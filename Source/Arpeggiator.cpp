@@ -2,6 +2,7 @@
 #include "Arpeggiator.h"
 #include <algorithm>
 #include <cstddef>
+#include <cstdlib>
 
 void Arpeggiator::prepare (double newSampleRate)
 {
@@ -31,7 +32,7 @@ Arpeggiator::ArpMode Arpeggiator::modeFromIndex (int index)
     return Arpeggiator::ArpMode::Up;
 }
 
-void Arpeggiator::updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, int newOctaveRange)
+void Arpeggiator::updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, float deviation, int newOctaveRange)
 {
     if (std::abs (subdivision - stepLengthInBeats) > 1e-9)
         pendingStepLength = subdivision;
@@ -45,6 +46,7 @@ void Arpeggiator::updateSettings (double subdivision, float gateLength, ArpMode 
     gateLengthPercent = gateLength;
     currentMode       = mode;
     currentScatter    = scatter;
+    currentDeviation  = deviation;
 }
 
 //==============================================================================
@@ -238,14 +240,32 @@ int Arpeggiator::selectNextNote()
 {
     const size_t size = expandedNotes.size();
 
+    int randomIndex     = randomEngine.nextInt(size);
+    int randomNote      = expandedNotes[randomIndex];
+    float randomValue   = randomEngine.nextFloat();
+    bool useRandomNote  = randomValue < currentDeviation;
+
     switch (currentMode)
     {
+        case ArpMode::Up:
+        default:
+        {
+            if (poolIndex < 0 || poolIndex >= size)
+                poolIndex = 0;
+            
+            int note = useRandomNote? randomNote : expandedNotes[poolIndex];
+            poolIndex++;
+            return note;
+        }
+
         case ArpMode::Down:
         {
             if (poolIndex < 0 || poolIndex >= size)
                 poolIndex = size - 1;
-
-            return expandedNotes[poolIndex--];
+            
+            int note = useRandomNote? randomNote : expandedNotes[poolIndex];
+            poolIndex--;
+            return note;
         }
 
         case ArpMode::Updown:
@@ -254,7 +274,7 @@ int Arpeggiator::selectNextNote()
                 return expandedNotes[0];
 
             poolIndex = std::clamp(poolIndex, (size_t)0, size-1);
-            int note  = expandedNotes[poolIndex];
+            int note  = useRandomNote? randomNote : expandedNotes[poolIndex];
 
             if (arpGoingUp)
             {
@@ -284,17 +304,6 @@ int Arpeggiator::selectNextNote()
             return note;
         }
 
-        case ArpMode::Random:
-            return expandedNotes[randomEngine.nextInt (size)];
-
-        case ArpMode::Up:
-        default:
-        {
-            if (poolIndex < 0 || poolIndex >= size)
-                poolIndex = 0;
-
-            return expandedNotes[poolIndex++];
-        }
     }
 }
 

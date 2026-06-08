@@ -54,33 +54,34 @@ private:
     juce::Synthesiser chordSynth;
 
     Arpeggiator arp;
-    std::atomic<float>* arpRateIndex = nullptr;
-    std::atomic<float>* arpGateParam = nullptr;
-    std::atomic<float>* arpModeParam = nullptr;
-    std::atomic<float>* arpScatter   = nullptr;
-    std::atomic<float>* octRange     = nullptr;
+    std::atomic<float>* arpRateIndex        = nullptr;
+    std::atomic<float>* arpGateParam        = nullptr;
+    std::atomic<float>* arpModeParam        = nullptr;
+    std::atomic<float>* arpScatter          = nullptr;
+    std::atomic<float>* arpDeviation        = nullptr;
+    std::atomic<float>* octRange            = nullptr;
 
     bool   wasPlaying       = false;
     double lastProcessorPPQ = -1.0;
 
-    std::atomic<float>* feedback         = nullptr;
-    std::atomic<float>* damping          = nullptr;
-    std::atomic<float>* mix              = nullptr;
-    std::atomic<float>* arpGainDB        = nullptr;
-    std::atomic<float>* chordGainDB        = nullptr;
+    std::atomic<float>* feedback            = nullptr;
+    std::atomic<float>* damping             = nullptr;
+    std::atomic<float>* mix                 = nullptr;
+    std::atomic<float>* arpGainDB           = nullptr;
+    std::atomic<float>* chordGainDB         = nullptr;
 
     float envFast      = 0.0f;
     float envSlow      = 0.0f;
     float smoothedGate = 0.0f;
 
-    std::atomic<float>* trigReleaseMS    = nullptr;
-    std::atomic<float>* trigThreshDB     = nullptr;
-    std::atomic<float>* trigSoftness     = nullptr;
+    std::atomic<float>* trigReleaseMS       = nullptr;
+    std::atomic<float>* trigThreshDB        = nullptr;
+    std::atomic<float>* trigSoftness        = nullptr;
 
-    std::atomic<float>* envAttackS       = nullptr;
-    std::atomic<float>* envDecayS        = nullptr;
-    std::atomic<float>* envSustainLinear = nullptr;
-    std::atomic<float>* envReleaseS      = nullptr;
+    std::atomic<float>* envAttackS          = nullptr;
+    std::atomic<float>* envDecayS           = nullptr;
+    std::atomic<float>* envSustainLinear    = nullptr;
+    std::atomic<float>* envReleaseS         = nullptr;
 
     float calculateCoef (float timeMs, double sampleRate);
 };

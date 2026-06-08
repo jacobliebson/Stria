@@ -158,7 +158,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     // Arpeggiator mode
     // When adding new mode, update enum class in Arpeggiator.h in exact order
-    juce::StringArray modeChoices { "Up", "Down", "Up-down", "Random" };
+    juce::StringArray modeChoices { "Up", "Down", "Up-down" };
     layout.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "ARP_MODE", 1 },
         "Arp Mode",
@@ -166,7 +166,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         0 
     ));
 
-    // Arpeggiator scatter
+    // Arpeggiatior deviation - chance to reandomly swap a note
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { "ARP_DEVIATION", 1 },
+        "Deviation",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.01f), // 0% to 100%
+        0.0f
+    ));
+
+    // Arpeggiator scatter - random time offset
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_SCATTER", 1 },
         "Scatter",

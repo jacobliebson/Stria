@@ -60,6 +60,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     arpGateParam     = apvts.getRawParameterValue ("ARP_GATE");
     arpModeParam     = apvts.getRawParameterValue ("ARP_MODE");
     arpScatter       = apvts.getRawParameterValue ("ARP_SCATTER");
+    arpDeviation     = apvts.getRawParameterValue ("ARP_DEVIATION");
     octRange         = apvts.getRawParameterValue("ARP_RANGE");
 
     juce::dsp::ProcessSpec spec;
@@ -171,6 +172,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float gateLength = arpGateParam->load();
     Arpeggiator::ArpMode mode = Arpeggiator::modeFromIndex (static_cast<int> (arpModeParam->load()));
     float scatter    = arpScatter->load();
+    float deviation  = arpDeviation->load();
     int range        = static_cast<int>(octRange->load());
 
     double subdivisionInBeats = 0.25; // Default fallback (1/16th)
@@ -190,7 +192,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     if (rateIndex < 7)
     {
-        arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter, range);
+        arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter, deviation, range);
         arp.processMidiBlock (midiMessages, getPlayHead());
          
     }

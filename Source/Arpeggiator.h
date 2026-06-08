@@ -9,7 +9,7 @@
 class Arpeggiator
 {
 public:
-    enum class ArpMode { Up, Down, Updown, Random, Count };
+    enum class ArpMode { Up, Down, Updown, Count };
     static ArpMode modeFromIndex (int index);
 
     Arpeggiator() = default;
@@ -21,7 +21,7 @@ public:
     void prepare (double newSampleRate);
 
     // Updates the settings from your UI sliders/menus
-    void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, int newOctaveRange);
+    void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, float deviation, int newOctaveRange);
 
     // The main processing pipeline called at the top of PluginProcessor::processBlock
     void processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead);
@@ -58,6 +58,7 @@ private:
     float   gateLengthPercent = 0.8f;
     ArpMode currentMode       = ArpMode::Up;
     float   currentScatter    = 0.0f;
+    float   currentDeviation  = 0.0f;
 
     // Octave range 
     int  octaveRange   = 0;
