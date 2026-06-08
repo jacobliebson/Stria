@@ -110,6 +110,101 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
     }
 }
 
+void ResonatorLookAndFeel::drawLinearSlider (juce::Graphics& g, 
+                                             int x, int y, int width, int height,
+                                             float sliderPos, 
+                                             float minSliderPos, 
+                                             float maxSliderPos,
+                                             const juce::Slider::SliderStyle style, 
+                                             juce::Slider& slider)
+{
+    if (slider.isBar())
+        return;
+
+    const bool isVertical = slider.isVertical();
+    const float trackWidth = 3.0f;
+    
+    // 1. Shave 6 pixels off the top and bottom bounds right away
+    const float inset = 6.0f;
+    
+    const float startX  = static_cast<float> (x);
+    const float startY  = static_cast<float> (y) + inset;
+    const float boundsW = static_cast<float> (width);
+    const float boundsH = static_cast<float> (height) - (inset * 2.0f);
+
+    // Track background & active fill
+    {
+        juce::Path backgroundTrack;
+        juce::Path fillTrack;
+
+        if (isVertical)
+        {
+            const float trackX = startX + boundsW * 0.5f;
+            
+            backgroundTrack.startNewSubPath (trackX, startY);
+            backgroundTrack.lineTo (trackX, startY + boundsH);
+
+            // Clamp the drawing position to our new inset boundaries
+            float clampedPos = juce::jlimit (startY, startY + boundsH, sliderPos);
+            fillTrack.startNewSubPath (trackX, clampedPos);
+            fillTrack.lineTo (trackX, startY + boundsH);
+        }
+        else
+        {
+            // Horizontal layout support just in case
+            const float insetX = static_cast<float> (x) + inset;
+            const float boundsWHz = static_cast<float> (width) - (inset * 2.0f);
+            const float trackY = static_cast<float> (y) + static_cast<float> (height) * 0.5f;
+
+            backgroundTrack.startNewSubPath (insetX, trackY);
+            backgroundTrack.lineTo (insetX + boundsWHz, trackY);
+
+            float clampedPos = juce::jlimit (insetX, insetX + boundsWHz, sliderPos);
+            fillTrack.startNewSubPath (insetX, trackY);
+            fillTrack.lineTo (clampedPos, trackY);
+        }
+
+        // Draw tracks
+        g.setColour (ResonatorPalette::backgroundWidget());
+        g.strokePath (backgroundTrack, juce::PathStrokeType (trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+
+        g.setColour (ResonatorPalette::accentPrimary());
+        g.strokePath (fillTrack, juce::PathStrokeType (trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+    }
+
+    // Slider Handle/Thumb
+    {
+        juce::Path handle;
+
+        if (isVertical)
+        {
+            const float handleW = 22.0f;
+            const float handleH = 8.0f;
+            const float handleX = startX + (boundsW - handleW) * 0.5f;
+            const float handleY = juce::jlimit (startY, startY + boundsH, sliderPos) - handleH * 0.5f;
+
+            handle.addRoundedRectangle (handleX, handleY, handleW, handleH, 2.0f);
+        }
+        else
+        {
+            const float insetX = static_cast<float> (x) + inset;
+            const float boundsWHz = static_cast<float> (width) - (inset * 2.0f);
+            const float handleW = 8.0f;
+            const float handleH = 22.0f;
+            const float handleX = juce::jlimit (insetX, insetX + boundsWHz, sliderPos) - handleW * 0.5f;
+            const float handleY = static_cast<float> (y) + (static_cast<float> (height) - handleH) * 0.5f;
+
+            handle.addRoundedRectangle (handleX, handleY, handleW, handleH, 2.0f);
+        }
+
+        g.setColour (ResonatorPalette::knobBody());
+        g.fillPath (handle);
+
+        g.setColour (ResonatorPalette::knobOutline());
+        g.strokePath (handle, juce::PathStrokeType (1.5f));
+    }
+}
+
 void ResonatorLookAndFeel::drawLabel (juce::Graphics& g, juce::Label& label)
 {
     g.setColour (ResonatorPalette::textSecondary());
