@@ -74,7 +74,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
                        deviationAttachment,  "ARP_DEVIATION", "%");
     setupKnob         (scatterKnob,    scatterLabel,    "Scatter",
                        scatterAttachment,    "ARP_SCATTER", "%");
-    setupDiscreteKnob (octaveRangeKnob, octaveRangeLabel, "Oct Range",
+    setupDiscreteKnob (octaveRangeKnob, octaveRangeLabel, "Range",
                        octaveRangeAttachment, "ARP_RANGE");
 
     // Mixer
