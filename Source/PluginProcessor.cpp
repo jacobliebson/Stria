@@ -51,10 +51,15 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     trigThreshDB     = apvts.getRawParameterValue ("TRIG_THRESHOLD");
     trigSoftness     = apvts.getRawParameterValue ("TRIG_SOFTNESS");
 
-    envAttackS       = apvts.getRawParameterValue ("ENV_ATTACK");
-    envDecayS        = apvts.getRawParameterValue ("ENV_DECAY");
-    envSustainLinear = apvts.getRawParameterValue ("ENV_SUSTAIN");
-    envReleaseS      = apvts.getRawParameterValue ("ENV_RELEASE");
+    arpEnvAttack     = apvts.getRawParameterValue ("ARP_ENV_ATTACK");
+    arpEnvDecay      = apvts.getRawParameterValue ("ARP_ENV_DECAY");
+    arpEnvSustain    = apvts.getRawParameterValue ("ARP_ENV_SUSTAIN");
+    arpEnvRelease    = apvts.getRawParameterValue ("ARP_ENV_RELEASE");
+
+    chordEnvAttack     = apvts.getRawParameterValue ("CHORD_ENV_ATTACK");
+    chordEnvDecay      = apvts.getRawParameterValue ("CHORD_ENV_DECAY");
+    chordEnvSustain    = apvts.getRawParameterValue ("CHORD_ENV_SUSTAIN");
+    chordEnvRelease    = apvts.getRawParameterValue ("CHORD_ENV_RELEASE");
 
     arpRateIndex     = apvts.getRawParameterValue ("ARP_RATE");
     arpGateParam     = apvts.getRawParameterValue ("ARP_GATE");
@@ -129,22 +134,28 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float arpGainLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f : juce::Decibels::decibelsToGain (currentArpGainDB);
     float chordGainLinear = (currentChordGainDB <= silenceThresholdDB )? 0.0f : juce::Decibels::decibelsToGain (currentChordGainDB);
 
-    CustomADSR::Parameters envParams;
-    envParams.attack  = envAttackS->load();
-    envParams.decay   = envDecayS->load();
-    envParams.sustain = envSustainLinear->load() / 100.0f;
-    envParams.release = envReleaseS->load();
+    CustomADSR::Parameters arpEnvParams;
+    arpEnvParams.attack  = arpEnvAttack ->load();
+    arpEnvParams.decay   = arpEnvDecay  ->load();
+    arpEnvParams.sustain = arpEnvSustain->load() / 100.0f;
+    arpEnvParams.release = arpEnvRelease->load();
+
+    CustomADSR::Parameters chordEnvParams;
+    chordEnvParams.attack  = chordEnvAttack ->load();
+    chordEnvParams.decay   = chordEnvDecay  ->load();
+    chordEnvParams.sustain = chordEnvSustain->load() / 100.0f;
+    chordEnvParams.release = chordEnvRelease->load();
 
     // Broadcast parameters to both voice pools
     // NOTE: When independent envelopes are added, pass VoiceRole here to route
     // different envParams to arpSynth vs chordSynth voices.
     for (int i = 0; i < arpSynth.getNumVoices(); ++i)
         if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
-            voice->updateParameters (currentFeedback, currentDamping, envParams);
+            voice->updateParameters (currentFeedback, currentDamping, arpEnvParams);
 
     for (int i = 0; i < chordSynth.getNumVoices(); ++i)
         if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
-            voice->updateParameters (currentFeedback, currentDamping, envParams);
+            voice->updateParameters (currentFeedback, currentDamping, chordEnvParams);
 
     // Snapshot transient follower parameters
     float attackTau         = 0.00001f;

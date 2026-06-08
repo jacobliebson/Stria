@@ -80,10 +80,15 @@ private:
     std::atomic<float>* trigThreshDB        = nullptr;
     std::atomic<float>* trigSoftness        = nullptr;
 
-    std::atomic<float>* envAttackS          = nullptr;
-    std::atomic<float>* envDecayS           = nullptr;
-    std::atomic<float>* envSustainLinear    = nullptr;
-    std::atomic<float>* envReleaseS         = nullptr;
+    std::atomic<float>* arpEnvAttack        = nullptr;
+    std::atomic<float>* arpEnvDecay         = nullptr;
+    std::atomic<float>* arpEnvSustain       = nullptr;
+    std::atomic<float>* arpEnvRelease       = nullptr;
+
+    std::atomic<float>* chordEnvAttack          = nullptr;
+    std::atomic<float>* chordEnvDecay           = nullptr;
+    std::atomic<float>* chordEnvSustain    = nullptr;
+    std::atomic<float>* chordEnvRelease         = nullptr;
 
     float calculateCoef (float timeMs, double sampleRate);
 };

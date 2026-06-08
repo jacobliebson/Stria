@@ -112,59 +112,111 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     
     
-    // ============================================= SYNTH ENVELOPE =============================================
+    // ============================================= CHORD ENVELOPE =============================================
 
-    // Voice attack
-    juce::AudioParameterFloatAttributes attackAttributes;
-    attackAttributes = attackAttributes.withLabel(" s");
-    juce::NormalisableRange<float> attackRange(0.001f, 2.0f, 0.001f);
-    attackRange.setSkewForCentre(0.1f); // 100ms sits at the physical center
+    // Chord voice attack
+    juce::AudioParameterFloatAttributes chordAttackAttributes;
+    chordAttackAttributes = chordAttackAttributes.withLabel(" s");
+    juce::NormalisableRange<float> chordAttackRange(0.001f, 2.0f, 0.001f);
+    chordAttackRange.setSkewForCentre(0.1f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID("ENV_ATTACK", 1),
-        "Env Attack",
-        attackRange,
+        juce::ParameterID("CHORD_ENV_ATTACK", 1),
+        "Chord Env Attack",
+        chordAttackRange,
         0.01f,
-        attackAttributes
+        chordAttackAttributes
     ));
 
-    // Voice decay
-    juce::AudioParameterFloatAttributes decayAttributes;
-    decayAttributes = decayAttributes.withLabel(" s");
-    juce::NormalisableRange<float> decayRange(0.01f, 3.0f, 0.01f);
-    decayRange.setSkewForCentre(0.3f);
+    // Chord voice decay
+    juce::AudioParameterFloatAttributes chordDecayAttributes;
+    chordDecayAttributes = chordDecayAttributes.withLabel(" s");
+    juce::NormalisableRange<float> chordDecayRange(0.01f, 3.0f, 0.01f);
+    chordDecayRange.setSkewForCentre(0.3f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID("ENV_DECAY", 1),
-        "Env Decay",
-        decayRange,
+        juce::ParameterID("CHORD_ENV_DECAY", 1),
+        "Chord Env Decay",
+        chordDecayRange,
         0.1f,
-        decayAttributes
+        chordDecayAttributes
     ));
 
-    // Voice sustain
-    juce::AudioParameterFloatAttributes sustainAttributes;
-    sustainAttributes = sustainAttributes.withLabel("%");
-    juce::NormalisableRange<float> sustainRange(0.0f, 100.0f, 0.1f);
+    // Chord voice sustain
+    juce::AudioParameterFloatAttributes chordSustainAttributes;
+    chordSustainAttributes = chordSustainAttributes.withLabel("%");
+    juce::NormalisableRange<float> chordSustainRange(0.0f, 100.0f, 0.1f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID("ENV_SUSTAIN", 1),
-        "Env Sustain",
-        sustainRange,
+        juce::ParameterID("CHORD_ENV_SUSTAIN", 1),
+        "Chord Env Sustain",
+        chordSustainRange,
         0.0f,
-        sustainAttributes
+        chordSustainAttributes
     ));
 
-    // Voice release
-    juce::AudioParameterFloatAttributes releaseAttributes;
-    releaseAttributes = releaseAttributes.withLabel(" s");
-    juce::NormalisableRange<float> releaseRange(0.01f, 5.0f, 0.01f);
-    releaseRange.setSkewForCentre(1.0f);
+    // Chord voice release
+    juce::AudioParameterFloatAttributes chordReleaseAttributes;
+    chordReleaseAttributes = chordReleaseAttributes.withLabel(" s");
+    juce::NormalisableRange<float> chordReleaseRange(0.01f, 5.0f, 0.01f);
+    chordReleaseRange.setSkewForCentre(1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID("ENV_RELEASE", 1),
-        "Env Release",
-        releaseRange,
+        juce::ParameterID("CHORD_ENV_RELEASE", 1),
+        "Chord Env Release",
+        chordReleaseRange,
         0.5f,
-        releaseAttributes
+        chordReleaseAttributes
     ));
 
+    // ============================================= ARP ENVELOPE =============================================
+
+    // Arp voice attack
+    juce::AudioParameterFloatAttributes arpAttackAttributes;
+    arpAttackAttributes = arpAttackAttributes.withLabel(" s");
+    juce::NormalisableRange<float> arpAttackRange(0.001f, 2.0f, 0.001f);
+    arpAttackRange.setSkewForCentre(0.1f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("ARP_ENV_ATTACK", 1),
+        "Arp Env Attack",
+        arpAttackRange,
+        0.01f,
+        arpAttackAttributes
+    ));
+
+    // Arp voice decay
+    juce::AudioParameterFloatAttributes arpDecayAttributes;
+    arpDecayAttributes = arpDecayAttributes.withLabel(" s");
+    juce::NormalisableRange<float> arpDecayRange(0.01f, 3.0f, 0.01f);
+    arpDecayRange.setSkewForCentre(0.3f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("ARP_ENV_DECAY", 1),
+        "Arp Env Decay",
+        arpDecayRange,
+        0.1f,
+        arpDecayAttributes
+    ));
+
+    // Arp voice sustain
+    juce::AudioParameterFloatAttributes arpSustainAttributes;
+    arpSustainAttributes = arpSustainAttributes.withLabel("%");
+    juce::NormalisableRange<float> arpSustainRange(0.0f, 100.0f, 0.1f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("ARP_ENV_SUSTAIN", 1),
+        "Arp Env Sustain",
+        arpSustainRange,
+        0.0f,
+        arpSustainAttributes
+    ));
+
+    // Arp voice release
+    juce::AudioParameterFloatAttributes arpReleaseAttributes;
+    arpReleaseAttributes = arpReleaseAttributes.withLabel(" s");
+    juce::NormalisableRange<float> arpReleaseRange(0.01f, 5.0f, 0.01f);
+    arpReleaseRange.setSkewForCentre(1.0f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("ARP_ENV_RELEASE", 1),
+        "Arp Env Release",
+        arpReleaseRange,
+        0.5f,
+        arpReleaseAttributes
+    ));
     
     
     // ============================================= ARP CONTROLS =============================================
