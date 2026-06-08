@@ -9,7 +9,7 @@ namespace Layout
     constexpr int margin        = 12;
     constexpr int windowW   = 920;
     constexpr int windowH   = 650;  // reduced from 620 - 480
-    constexpr int topH      = 307;  // reduced from 140
+    constexpr int topH      = 325;  // reduced from 140
     constexpr int bottomH   = windowH - topH - margin * 3;
     constexpr int panelPadding  = 10;
     constexpr int titleHeight   = 22;

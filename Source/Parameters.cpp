@@ -139,12 +139,40 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     
     // ============================================= ARP CONTROLS =============================================
 
-    // Arpeggiator subdivision
-    layout.add (std::make_unique<juce::AudioParameterInt> (
-        juce::ParameterID { "ARP_RATE", 1 },
-        "Arp Rate",
-        0, 6, 4  // 0=1/4, 1=1/4 Triplet, 2=1/8, 3=1/8 Triplet, 4=1/16, 5=1/16 Triplet, 6=1/32
-    ));
+    // 1. Create and configure the attributes object for the subdivision rates
+        juce::AudioParameterIntAttributes rateAttributes;
+
+        rateAttributes = rateAttributes.withStringFromValueFunction ([](float value, int maxLen) -> juce::String {
+            switch (static_cast<int> (value))
+            {
+                case 0:  return "1/4";
+                case 1:  return "1/4 T";
+                case 2:  return "1/8";
+                case 3:  return "1/8 T";
+                case 4:  return "1/16";
+                case 5:  return "1/16 T";
+                case 6:  return "1/32";
+                default: return "1/16";
+            }
+        });
+
+        rateAttributes = rateAttributes.withValueFromStringFunction ([](const juce::String& text) -> float {
+            if (text.equalsIgnoreCase ("1/4"))    return 0.0f;
+            if (text.equalsIgnoreCase ("1/4 T"))  return 1.0f;
+            if (text.equalsIgnoreCase ("1/8"))    return 2.0f;
+            if (text.equalsIgnoreCase ("1/8 T"))  return 3.0f;
+            if (text.equalsIgnoreCase ("1/16"))   return 4.0f;
+            if (text.equalsIgnoreCase ("1/16 T")) return 5.0f;
+            if (text.equalsIgnoreCase ("1/32"))   return 6.0f;
+            return 4.0f; // fallback to 1/16
+        });
+
+        layout.add (std::make_unique<juce::AudioParameterInt> (
+            juce::ParameterID { "ARP_RATE", 1 },
+            "Arp Rate",
+            0, 6, 4,  // min, max, default (1/16)
+            rateAttributes
+        ));
     
     // Arpeggiator gate length 
     layout.add (std::make_unique<juce::AudioParameterFloat> (
@@ -156,11 +184,34 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     // Arpeggiator mode
     // When adding new mode, update enum class in Arpeggiator.h in exact order
-    layout.add (std::make_unique<juce::AudioParameterInt> (
-        juce::ParameterID { "ARP_MODE", 1 },
-        "Arp Mode",
-        0, 2, 0  // 0=Up, 1=Down, 2=Up-Down
-    ));
+
+        // Create and configure the attributes object
+        juce::AudioParameterIntAttributes modeAttributes;
+        
+        modeAttributes = modeAttributes.withStringFromValueFunction ([](float value, int maxLen) -> juce::String {
+            switch (static_cast<int> (value))
+            {
+                case 0:  return "Up";
+                case 1:  return "Down";
+                case 2:  return "Up/down";
+                default: return "Unknown";
+            }
+        });
+
+        modeAttributes = modeAttributes.withValueFromStringFunction ([](const juce::String& text) -> float {
+            if (text.equalsIgnoreCase ("Up"))      return 0.0f;
+            if (text.equalsIgnoreCase ("Down"))    return 1.0f;
+            if (text.equalsIgnoreCase ("Up/down"))  return 2.0f;
+            return 0.0f;
+        });
+
+        // Pass the attributes object as the final argument to AudioParameterInt
+        layout.add (std::make_unique<juce::AudioParameterInt> (
+            juce::ParameterID { "ARP_MODE", 1 },
+            "Arp Mode",
+            0, 2, 0,  // min, max, default
+            modeAttributes
+        ));
 
     // Arpeggiatior deviation - chance to reandomly swap a note
     layout.add (std::make_unique<juce::AudioParameterFloat> (
