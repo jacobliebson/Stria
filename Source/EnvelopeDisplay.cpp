@@ -17,7 +17,7 @@ EnvelopeDisplay::EnvelopeDisplay (juce::AudioProcessorValueTreeState& apvtsRef,
     // Initialise from current parameter values
     if (auto* p = apvts.getRawParameterValue (attackId))  attack  = p->load();
     if (auto* p = apvts.getRawParameterValue (decayId))   decay   = p->load();
-    if (auto* p = apvts.getRawParameterValue (sustainId)) sustain = p->load();
+    if (auto* p = apvts.getRawParameterValue (sustainId)) sustain = p->load() / 100.0f;
     if (auto* p = apvts.getRawParameterValue (releaseId)) release = p->load();
 }
 
@@ -33,7 +33,7 @@ void EnvelopeDisplay::parameterChanged (const juce::String& paramId, float newVa
 {
     if      (paramId == attackId)  attack  = newValue;
     else if (paramId == decayId)   decay   = newValue;
-    else if (paramId == sustainId) sustain = newValue;
+    else if (paramId == sustainId) sustain = newValue / 100.0f;
     else if (paramId == releaseId) release = newValue;
 
     repaint();

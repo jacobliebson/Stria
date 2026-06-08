@@ -143,7 +143,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Voice sustain
     juce::AudioParameterFloatAttributes sustainAttributes;
     sustainAttributes = sustainAttributes.withLabel("%");
-    juce::NormalisableRange<float> sustainRange(0.0f, 1.0f, 0.01f);
+    juce::NormalisableRange<float> sustainRange(0.0f, 100.0f, 0.1f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ENV_SUSTAIN", 1),
         "Env Sustain",

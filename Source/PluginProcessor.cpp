@@ -132,7 +132,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     CustomADSR::Parameters envParams;
     envParams.attack  = envAttackS->load();
     envParams.decay   = envDecayS->load();
-    envParams.sustain = envSustainLinear->load();
+    envParams.sustain = envSustainLinear->load() / 100.0f;
     envParams.release = envReleaseS->load();
 
     // Broadcast parameters to both voice pools

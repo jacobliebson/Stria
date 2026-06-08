@@ -81,8 +81,7 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
         const float ox = centreX + indicatorLength * std::sin (angle);
         const float oy = centreY - indicatorLength * std::cos (angle);
 
-        g.setColour (isDiscrete ? ResonatorPalette::accentPrimary()
-                                : ResonatorPalette::knobIndicator());
+        g.setColour (ResonatorPalette::knobIndicator());
         g.drawLine (ix, iy, ox, oy, 2.0f);
     }
 
