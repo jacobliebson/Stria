@@ -140,14 +140,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // ============================================= ARP CONTROLS =============================================
 
     // Arpeggiator subdivision
-    juce::StringArray rateChoices { "1/4", "1/4 Triplet", "1/8", "1/8 Triplet", "1/16", "1/16 Triplet", "1/32" };
-    layout.add (std::make_unique<juce::AudioParameterChoice> (
+    layout.add (std::make_unique<juce::AudioParameterInt> (
         juce::ParameterID { "ARP_RATE", 1 },
         "Arp Rate",
-        rateChoices,
-        4 
+        0, 6, 4  // 0=1/4, 1=1/4 Triplet, 2=1/8, 3=1/8 Triplet, 4=1/16, 5=1/16 Triplet, 6=1/32
     ));
-
+    
     // Arpeggiator gate length 
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_GATE", 1 },
@@ -158,12 +156,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     // Arpeggiator mode
     // When adding new mode, update enum class in Arpeggiator.h in exact order
-    juce::StringArray modeChoices { "Up", "Down", "Up-down" };
-    layout.add (std::make_unique<juce::AudioParameterChoice> (
+    layout.add (std::make_unique<juce::AudioParameterInt> (
         juce::ParameterID { "ARP_MODE", 1 },
         "Arp Mode",
-        modeChoices,
-        0 
+        0, 2, 0  // 0=Up, 1=Down, 2=Up-Down
     ));
 
     // Arpeggiatior deviation - chance to reandomly swap a note

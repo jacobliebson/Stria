@@ -1,8 +1,12 @@
+// Source/PluginEditor.h
 #pragma once
 #include "PluginProcessor.h"
+#include "ResonatorLookAndFeel.h"
+#include "ArpDisplay.h"
+#include "EnvelopeDisplay.h"
 
-class AudioPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                         public juce::Timer // 1. Add Timer Inheritance
+class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                         public juce::Timer
 {
 public:
     AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor&);
@@ -10,15 +14,71 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
-    
-    // 2. Add the timer callback declaration
-    void timerCallback() override;
+    void timerCallback() override {}
 
 private:
-    AudioPluginAudioProcessor& audioProcessor;
-    
-    // 3. Keep a local copy of the notes to check for visual changes
+    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
+    // Helper to configure and add a labelled knob
+    void setupKnob (juce::Slider& slider, juce::Label& label,
+                    const juce::String& labelText,
+                    std::unique_ptr<SliderAttachment>& attachment,
+                    const juce::String& paramId);
+
+    // Helper to configure and add a discrete knob (integer steps)
+    void setupDiscreteKnob (juce::Slider& slider, juce::Label& label,
+                             const juce::String& labelText,
+                             std::unique_ptr<SliderAttachment>& attachment,
+                             const juce::String& paramId);
+
+    // Helper to draw a labelled panel background
+    void drawPanel (juce::Graphics& g, juce::Rectangle<int> bounds,
+                    const juce::String& title);
+
+    AudioPluginAudioProcessor& audioProcessor;
+    ResonatorLookAndFeel lookAndFeel;
+
+    //==========================================================================
+    // Resonator panel
+    juce::Slider feedbackKnob,  dampingKnob;
+    juce::Label  feedbackLabel, dampingLabel;
+    std::unique_ptr<SliderAttachment> feedbackAttachment, dampingAttachment;
+
+    //==========================================================================
+    // Trigger panel
+    juce::Slider thresholdKnob,  releaseKnob,  softnessKnob;
+    juce::Label  thresholdLabel, releaseLabel, softnessLabel;
+    std::unique_ptr<SliderAttachment> thresholdAttachment, releaseAttachment, softnessAttachment;
+
+    //==========================================================================
+    // Envelope panel
+    std::unique_ptr<EnvelopeDisplay> envelopeDisplay;
+
+    juce::Slider attackKnob,  decayKnob,  sustainKnob,  releaseEnvKnob;
+    juce::Label  attackLabel, decayLabel, sustainLabel, releaseEnvLabel;
+    std::unique_ptr<SliderAttachment> attackAttachment, decayAttachment,
+                                      sustainAttachment, releaseEnvAttachment;
+
+    //==========================================================================
+    // Arpeggiator panel
+    std::unique_ptr<ArpDisplay> arpDisplay;
+
+    juce::Slider rateKnob,  gateKnob,  modeKnob,  deviationKnob,  scatterKnob,  octaveRangeKnob;
+    juce::Label  rateLabel, gateLabel, modeLabel, deviationLabel, scatterLabel, octaveRangeLabel;
+    std::unique_ptr<SliderAttachment> rateAttachment, gateAttachment, modeAttachment,
+                                      deviationAttachment, scatterAttachment, octaveRangeAttachment;
+
+    //==========================================================================
+    // Mixer panel
+    juce::Slider arpGainSlider,  chordGainSlider,  mixKnob;
+    juce::Label  arpGainLabel,   chordGainLabel,   mixLabel;
+    std::unique_ptr<SliderAttachment> arpGainAttachment, chordGainAttachment, mixAttachment;
+
+    //==========================================================================
+    // Bypass toggle (global, outside panels)
+    //juce::ToggleButton bypassButton;
+    //std::unique_ptr<ButtonAttachment> bypassAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

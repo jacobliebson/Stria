@@ -42,6 +42,13 @@ target_sources(MyJucePlugin PRIVATE
     Source/Arpeggiator.cpp
     Source/Parameters.h
     Source/Parameters.cpp
+    Source/ResonatorPalette.h
+    Source/ResonatorLookAndFeel.h
+    Source/ResonatorLookAndFeel.cpp
+    Source/ArpDisplay.h
+    Source/ArpDisplay.cpp
+    Source/EnvelopeDisplay.h
+    Source/EnvelopeDisplay.cpp
 )
 
 # 4. Compile Features and Definitions

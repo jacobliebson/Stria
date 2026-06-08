@@ -1,0 +1,27 @@
+// Source/ResonatorLookAndFeel.h
+#pragma once
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "ResonatorPalette.h"
+
+class ResonatorLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    ResonatorLookAndFeel();
+
+    //==============================================================================
+    // Rotary sliders (standard and discrete knobs share this path)
+    void drawRotarySlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPosProportional, float rotaryStartAngle,
+                           float rotaryEndAngle, juce::Slider&) override;
+
+    // Labels
+    void drawLabel (juce::Graphics&, juce::Label&) override;
+
+    // Toggle buttons (used for Bypass)
+    void drawToggleButton (juce::Graphics&, juce::ToggleButton&,
+                           bool shouldDrawButtonAsHighlighted,
+                           bool shouldDrawButtonAsDown) override;
+
+    // Scrollbars etc. — kept minimal
+    int getSliderThumbRadius (juce::Slider&) override { return 0; }
+};
