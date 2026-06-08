@@ -14,12 +14,12 @@ void Arpeggiator::reset()
 {
     heldNotes.clear();
     activeNotes.clear();
+    expandedNotes.clear();
     lastPPQ           = -1.0;
     nextTargetPPQ     = -1.0;
     pendingStepLength = -1.0;
     nextStepIndex     = 0;
     poolIndex         = 0;
-    goingUp           = true;
 }
 
 Arpeggiator::ArpMode Arpeggiator::modeFromIndex (int index)
@@ -31,13 +31,16 @@ Arpeggiator::ArpMode Arpeggiator::modeFromIndex (int index)
     return Arpeggiator::ArpMode::Up;
 }
 
-void Arpeggiator::updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter)
+void Arpeggiator::updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, int newOctaveRange)
 {
-    // Rate changes are applied in processMidiBlock where currentPPQ is available,
-    // so we can reschedule nextTargetPPQ correctly from the actual playhead position.
-    
-    if (std::abs(subdivision - stepLengthInBeats) > 1e-9) // Use epsilon tolerance for safety
+    if (std::abs (subdivision - stepLengthInBeats) > 1e-9)
         pendingStepLength = subdivision;
+
+    if (newOctaveRange != octaveRange)
+    {
+        octaveRange = newOctaveRange;
+        rebuildExpandedNotes();
+    }
 
     gateLengthPercent = gateLength;
     currentMode       = mode;
@@ -55,6 +58,7 @@ void Arpeggiator::scheduleNextTrigger()
 
 void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead)
 {
+
     if (playHead == nullptr)
         return;
 
@@ -157,6 +161,8 @@ void Arpeggiator::updateHeldNotes (const juce::MidiBuffer& incomingMidi)
 
     // Keep sorted lowest-to-highest so Up/Down modes have a predictable base
     std::sort (heldNotes.begin(), heldNotes.end());
+
+    rebuildExpandedNotes();
 }
 
 void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi)
@@ -193,11 +199,44 @@ void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi)
 
     // Keep sorted lowest-to-highest so Up/Down modes have a predictable base
     std::sort (heldNotes.begin(), heldNotes.end());
+
+    rebuildExpandedNotes();
+}
+
+void Arpeggiator::rebuildExpandedNotes()
+{
+    expandedNotes.clear();
+
+    if (heldNotes.empty())
+        return;
+
+    if (octaveRange == 0)
+    {
+        expandedNotes = heldNotes;
+        return;
+    }
+
+    int low  = std::min (0, octaveRange);
+    int high = std::max (0, octaveRange);
+
+    for (int octave = low; octave <= high; ++octave)
+    {
+        for (int note : heldNotes)
+        {
+            int shifted = note + (octave * 12);
+
+            if (shifted >= 0 && shifted <= 127)
+                expandedNotes.push_back (shifted);
+        }
+    }
+
+    // Keep sorted so Up/Down modes have a predictable base
+    std::sort (expandedNotes.begin(), expandedNotes.end());
 }
 
 int Arpeggiator::selectNextNote()
 {
-    const size_t size = heldNotes.size();
+    const size_t size = expandedNotes.size();
 
     switch (currentMode)
     {
@@ -206,41 +245,38 @@ int Arpeggiator::selectNextNote()
             if (poolIndex < 0 || poolIndex >= size)
                 poolIndex = size - 1;
 
-            return heldNotes[poolIndex--];
+            return expandedNotes[poolIndex--];
         }
 
-        case ArpMode::Random:
-            return heldNotes[static_cast<size_t>(randomEngine.nextInt (static_cast<int>(size)))];
-
-        case ArpMode::Up:
-        {
-            if (poolIndex < 0 || poolIndex >= size)
-                poolIndex = 0;
-
-            return heldNotes[poolIndex++];
-        }
         case ArpMode::Updown:
         {
             if (size == 1)
-                return heldNotes[0];
+                return expandedNotes[0];
 
-            // Clamp index into valid range on entry
-            poolIndex = std::clamp(poolIndex, static_cast<size_t>(0), size - 1);
-            int note = heldNotes[poolIndex];
+            poolIndex = std::clamp(poolIndex, (size_t)0, size-1);
+            int note  = expandedNotes[poolIndex];
 
-            if (goingUp) {
-                if (poolIndex >= size - 1) {
-                    goingUp = false;
+            if (arpGoingUp)
+            {
+                if (poolIndex >= size - 1)
+                {
+                    arpGoingUp = false;
                     poolIndex--;
                 }
-                else {
+                else
+                {
                     poolIndex++;
                 }
-            } else {
-                if (poolIndex <= 0) {
-                    goingUp = true;
+            }
+            else
+            {
+                if (poolIndex <= 0)
+                {
+                    arpGoingUp = true;
                     poolIndex++;
-                } else {
+                }
+                else
+                {
                     poolIndex--;
                 }
             }
@@ -248,9 +284,17 @@ int Arpeggiator::selectNextNote()
             return note;
         }
 
-        case ArpMode::Count:
+        case ArpMode::Random:
+            return expandedNotes[randomEngine.nextInt (size)];
+
+        case ArpMode::Up:
         default:
-            return -1;
+        {
+            if (poolIndex < 0 || poolIndex >= size)
+                poolIndex = 0;
+
+            return expandedNotes[poolIndex++];
+        }
     }
 }
 
@@ -260,17 +304,19 @@ void Arpeggiator::triggerNextNote (juce::MidiBuffer& outputMidi, double currentP
         return;
 
     int noteToPlay = selectNextNote();
-    int velocity   = 90;
+    
+    // Clamp to valid MIDI range
+    noteToPlay = juce::jlimit (0, 127, noteToPlay);
 
+    int velocity = 90;
     double offPPQ = currentPPQ + (stepLengthInBeats * gateLengthPercent);
 
-    // If this note is already sounding, retire it before retriggering
-    for (int i = static_cast<int>(activeNotes.size()) - 1; i >= 0; --i)
+    for (int i = static_cast<int> (activeNotes.size()) - 1; i >= 0; --i)
     {
-        if (activeNotes[static_cast<size_t>(i)].midiNoteNumber == noteToPlay)
+        if (activeNotes[i].midiNoteNumber == noteToPlay)
         {
             outputMidi.addEvent (juce::MidiMessage::noteOff (1, noteToPlay), 0);
-            activeNotes.erase (activeNotes.begin() + static_cast<int>(i));
+            activeNotes.erase (activeNotes.begin() + i);
         }
     }
 
@@ -294,8 +340,8 @@ void Arpeggiator::checkScheduledNoteOffs (juce::MidiBuffer& outputMidi, double c
 
 void Arpeggiator::releaseAllActiveNotes (juce::MidiBuffer& outputMidi)
 {
-    for (const auto& note : activeNotes)
+    for (const auto& note : activeNotes) {
         outputMidi.addEvent (juce::MidiMessage::noteOff (1, note.midiNoteNumber), 0);
-
+    }
     activeNotes.clear();
 }

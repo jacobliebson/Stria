@@ -58,6 +58,10 @@ private:
     std::atomic<float>* arpGateParam = nullptr;
     std::atomic<float>* arpModeParam = nullptr;
     std::atomic<float>* arpScatter   = nullptr;
+    std::atomic<float>* octRange     = nullptr;
+
+    bool   wasPlaying       = false;
+    double lastProcessorPPQ = -1.0;
 
     std::atomic<float>* feedback         = nullptr;
     std::atomic<float>* damping          = nullptr;

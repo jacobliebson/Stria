@@ -102,7 +102,10 @@ float CustomADSR::getNextSample() noexcept
             envelopeVal -= releaseRate;
 
             if (envelopeVal <= 0.0f)
+            {
+                envelopeVal = 0.0f; // clamp before returning
                 goToNextState();
+            }
 
             break;
         }
@@ -138,10 +141,10 @@ void CustomADSR::recalculateRates() noexcept
         return timeInSeconds > 0.0f ? (float) (distance / (timeInSeconds * sr)) : -1.0f;
     };
 
-    attackRate  = getRate (1.0f, parameters.attack, sampleRate);
-    decayRate   = getRate (1.0f - parameters.sustain, parameters.decay, sampleRate);
-    
-    releaseRate = getRate (1.0f, parameters.release, sampleRate);
+    attackRate = getRate (1.0f, parameters.attack, sampleRate);
+    decayRate  = getRate (1.0f - parameters.sustain, parameters.decay, sampleRate);
+    // releaseRate is intentionally omitted — it's calculated dynamically in noteOff()
+    // based on envelopeVal at that moment, so it correctly covers only the remaining distance.
 
     if ((state == State::attack && attackRate <= 0.0f)
         || (state == State::decay && (decayRate <= 0.0f || envelopeVal <= parameters.sustain))

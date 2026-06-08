@@ -37,7 +37,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         juce::ParameterID("ARP_GAIN", 1),
         "Arp Gain",
         arpGainRange,
-        6.0f
+        0.0f
     ));
 
     // Chord gain
@@ -47,7 +47,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         juce::ParameterID("CHORD_GAIN", 1),
         "Chord Gain",
         chordGainRange,
-        6.0f
+        0.0f
     ));
 
     // Dry wet mix
@@ -171,6 +171,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         juce::ParameterID { "ARP_SCATTER", 1 },
         "Scatter",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.01f), // 0% to 100%
+        0.0f
+    ));
+
+    // Arpeggiator octave range
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { "ARP_RANGE", 1 },
+        "Octave Range",
+        juce::NormalisableRange<float> (-4.0f, 4.0f, 1.0f), 
         0.0f
     ));
 

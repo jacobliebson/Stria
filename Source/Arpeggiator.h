@@ -21,7 +21,7 @@ public:
     void prepare (double newSampleRate);
 
     // Updates the settings from your UI sliders/menus
-    void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter);
+    void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, int newOctaveRange);
 
     // The main processing pipeline called at the top of PluginProcessor::processBlock
     void processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead);
@@ -44,6 +44,9 @@ private:
     // so they don't bleed through to the output as raw notes
     void consumeIncomingMidi (juce::MidiBuffer& incomingMidi);
 
+    // Expands active notes to the specified octave range
+    void rebuildExpandedNotes();
+
     void triggerNextNote (juce::MidiBuffer& outputMidi, double currentPPQ);
     void checkScheduledNoteOffs (juce::MidiBuffer& outputMidi, double currentPPQ);
     void releaseAllActiveNotes (juce::MidiBuffer& outputMidi);
@@ -56,13 +59,17 @@ private:
     ArpMode currentMode       = ArpMode::Up;
     float   currentScatter    = 0.0f;
 
+    // Octave range 
+    int  octaveRange   = 0;
+    std::vector<int> expandedNotes; 
+
     // Transport / sequencing state
     double lastPPQ           = -1.0;
     double nextTargetPPQ     = -1.0;  // Scattered trigger time for the upcoming step
     double pendingStepLength = -1.0;  // Rate change staged by updateSettings, applied in processMidiBlock
     int    nextStepIndex     = 0;     // Grid step index of the next note to fire
     size_t    poolIndex      = 0;     // Position within heldNotes for Up/Down modes
-    bool goingUp             = false; 
+    bool arpGoingUp             = false; 
 
     juce::Random randomEngine;
 

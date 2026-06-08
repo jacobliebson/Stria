@@ -27,6 +27,9 @@ void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::Synthe
     
     leftFilter.setTargetFrequency (freq);
     rightFilter.setTargetFrequency (freq);
+
+    leftFilter.reset();
+    rightFilter.reset();
     
     adsr.noteOn();
 }
@@ -74,22 +77,21 @@ void ResonatorVoice::updateParameters (float feedback, float damping, const Cust
 
 void ResonatorVoice::processExcitation (float inputL, float inputR, float& outputL, float& outputR)
 {
-    // 3. Read the sample value exactly as before from your custom tracker clock loop
     float envelopeGain = adsr.getNextSample();
 
-    if (!adsr.isActive())
-    {
-        clearCurrentNote();
-        return;
-    }
-
-    // 4. Modulate ONLY the input excitation (your mallet impulse)
     float wetL = leftFilter.processSample (inputL * envelopeGain);
     float wetR = rightFilter.processSample (inputR * envelopeGain);
 
-    // 5. Let the waveguide strings ring out freely and smoothly!
     outputL += wetL;
     outputR += wetR;
+
+    // Once the ADSR is idle, keep processing until the filter has fully decayed
+    if (!adsr.isActive())
+    {
+        static constexpr float silenceThreshold = 1e-6f;
+        if (std::abs (wetL) < silenceThreshold && std::abs (wetR) < silenceThreshold)
+            clearCurrentNote();
+    }
 }
 
 void ResonatorVoice::renderNextBlock (juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)

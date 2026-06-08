@@ -45,7 +45,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     damping          = apvts.getRawParameterValue ("DAMPING");
     mix              = apvts.getRawParameterValue ("MIX");
     arpGainDB        = apvts.getRawParameterValue ("ARP_GAIN");
-    chordGainDB        = apvts.getRawParameterValue ("CHORD_GAIN");
+    chordGainDB      = apvts.getRawParameterValue ("CHORD_GAIN");
 
     trigReleaseMS    = apvts.getRawParameterValue ("TRIG_RELEASE");
     trigThreshDB     = apvts.getRawParameterValue ("TRIG_THRESHOLD");
@@ -60,6 +60,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     arpGateParam     = apvts.getRawParameterValue ("ARP_GATE");
     arpModeParam     = apvts.getRawParameterValue ("ARP_MODE");
     arpScatter       = apvts.getRawParameterValue ("ARP_SCATTER");
+    octRange         = apvts.getRawParameterValue("ARP_RANGE");
 
     juce::dsp::ProcessSpec spec;
     spec.sampleRate       = sampleRate;
@@ -84,6 +85,30 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 {
     juce::ScopedNoDenormals noDenormals;
 
+    auto playHead = getPlayHead();
+    bool isPlaying = false;
+    double currentPPQ = 0.0;
+
+    if (playHead != nullptr)
+    {
+        auto position = playHead->getPosition();
+        if (position.hasValue())
+        {
+            isPlaying = position->getIsPlaying();
+            if (auto ppq = position->getPpqPosition())
+                currentPPQ = *ppq;
+        }
+    }
+
+    bool rewindDetected = isPlaying && lastProcessorPPQ >= 0.0 && currentPPQ < lastProcessorPPQ;
+    bool stoppedPlaying = wasPlaying && !isPlaying;
+
+    if (rewindDetected || stoppedPlaying)
+        arpSynth.allNotesOff (0, true);
+
+    wasPlaying        = isPlaying;
+    lastProcessorPPQ  = isPlaying ? currentPPQ : -1.0;
+
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -96,8 +121,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float currentDamping   = damping->load();
     float currentMix       = mix->load() / 100.0f;
     
-    float currentArpGainDB   = arpGainDB->load();
-    float currentChordGainDB = chordGainDB->load();
+    float currentArpGainDB   = arpGainDB->load() + 12.0f;
+    float currentChordGainDB = chordGainDB->load() + 12.0f;
 
     static constexpr float silenceThresholdDB = -60.0f;
     float arpGainLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f : juce::Decibels::decibelsToGain (currentArpGainDB);
@@ -121,15 +146,15 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             voice->updateParameters (currentFeedback, currentDamping, envParams);
 
     // Snapshot transient follower parameters
-    float attackTau    = 0.00001f;
-    float attackCoef   = static_cast<float> (std::exp (-1.0f / (sampleRate * attackTau)));
-    float releaseTau   = trigReleaseMS->load() / 1000.0f;
-     float currentSoftness = trigSoftness->load();
-    float releaseCoef  = static_cast<float> (std::exp (-1.0f / (sampleRate * releaseTau)));
-    float smoothCoef = currentSoftness <= 0.0f
+    float attackTau         = 0.00001f;
+    float attackCoef        = static_cast<float> (std::exp (-1.0f / (sampleRate * attackTau)));
+    float releaseTau        = trigReleaseMS->load() / 1000.0f;
+    float currentSoftness   = trigSoftness->load();
+    float releaseCoef       = static_cast<float> (std::exp (-1.0f / (sampleRate * releaseTau)));
+    float smoothCoef        = currentSoftness <= 0.0f
                                ? 0.0f
                                : static_cast<float> (std::exp (-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
-    float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshDB->load());
+    float thresholdLinear   = juce::Decibels::decibelsToGain (trigThreshDB->load());
    
 
     // Safe read snapshot of dry input
@@ -146,9 +171,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float gateLength = arpGateParam->load();
     Arpeggiator::ArpMode mode = Arpeggiator::modeFromIndex (static_cast<int> (arpModeParam->load()));
     float scatter    = arpScatter->load();
+    int range        = static_cast<int>(octRange->load());
 
     double subdivisionInBeats = 0.25; // Default fallback (1/16th)
     int rateIndex = static_cast<int> (arpRateIndex->load());
+
     switch (rateIndex)
     {
         case 0: subdivisionInBeats = 1.0;       break; // 1/4 note
@@ -163,10 +190,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     if (rateIndex < 7)
     {
-        arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter);
+        arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter, range);
         arp.processMidiBlock (midiMessages, getPlayHead());
+         
     }
-
     // midiMessages now contains arp notes; chordMidi contains raw held notes.
     // Both iterators advance independently through the same sample range below.
     auto arpMidiIt    = midiMessages.begin();
