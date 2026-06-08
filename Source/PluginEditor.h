@@ -4,6 +4,7 @@
 #include "ResonatorLookAndFeel.h"
 #include "ArpDisplay.h"
 #include "EnvelopeDisplay.h"
+#include <string>
 
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
                                          public juce::Timer
@@ -24,7 +25,8 @@ private:
     void setupKnob (juce::Slider& slider, juce::Label& label,
                     const juce::String& labelText,
                     std::unique_ptr<SliderAttachment>& attachment,
-                    const juce::String& paramId);
+                    const juce::String& paramId,
+                    std::string suffix="");
 
     // Helper to configure and add a discrete knob (integer steps)
     void setupDiscreteKnob (juce::Slider& slider, juce::Label& label,

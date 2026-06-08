@@ -31,32 +31,41 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // ============================================= OUTPUT BALANCE =============================================
 
     // Arp gain
+    juce::AudioParameterFloatAttributes arpGainAttributes;
+    arpGainAttributes = arpGainAttributes.withLabel(" dB");
     juce::NormalisableRange<float> arpGainRange(-60.0f, 24.0f, 0.1f);
     arpGainRange.setSkewForCentre(0.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ARP_GAIN", 1),
         "Arp Gain",
         arpGainRange,
-        0.0f
+        0.0f,
+        arpGainAttributes
     ));
 
     // Chord gain
+    juce::AudioParameterFloatAttributes chordGainAttributes;
+    chordGainAttributes = chordGainAttributes.withLabel(" dB");
     juce::NormalisableRange<float> chordGainRange(-60.0f, 24.0f, 0.1f);
     chordGainRange.setSkewForCentre(0.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("CHORD_GAIN", 1),
         "Chord Gain",
         chordGainRange,
-        0.0f
+        0.0f,
+        chordGainAttributes
     ));
 
     // Dry wet mix
+    juce::AudioParameterFloatAttributes mixAttributes;
+    mixAttributes = mixAttributes.withLabel("%");
     juce::NormalisableRange<float> mixRange(0.0f, 100.0f, 0.1f, 1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("MIX", 1),
         "Mix",
         mixRange,
-        100.0f
+        100.0f,
+        mixAttributes
     ));
 
     
@@ -64,32 +73,41 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // ============================================= TRIGGER ENVELOPE ============================================
 
     // Trigger release
+    juce::AudioParameterFloatAttributes trigReleaseAttributes;
+    trigReleaseAttributes = trigReleaseAttributes.withLabel(" ms");
     juce::NormalisableRange<float> trigReleaseRange(1.0f, 500.0f, 0.1f);
     trigReleaseRange.setSkewForCentre(50.0f); // 50ms center
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_RELEASE", 1),
         "Trigger Release",
         trigReleaseRange,
-        100.0f
+        100.0f,
+        trigReleaseAttributes
     ));
 
     // Trigger softness
+    juce::AudioParameterFloatAttributes trigAttackAttributes;
+    trigAttackAttributes = trigAttackAttributes.withLabel(" ms");
     juce::NormalisableRange<float> trigSoftnessRange(0.0f, 200.0f, 0.1f);
     trigSoftnessRange.setSkewForCentre(25.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_SOFTNESS", 1),
-        "Softness",
+        "Trigger attack",
         trigSoftnessRange,
-        0.0f
+        0.0f,
+        trigAttackAttributes
     ));
 
     // Trigger threshold
+    juce::AudioParameterFloatAttributes trigThreshAttributes;
+    trigThreshAttributes = trigThreshAttributes.withLabel(" dB");
+    juce::NormalisableRange<float> trigThreshRange(0.0f, 24.0f, 0.1f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_THRESHOLD", 1),
         "Trigger threshold",
+        trigThreshRange,
         0.0f,
-        24.0f,
-        6.0f
+        trigThreshAttributes
     ));
 
     
@@ -97,42 +115,54 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // ============================================= SYNTH ENVELOPE =============================================
 
     // Voice attack
+    juce::AudioParameterFloatAttributes attackAttributes;
+    attackAttributes = attackAttributes.withLabel(" s");
     juce::NormalisableRange<float> attackRange(0.001f, 2.0f, 0.001f);
     attackRange.setSkewForCentre(0.1f); // 100ms sits at the physical center
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ENV_ATTACK", 1),
         "Env Attack",
         attackRange,
-        0.01f
+        0.01f,
+        attackAttributes
     ));
 
     // Voice decay
+    juce::AudioParameterFloatAttributes decayAttributes;
+    decayAttributes = decayAttributes.withLabel(" s");
     juce::NormalisableRange<float> decayRange(0.01f, 3.0f, 0.01f);
     decayRange.setSkewForCentre(0.3f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ENV_DECAY", 1),
         "Env Decay",
         decayRange,
-        0.1f
+        0.1f,
+        decayAttributes
     ));
 
     // Voice sustain
+    juce::AudioParameterFloatAttributes sustainAttributes;
+    sustainAttributes = sustainAttributes.withLabel("%");
     juce::NormalisableRange<float> sustainRange(0.0f, 1.0f, 0.01f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ENV_SUSTAIN", 1),
         "Env Sustain",
         sustainRange,
-        0.0f
+        0.0f,
+        sustainAttributes
     ));
 
     // Voice release
+    juce::AudioParameterFloatAttributes releaseAttributes;
+    releaseAttributes = releaseAttributes.withLabel(" s");
     juce::NormalisableRange<float> releaseRange(0.01f, 5.0f, 0.01f);
     releaseRange.setSkewForCentre(1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ENV_RELEASE", 1),
         "Env Release",
         releaseRange,
-        0.5f
+        0.5f,
+        releaseAttributes
     ));
 
     
@@ -175,11 +205,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         ));
     
     // Arpeggiator gate length 
+    juce::AudioParameterFloatAttributes arpGateAttributes;
+    arpGateAttributes = arpGateAttributes.withLabel("%");
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_GATE", 1 },
         "Arp Gate Length",
-        juce::NormalisableRange<float> (0.10f, 4.00f, 0.01f), // 10% to 400%
-        0.80f
+        juce::NormalisableRange<float> (10.00f, 400.0f, 0.1f), // 10% to 400%
+        100.0f,
+        arpGateAttributes
     ));
 
     // Arpeggiator mode
@@ -214,19 +247,25 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         ));
 
     // Arpeggiatior deviation - chance to reandomly swap a note
+    juce::AudioParameterFloatAttributes arpDevAttributes;
+    arpDevAttributes = arpDevAttributes.withLabel("%");
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_DEVIATION", 1 },
         "Deviation",
-        juce::NormalisableRange<float> (0.0f, 1.0f, 0.01f), // 0% to 100%
-        0.0f
+        juce::NormalisableRange<float> (0.0f, 100.0f, 0.1f), // 0% to 100%
+        0.0f,
+        arpDevAttributes
     ));
 
     // Arpeggiator scatter - random time offset
+    juce::AudioParameterFloatAttributes arpScatAttributes;
+    arpScatAttributes = arpScatAttributes.withLabel("%");
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_SCATTER", 1 },
         "Scatter",
-        juce::NormalisableRange<float> (0.0f, 1.0f, 0.01f), // 0% to 100%
-        0.0f
+        juce::NormalisableRange<float> (0.0f, 100.0f, 0.1f), // 0% to 100%
+        0.0f,
+        arpScatAttributes
     ));
 
     // Arpeggiator octave range

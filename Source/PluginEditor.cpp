@@ -1,6 +1,7 @@
 // Source/PluginEditor.cpp
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <string_view>
 
 //==============================================================================
 // Layout constants
@@ -37,11 +38,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     // Trigger
     setupKnob (thresholdKnob, thresholdLabel, "Threshold",
-               thresholdAttachment, "TRIG_THRESHOLD");
+               thresholdAttachment, "TRIG_THRESHOLD", " dB");
     setupKnob (releaseKnob,   releaseLabel,   "Release",
-               releaseAttachment,   "TRIG_RELEASE");
-    setupKnob (softnessKnob,  softnessLabel,  "Softness",
-               softnessAttachment,  "TRIG_SOFTNESS");
+               releaseAttachment,   "TRIG_RELEASE", " ms");
+    setupKnob (softnessKnob,  softnessLabel,  "Attack",
+               softnessAttachment,  "TRIG_SOFTNESS", " ms");
 
     // Envelope
     envelopeDisplay = std::make_unique<EnvelopeDisplay> (apvts,
@@ -49,13 +50,13 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible (*envelopeDisplay);
 
     setupKnob (attackKnob,     attackLabel,     "Attack",
-               attackAttachment,     "ENV_ATTACK");
+               attackAttachment,     "ENV_ATTACK", " s");
     setupKnob (decayKnob,      decayLabel,      "Decay",
-               decayAttachment,      "ENV_DECAY");
+               decayAttachment,      "ENV_DECAY", " s");
     setupKnob (sustainKnob,    sustainLabel,    "Sustain",
-               sustainAttachment,    "ENV_SUSTAIN");
+               sustainAttachment,    "ENV_SUSTAIN", "%");
     setupKnob (releaseEnvKnob, releaseEnvLabel, "Release",
-               releaseEnvAttachment, "ENV_RELEASE");
+               releaseEnvAttachment, "ENV_RELEASE", " s");
 
     // Arpeggiator
     arpDisplay = std::make_unique<ArpDisplay> (apvts,
@@ -66,13 +67,13 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     setupDiscreteKnob (rateKnob,       rateLabel,       "Rate",
                    rateAttachment,       "ARP_RATE");
     setupKnob         (gateKnob,       gateLabel,       "Gate",
-                       gateAttachment,       "ARP_GATE");
+                       gateAttachment,       "ARP_GATE", "%");
     setupDiscreteKnob (modeKnob,       modeLabel,       "Mode",
                        modeAttachment,       "ARP_MODE");
     setupKnob         (deviationKnob,  deviationLabel,  "Deviation",
-                       deviationAttachment,  "ARP_DEVIATION");
+                       deviationAttachment,  "ARP_DEVIATION", "%");
     setupKnob         (scatterKnob,    scatterLabel,    "Scatter",
-                       scatterAttachment,    "ARP_SCATTER");
+                       scatterAttachment,    "ARP_SCATTER", "%");
     setupDiscreteKnob (octaveRangeKnob, octaveRangeLabel, "Oct Range",
                        octaveRangeAttachment, "ARP_RANGE");
 
@@ -92,7 +93,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     arpGainAttachment   = std::make_unique<SliderAttachment> (apvts, "ARP_GAIN",   arpGainSlider);
     chordGainAttachment = std::make_unique<SliderAttachment> (apvts, "CHORD_GAIN", chordGainSlider);
 
-    setupKnob (mixKnob, mixLabel, "Mix", mixAttachment, "MIX");
+    setupKnob (mixKnob, mixLabel, "Mix", mixAttachment, "MIX", "%");
 
     // Bypass
     //bypassButton.setButtonText ("Bypass");
@@ -115,12 +116,13 @@ void AudioPluginAudioProcessorEditor::setupKnob (juce::Slider& slider,
                                                    juce::Label& label,
                                                    const juce::String& labelText,
                                                    std::unique_ptr<SliderAttachment>& attachment,
-                                                   const juce::String& paramId)
+                                                   const juce::String& paramId,
+                                                   std::string suffix)
 {
     slider.setSliderStyle (juce::Slider::RotaryVerticalDrag);
     slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 56, 14);
     addAndMakeVisible (slider);
-
+    slider.setTextValueSuffix(suffix);
     label.setText (labelText, juce::dontSendNotification);
     label.setJustificationType (juce::Justification::centred);
     addAndMakeVisible (label);

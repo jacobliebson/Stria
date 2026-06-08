@@ -169,10 +169,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     // Build the arp MIDI stream: the arpeggiator consumes note events from
     // midiMessages and replaces them with sequential arp notes.
-    float gateLength = arpGateParam->load();
+    float gateLength = arpGateParam->load() / 100.0f;
     Arpeggiator::ArpMode mode = Arpeggiator::modeFromIndex (static_cast<int> (arpModeParam->load()));
-    float scatter    = arpScatter->load();
-    float deviation  = arpDeviation->load();
+    float scatter    = arpScatter->load() / 100.0f;
+    float deviation  = arpDeviation->load() / 100.0f;
     int range        = static_cast<int>(octRange->load());
 
     double subdivisionInBeats = 0.25; // Default fallback (1/16th)

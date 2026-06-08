@@ -15,9 +15,9 @@ ArpDisplay::ArpDisplay (juce::AudioProcessorValueTreeState& apvtsRef,
     apvts.addParameterListener (scatterId,     this);
     apvts.addParameterListener (octaveRangeId, this);
 
-    if (auto* p = apvts.getRawParameterValue (gateId))        gate        = p->load();
+    if (auto* p = apvts.getRawParameterValue (gateId))        gate        = p->load() / 100.0f;
     if (auto* p = apvts.getRawParameterValue (modeId))        mode        = static_cast<int> (p->load());
-    if (auto* p = apvts.getRawParameterValue (scatterId))     scatter     = p->load();
+    if (auto* p = apvts.getRawParameterValue (scatterId))     scatter     = p->load() / 100.0f;
     if (auto* p = apvts.getRawParameterValue (octaveRangeId)) octaveRange = static_cast<int> (p->load());
 }
 
@@ -31,9 +31,9 @@ ArpDisplay::~ArpDisplay()
 
 void ArpDisplay::parameterChanged (const juce::String& paramId, float newValue)
 {
-    if      (paramId == gateId)        gate        = newValue;
+    if      (paramId == gateId)        gate        = newValue / 100.0f;
     else if (paramId == modeId)        mode        = static_cast<int> (newValue);
-    else if (paramId == scatterId)     scatter     = newValue;
+    else if (paramId == scatterId)     scatter     = newValue / 100.0f;
     else if (paramId == octaveRangeId) octaveRange = static_cast<int> (newValue);
 
     repaint();
