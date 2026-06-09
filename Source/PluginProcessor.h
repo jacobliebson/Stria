@@ -68,6 +68,9 @@ private:
 
     std::atomic<float>* feedback            = nullptr;
     std::atomic<float>* damping             = nullptr;
+    std::atomic<float>* detune              = nullptr;
+    std::atomic<float>* detuneMode          = nullptr;
+
     std::atomic<float>* mix                 = nullptr;
     std::atomic<float>* arpGainDB           = nullptr;
     std::atomic<float>* chordGainDB         = nullptr;
@@ -85,10 +88,10 @@ private:
     std::atomic<float>* arpEnvSustain       = nullptr;
     std::atomic<float>* arpEnvRelease       = nullptr;
 
-    std::atomic<float>* chordEnvAttack          = nullptr;
-    std::atomic<float>* chordEnvDecay           = nullptr;
-    std::atomic<float>* chordEnvSustain    = nullptr;
-    std::atomic<float>* chordEnvRelease         = nullptr;
+    std::atomic<float>* chordEnvAttack      = nullptr;
+    std::atomic<float>* chordEnvDecay       = nullptr;
+    std::atomic<float>* chordEnvSustain     = nullptr;
+    std::atomic<float>* chordEnvRelease     = nullptr;
 
     float calculateCoef (float timeMs, double sampleRate);
 };

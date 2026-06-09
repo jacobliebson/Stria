@@ -43,6 +43,10 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 {
     feedback         = apvts.getRawParameterValue ("FEEDBACK");
     damping          = apvts.getRawParameterValue ("DAMPING");
+    detune           = apvts.getRawParameterValue ("DETUNE");
+    detuneMode       = apvts.getRawParameterValue ("DETUNE_MODE");
+
+
     mix              = apvts.getRawParameterValue ("MIX");
     arpGainDB        = apvts.getRawParameterValue ("ARP_GAIN");
     chordGainDB      = apvts.getRawParameterValue ("CHORD_GAIN");
@@ -122,11 +126,15 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.clear (i, 0, buffer.getNumSamples());
 
     // Snapshot parameters
-    double sampleRate      = getSampleRate();
-    float currentFeedback  = feedback->load();
-    float currentDamping   = damping->load();
-    float currentMix       = mix->load() / 100.0f;
-    
+    double sampleRate = getSampleRate();
+
+    float currentFeedback    = feedback->load();
+    float currentDamping     = damping->load();
+    float currentDetune      = detune->load();
+    int currentDetuneMode    = (int)detuneMode->load();
+
+
+    float currentMix         = mix->load() / 100.0f;
     float currentArpGainDB   = arpGainDB->load() + 12.0f;
     float currentChordGainDB = chordGainDB->load() + 12.0f;
 
@@ -151,11 +159,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // different envParams to arpSynth vs chordSynth voices.
     for (int i = 0; i < arpSynth.getNumVoices(); ++i)
         if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
-            voice->updateParameters (currentFeedback, currentDamping, arpEnvParams);
+            voice->updateParameters (currentFeedback, currentDamping, arpEnvParams, currentDetune, currentDetuneMode);
 
     for (int i = 0; i < chordSynth.getNumVoices(); ++i)
         if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
-            voice->updateParameters (currentFeedback, currentDamping, chordEnvParams);
+            voice->updateParameters (currentFeedback, currentDamping, chordEnvParams, currentDetune, currentDetuneMode);
 
     // Snapshot transient follower parameters
     float attackTau         = 0.00001f;

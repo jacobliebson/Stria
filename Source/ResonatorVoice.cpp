@@ -19,14 +19,24 @@ bool ResonatorVoice::canPlaySound (juce::SynthesiserSound* sound)
 
 void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
-    juce::ignoreUnused(velocity);
-    juce::ignoreUnused(sound);
-    juce::ignoreUnused(currentPitchWheelPosition);
+    // 1. Cache the base MIDI note as a float
+    float baseMidi = static_cast<float>(midiNoteNumber);
+    float processedMidi = baseMidi;
 
-    float freq = 440.0f * std::pow (2.0f, (static_cast<float> (midiNoteNumber) - 69.0f) / 12.0f);
-    
-    leftFilter.setTargetFrequency (freq);
-    rightFilter.setTargetFrequency (freq);
+    // 2. Apply detune offset in SEMITONE space
+    if (detuneMode == 0) // Note Mode
+    {
+        // Random value between -1.0 and 1.0
+        float randomRange = juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f;
+        processedMidi += randomRange * detuneAmount;
+    }
+
+    // 3. Convert to frequency
+    baseFrequency = 440.0f * std::pow(2.0f, (baseMidi - 69.0f) / 12.0f);
+    float processedFreq = 440.0f * std::pow(2.0f, (processedMidi - 69.0f) / 12.0f);
+
+    leftFilter.setTargetFrequency(processedFreq);
+    rightFilter.setTargetFrequency(processedFreq);
 
     leftFilter.reset();
     rightFilter.reset();
@@ -65,7 +75,7 @@ void ResonatorVoice::prepare (const juce::dsp::ProcessSpec& spec)
 }
 
 // 2. Change the incoming argument to match your custom parameter struct definition
-void ResonatorVoice::updateParameters (float feedback, float damping, const CustomADSR::Parameters& envParams)
+void ResonatorVoice::updateParameters (float feedback, float damping, const CustomADSR::Parameters& envParams, float detune, int mode)
 {
     leftFilter.setFeedback (feedback);
     rightFilter.setFeedback (feedback);
@@ -73,23 +83,45 @@ void ResonatorVoice::updateParameters (float feedback, float damping, const Cust
     rightFilter.setDamping (damping);
     
     adsr.setParameters (envParams);
+
+    detuneAmount = detune;
+    detuneMode = mode;
 }
 
 void ResonatorVoice::processExcitation (float inputL, float inputR, float& outputL, float& outputR)
 {
-    float envelopeGain = adsr.getNextSample();
+    // Update drift/shake logic if mode is 1 (Drift) or 2 (shake)
+    if (detuneMode != 0) 
+    {
+        // 1 = Drift (Slow), 2 = shake (Fast)
+        int threshold = (detuneMode == 1) ? 400 : 100;
 
+        if (++driftCounter >= threshold) 
+        {
+            float shake = (juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f) * detuneAmount;
+            targetDetuneOffset = (targetDetuneOffset * 0.95f) + shake;
+            driftCounter = 0;
+        }
+        
+        // Linear interpolation for smooth pitch movement
+        currentDetuneOffset = currentDetuneOffset * 0.99f + targetDetuneOffset * 0.01f;
+        
+        float freq = baseFrequency * std::pow(2.0f, currentDetuneOffset / 12.0f);
+        leftFilter.setTargetFrequency(freq);
+        rightFilter.setTargetFrequency(freq);
+    }
+
+    // Standard audio processing
+    float envelopeGain = adsr.getNextSample();
     float wetL = leftFilter.processSample (inputL * envelopeGain);
     float wetR = rightFilter.processSample (inputR * envelopeGain);
 
     outputL += wetL;
     outputR += wetR;
 
-    // Once the ADSR is idle, keep processing until the filter has fully decayed
     if (!adsr.isActive())
     {
-        static constexpr float silenceThreshold = 1e-6f;
-        if (std::abs (wetL) < silenceThreshold && std::abs (wetR) < silenceThreshold)
+        if (std::abs (wetL) < 1e-6f && std::abs (wetR) < 1e-6f)
             clearCurrentNote();
     }
 }

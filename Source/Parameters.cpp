@@ -26,7 +26,35 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         0.5f
     ));
 
-    
+    // Resonator max detune in semitones
+    juce::NormalisableRange<float> detuneRange(0.0f, 1.0f, 0.01f, 1.0f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("DETUNE", 1),
+        "Detune",
+        detuneRange,
+        0.0f
+    ));
+
+    // Resonator detune mode
+
+        juce::AudioParameterIntAttributes detuneModeAttributes;
+        detuneModeAttributes = detuneModeAttributes.withStringFromValueFunction([](float value, int maxLen) -> juce::String {
+            switch (static_cast<int> (value))
+            {
+                case 0:  return "Note";
+                case 1:  return "Drift";
+                case 2:  return "Shake";
+                default: return "Unknown";
+            }
+        });
+
+        layout.add (std::make_unique<juce::AudioParameterInt> (
+            juce::ParameterID { "DETUNE_MODE", 1 },
+            "Detune Mode",
+            0, 2, 0,  // min, max, default
+            detuneModeAttributes
+        ));
+
     
     // ============================================= OUTPUT BALANCE =============================================
 
@@ -330,6 +358,3 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     return layout;
 }
-
-
-

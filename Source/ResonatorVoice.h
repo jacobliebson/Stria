@@ -30,7 +30,7 @@ public:
 
     void prepare (const juce::dsp::ProcessSpec& spec);
     // In Source/ResonatorVoice.h
-    void updateParameters (float feedback, float damping, const CustomADSR::Parameters& envParams);
+    void updateParameters (float feedback, float damping, const CustomADSR::Parameters& envParams, float detune, int mode);
     void processExcitation (float inputL, float inputR, float& outputL, float& outputR);
 
     void renderNextBlock (juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
@@ -39,4 +39,11 @@ private:
     CombFilter leftFilter;
     CombFilter rightFilter;
     CustomADSR adsr;
+
+    float baseFrequency;
+    int detuneMode;
+    float detuneAmount;
+    int driftCounter;
+    float currentDetuneOffset;
+    float targetDetuneOffset;
 };
