@@ -10,9 +10,10 @@ namespace Layout
 {
     constexpr int margin        = 12;
     constexpr int windowW   = 920;
-    constexpr int windowH   = 650;  // reduced from 620 - 480
+    constexpr int windowH   = 742;  // reduced from 620 - 480
+    constexpr int headerH   = 80;
     constexpr int topH      = 325;  // reduced from 140
-    constexpr int bottomH   = windowH - topH - margin * 3;
+    constexpr int bottomH   = windowH - topH - headerH - margin * 3;
     constexpr int panelPadding  = 10;
     constexpr int titleHeight   = 22;
     constexpr int knobSize      = 50;
@@ -232,8 +233,8 @@ void AudioPluginAudioProcessorEditor::drawPanel (juce::Graphics& g,
     g.drawRoundedRectangle (b.reduced (0.5f), 8.0f, 1.0f);
 
     // Title
-    g.setColour (ResonatorPalette::textSecondary());
     g.setFont (juce::Font (juce::FontOptions().withHeight (11.0f)));
+    g.setColour(ResonatorPalette::textSecondary());
     g.drawText (title.toUpperCase(),
                 bounds.getX() + Layout::panelPadding,
                 bounds.getY() + 6,
@@ -249,17 +250,37 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
     const int m  = Layout::margin;
     const int bH = Layout::bottomH;
+    const int hH = Layout::headerH;
     const int tH = Layout::topH;
     const int w  = getWidth();
 
+    // Title block
+    juce::ColourGradient gradient(
+        ResonatorPalette::textSecondary(),
+        (float)0, (float)0, 
+        ResonatorPalette::textSecondary().darker(0.3f), 
+        (float)0, (float)hH, 
+        false
+    );
+
+    g.setGradientFill(gradient);
+    juce::FontOptions options = juce::FontOptions().withHeight (Layout::headerH);
+    g.setFont (juce::Font (options));
+
+    g.drawText ("S T R I A",
+                m, 0,
+                w - m * 2,
+                hH,
+                juce::Justification::centred);
+
     // Resonator panel (top left)
     const int resonatorW = 80;
-    drawPanel (g, { m, m, resonatorW, tH }, "Resonator");
+    drawPanel (g, { m, m + hH, resonatorW, tH }, "Resonator");
 
     // Bottom panels — equal width
     const int numPanels  = 4;
     const int panelW     = (w - m * (numPanels + 1)) / numPanels;
-    const int panelY     = m + tH + m;
+    const int panelY     = m + hH + m + tH;
 
     drawPanel (g, { m,                           panelY, panelW, bH }, "Trigger");
     drawPanel (g, { m * 2 + panelW,              panelY, panelW, bH }, "Envelopes");
@@ -273,6 +294,7 @@ void AudioPluginAudioProcessorEditor::resized()
         return;
 
     const int m      = Layout::margin;
+    const int hH     = Layout::headerH;
     const int tH     = Layout::topH;
     const int bH     = Layout::bottomH;
     const int w      = getWidth();
@@ -289,6 +311,7 @@ void AudioPluginAudioProcessorEditor::resized()
     //                         Layout::bypassH);
 
     //==========================================================================
+
     // Resonator panel — four knobs stacked vertically
     {
         const int resonatorW = 80; // Narrower width for vertical stack
@@ -297,7 +320,7 @@ void AudioPluginAudioProcessorEditor::resized()
         const int labelSpace   = 20; // Space for labels
         
         // Starting Y position at the top of the panel
-        int currentY = m + Layout::titleHeight + 10;
+        int currentY = m + Layout::headerH + m + Layout::titleHeight;
 
         // Helper to position a knob and its label
         auto setKnobBounds = [&](juce::Slider& knob, juce::Label& label) {
@@ -316,7 +339,7 @@ void AudioPluginAudioProcessorEditor::resized()
     // Bottom panel layout helpers
     const int numPanels = 4;
     const int panelW    = (w - m * (numPanels + 1)) / numPanels;
-    const int panelY    = m + tH + m;
+    const int panelY    = m + hH + m + tH + m;
 
     auto knobRow = [&] (int panelX, int panelContentY, int count,
                         std::initializer_list<juce::Slider*> sliders,
