@@ -115,7 +115,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     //bypassAttachment = std::make_unique<ButtonAttachment> (apvts, "ARP_BYPASS", bypassButton);
 
     // Initialise tab button and knob colours — Chord selected by default
-    chordEnvButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary());
+    chordEnvButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary().withAlpha(0.3f));
     chordEnvButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
     chordEnvButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
@@ -211,9 +211,9 @@ void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
     // Update button colours
     chordEnvButton.setColour (juce::TextButton::buttonColourId,
                               showArp ? ResonatorPalette::backgroundWidget()
-                                      : ResonatorPalette::accentPrimary());
+                                      : ResonatorPalette::accentPrimary().withAlpha(0.3f));
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,
-                              showArp ? ResonatorPalette::accentSecondary()
+                              showArp ? ResonatorPalette::accentSecondary().withAlpha(0.3f)
                                       : ResonatorPalette::backgroundWidget());
 }
 
@@ -349,20 +349,20 @@ void AudioPluginAudioProcessorEditor::resized()
     // Envelope panel
     {
         const int px   = m * 2 + panelW;
-        const int tabH = 22;
-        const int tabW = (panelW - pad * 2 - 4) / 2;
-        const int tabY = panelY + Layout::titleHeight + pad;
+        const int tabH = 12;
+        const int tabW = 30;
+        const int tabY = panelY + pad;
 
-        chordEnvButton.setBounds (px + pad,            tabY, tabW, tabH);
-        arpEnvButton.setBounds   (px + pad + tabW + 4, tabY, tabW, tabH);
+        chordEnvButton.setBounds (px + panelW - 2 * (tabW + 6),            panelY + 6, tabW, tabH);
+        arpEnvButton.setBounds   (px + panelW - tabW - 6, panelY + 6, tabW, tabH);
 
-        const int available = bH - Layout::titleHeight - tabH - pad * 4 - kS - lH;
+        const int available = bH - Layout::titleHeight - pad * 3 - kS - lH;
         envelopeDisplay->setBounds (px + pad,
-                                    tabY + tabH + pad,
+                                    panelY + Layout::titleHeight,
                                     panelW - pad * 2,
                                     available);
 
-        const int knobY = tabY + tabH + pad + available + pad;
+        const int knobY = panelY + Layout::titleHeight + bH / 3 + pad + stride;
         knobRow (px, knobY, 4,
                 { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob },
                 { &attackLabel, &decayLabel, &sustainLabel, &releaseEnvLabel });
