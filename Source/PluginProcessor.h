@@ -93,5 +93,22 @@ private:
     std::atomic<float>* chordEnvSustain     = nullptr;
     std::atomic<float>* chordEnvRelease     = nullptr;
 
+
+    struct ActiveNoteInfo {
+        int   midiNote;
+        float amplitude;   // 0–1, from voice envelope
+        bool  isArp;
+    };
+
+    // Ring buffer — written audio thread, read GUI thread
+    static constexpr int waveRingSize = 4096;
+    std::array<std::atomic<float>, waveRingSize> noiseRingBuffer;
+    std::atomic<int> noiseWritePos { 0 };
+
+    // Active notes snapshot — written audio thread, read GUI thread
+    static constexpr int maxActiveNotes = 48; // numArpVoices + numChordVoices
+    std::array<ActiveNoteInfo, maxActiveNotes> activeNoteSnapshot;
+    std::atomic<int> activeNoteCount { 0 };
+
     float calculateCoef (float timeMs, double sampleRate);
 };

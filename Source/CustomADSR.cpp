@@ -21,6 +21,11 @@ void CustomADSR::reset() noexcept
     envelopeVal = 0.0f;
 }
 
+float CustomADSR::getEnvLevel() 
+{
+    return envelopeVal;
+}
+
 void CustomADSR::noteOn() noexcept
 {
 

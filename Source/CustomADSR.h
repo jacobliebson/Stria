@@ -22,11 +22,12 @@ public:
 
     void reset() noexcept;
     void noteOn() noexcept;
-    
-    // OUR FIXED NOTEOFF IMPLEMENTATION
+
     void noteOff() noexcept;
 
     float getNextSample() noexcept;
+
+    float getEnvLevel() noexcept;
     
 
 

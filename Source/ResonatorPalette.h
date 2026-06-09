@@ -10,8 +10,8 @@ namespace ResonatorPalette
     constexpr juce::uint32 backgroundWidgetVal = 0xff243444;
 
     // Accents
-    constexpr juce::uint32 accentPrimaryVal    = 0xff9b6dff; // Purple — chord / default elements
-    constexpr juce::uint32 accentSecondaryVal  = 0xffe5b23a; // Orange — arp / high intensity elements
+    constexpr juce::uint32 accentPrimaryVal    = 0xff9d4edd; // Purple — chord / default elements
+    constexpr juce::uint32 accentSecondaryVal  = 0xffff8300; // Orange — arp / high intensity elements
 
     // Controls
     constexpr juce::uint32 knobBodyVal         = 0xff3a4a5a;

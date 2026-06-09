@@ -1,5 +1,6 @@
 // Source/ResonatorLookAndFeel.cpp
 #include "ResonatorLookAndFeel.h"
+#include "ResonatorPalette.h"
 
 ResonatorLookAndFeel::ResonatorLookAndFeel()
 {
@@ -53,7 +54,17 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
         juce::Path fill;
         fill.addCentredArc (centreX, centreY, radius, radius, 0.0f,
                             rotaryStartAngle, angle, true);
+
+        juce::ColourGradient gradient(
+            ResonatorPalette::accentPrimary(),    // Start colour (low value/bottom)
+            (float)x, (float)y + (float)height, 
+            ResonatorPalette::accentSecondary(),    // End colour (high value/top)
+            (float)x + (float)width, (float)y, 
+            false // isRadial = false, makes it a linear gradient
+        );
+
         g.setColour (slider.findColour (juce::Slider::rotarySliderFillColourId));
+        //g.setGradientFill(gradient);
         g.strokePath (fill, juce::PathStrokeType (3.0f, juce::PathStrokeType::curved,
                                                    juce::PathStrokeType::rounded));
     }
@@ -81,8 +92,7 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
         const float ox = centreX + indicatorLength * std::sin (angle);
         const float oy = centreY - indicatorLength * std::cos (angle);
 
-        g.setColour (isDiscrete ? slider.findColour (juce::Slider::rotarySliderFillColourId)
-                                : ResonatorPalette::knobIndicator());
+        g.setColour (ResonatorPalette::knobIndicator());
         g.drawLine (ix, iy, ox, oy, 2.0f);
     }
 
@@ -137,9 +147,14 @@ void ResonatorLookAndFeel::drawLinearSlider (juce::Graphics& g,
         juce::Path backgroundTrack;
         juce::Path fillTrack;
 
+        float x1, x2, y1, y2 = 0.0f;
+
         if (isVertical)
         {
             const float trackX = startX + boundsW * 0.5f;
+
+            x1 = trackX; y1 = startY;
+            x2 = trackX; y2 = startY + boundsH;
             
             backgroundTrack.startNewSubPath (trackX, startY);
             backgroundTrack.lineTo (trackX, startY + boundsH);
@@ -156,6 +171,9 @@ void ResonatorLookAndFeel::drawLinearSlider (juce::Graphics& g,
             const float boundsWHz = static_cast<float> (width) - (inset * 2.0f);
             const float trackY = static_cast<float> (y) + static_cast<float> (height) * 0.5f;
 
+            x1 = insetX; y1 = trackY;
+            x2 = insetX + boundsWHz; y2 = trackY;
+
             backgroundTrack.startNewSubPath (insetX, trackY);
             backgroundTrack.lineTo (insetX + boundsWHz, trackY);
 
@@ -164,11 +182,24 @@ void ResonatorLookAndFeel::drawLinearSlider (juce::Graphics& g,
             fillTrack.lineTo (clampedPos, trackY);
         }
 
+        juce::ColourGradient backgroundGradient (
+            ResonatorPalette::accentPrimary().withAlpha(0.3f), x2, y2,  // start colour and position
+            ResonatorPalette::accentSecondary().withAlpha(0.3f), x1, y1,  // end colour and position
+            false                                        // false = linear, true = radial
+        );
+
+        juce::ColourGradient fillGradient (
+            ResonatorPalette::accentPrimary(), x2, y2,  // start colour and position
+            ResonatorPalette::accentSecondary(), x1, y1,  // end colour and position
+            false                                        // false = linear, true = radial
+        );
+        
+        
         // Draw tracks
-        g.setColour (ResonatorPalette::backgroundWidget());
+        g.setGradientFill (backgroundGradient);
         g.strokePath (backgroundTrack, juce::PathStrokeType (trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-        g.setColour (ResonatorPalette::accentPrimary());
+        g.setGradientFill (fillGradient);
         g.strokePath (fillTrack, juce::PathStrokeType (trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     }
 

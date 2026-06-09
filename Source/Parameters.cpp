@@ -28,6 +28,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
 
     // Resonator max detune in semitones
     juce::NormalisableRange<float> detuneRange(0.0f, 1.0f, 0.01f, 1.0f);
+    detuneRange.setSkewForCentre(0.1f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("DETUNE", 1),
         "Detune",
