@@ -1,6 +1,7 @@
 // Source/PluginEditor.cpp
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ResonatorPalette.h"
 #include <string_view>
 
 //==============================================================================
@@ -120,6 +121,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
     arpEnvButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
     arpEnvButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    chordEnvButton.setColour (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
+    arpEnvButton.setColour   (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
 
     for (auto* knob : { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob })
         knob->setColour (juce::Slider::rotarySliderFillColourId, ResonatorPalette::accentPrimary());
@@ -181,7 +184,7 @@ void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
     showingArpEnv = showArp;
 
     const juce::String  prefix     = showArp ? "ARP_ENV_" : "CHORD_ENV_";
-    const juce::Colour  knobColour = showArp ? ResonatorPalette::accentArp()
+    const juce::Colour  knobColour = showArp ? ResonatorPalette::accentSecondary()
                                              : ResonatorPalette::accentPrimary();
 
     // Swap display listeners and accent colour
@@ -210,7 +213,7 @@ void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
                               showArp ? ResonatorPalette::backgroundWidget()
                                       : ResonatorPalette::accentPrimary());
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,
-                              showArp ? ResonatorPalette::accentArp()
+                              showArp ? ResonatorPalette::accentSecondary()
                                       : ResonatorPalette::backgroundWidget());
 }
 
