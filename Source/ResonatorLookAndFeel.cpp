@@ -48,12 +48,12 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
                                                     juce::PathStrokeType::rounded));
     }
 
-    // Filled arc (value)
+    // Filled arc (value) — colour is per-slider via rotarySliderFillColourId
     {
         juce::Path fill;
         fill.addCentredArc (centreX, centreY, radius, radius, 0.0f,
                             rotaryStartAngle, angle, true);
-        g.setColour (ResonatorPalette::accentPrimary());
+        g.setColour (slider.findColour (juce::Slider::rotarySliderFillColourId));
         g.strokePath (fill, juce::PathStrokeType (3.0f, juce::PathStrokeType::curved,
                                                    juce::PathStrokeType::rounded));
     }
@@ -81,7 +81,8 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
         const float ox = centreX + indicatorLength * std::sin (angle);
         const float oy = centreY - indicatorLength * std::cos (angle);
 
-        g.setColour (ResonatorPalette::knobIndicator());
+        g.setColour (isDiscrete ? slider.findColour (juce::Slider::rotarySliderFillColourId)
+                                : ResonatorPalette::knobIndicator());
         g.drawLine (ix, iy, ox, oy, 2.0f);
     }
 
@@ -102,7 +103,7 @@ void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
             const float ty2 = centreY - tickOuter * std::cos (tickAngle);
 
             const bool isCurrent = (std::abs (t - sliderPosProportional) < (0.5f / static_cast<float> (numSteps - 1)));
-            g.setColour (isCurrent ? ResonatorPalette::accentPrimary()
+            g.setColour (isCurrent ? slider.findColour (juce::Slider::rotarySliderFillColourId)
                                    : ResonatorPalette::knobOutline());
             g.drawLine (tx1, ty1, tx2, ty2, 1.5f);
         }

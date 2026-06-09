@@ -19,6 +19,9 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override {}
 
+    // Set the accent colour (call before or after setParameters)
+    void setAccentColour (juce::Colour colour) { accentColour = colour; repaint(); }
+
     // Swap the parameter set this display listens to
     void setParameters (const juce::String& newAttackId,
                         const juce::String& newDecayId,
@@ -39,6 +42,8 @@ private:
     float release = 0.5f;
 
     // Max times in seconds used to normalise the display
+    juce::Colour accentColour = juce::Colour (0xff9b6dff); // defaults to purple
+
     static constexpr float maxAttack  = 2.0f;
     static constexpr float maxDecay   = 2.0f;
     static constexpr float maxRelease = 4.0f;

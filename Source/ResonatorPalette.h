@@ -10,8 +10,9 @@ namespace ResonatorPalette
     constexpr juce::uint32 backgroundWidgetVal = 0xff243444;
 
     // Accents
-    constexpr juce::uint32 accentPrimaryVal    = 0xff9b6dff;
-    constexpr juce::uint32 accentSecondaryVal  = 0xff6dbaff;
+    constexpr juce::uint32 accentPrimaryVal    = 0xff9b6dff; // Purple — chord / default elements
+    constexpr juce::uint32 accentSecondaryVal  = 0xff6dbaff; // Blue — secondary highlights
+    constexpr juce::uint32 accentArpVal        = 0xffff8c42; // Orange — arp-specific elements
 
     // Controls
     constexpr juce::uint32 knobBodyVal         = 0xff3a4a5a;
@@ -31,6 +32,7 @@ namespace ResonatorPalette
     inline juce::Colour backgroundWidget() { return juce::Colour (backgroundWidgetVal); }
     inline juce::Colour accentPrimary()    { return juce::Colour (accentPrimaryVal);    }
     inline juce::Colour accentSecondary()  { return juce::Colour (accentSecondaryVal);  }
+    inline juce::Colour accentArp()        { return juce::Colour (accentArpVal);        }
     inline juce::Colour knobBody()         { return juce::Colour (knobBodyVal);         }
     inline juce::Colour knobIndicator()    { return juce::Colour (knobIndicatorVal);    }
     inline juce::Colour knobOutline()      { return juce::Colour (knobOutlineVal);      }

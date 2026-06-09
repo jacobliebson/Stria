@@ -124,11 +124,11 @@ void EnvelopeDisplay::paint (juce::Graphics& g)
     filledPath.lineTo (bounds.getX()     + 4.0f, bounds.getBottom() - 4.0f);
     filledPath.closeSubPath();
 
-    g.setColour (ResonatorPalette::accentPrimary().withAlpha (0.15f));
+    g.setColour (accentColour.withAlpha (0.15f));
     g.fillPath (filledPath);
 
     // Curve line
-    g.setColour (ResonatorPalette::accentPrimary());
+    g.setColour (accentColour);
     g.strokePath (curvePath, juce::PathStrokeType (1.5f, juce::PathStrokeType::curved,
                                                     juce::PathStrokeType::rounded));
 }

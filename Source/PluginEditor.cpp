@@ -113,13 +113,16 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     //addAndMakeVisible (bypassButton);
     //bypassAttachment = std::make_unique<ButtonAttachment> (apvts, "ARP_BYPASS", bypassButton);
 
-    // Initialise tab button colours to reflect default (chord) selection
-    chordEnvButton.setColour (juce::TextButton::buttonColourId, ResonatorPalette::accentPrimary());
+    // Initialise tab button and knob colours — Chord selected by default
+    chordEnvButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary());
     chordEnvButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
     chordEnvButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
-    arpEnvButton.setColour   (juce::TextButton::buttonColourId, ResonatorPalette::backgroundWidget());
+    arpEnvButton.setColour   (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
     arpEnvButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
     arpEnvButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+
+    for (auto* knob : { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob })
+        knob->setColour (juce::Slider::rotarySliderFillColourId, ResonatorPalette::accentPrimary());
 
     startTimerHz (30);
 
@@ -177,11 +180,14 @@ void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
 {
     showingArpEnv = showArp;
 
-    const juce::String prefix = showArp ? "ARP_ENV_" : "CHORD_ENV_";
+    const juce::String  prefix     = showArp ? "ARP_ENV_" : "CHORD_ENV_";
+    const juce::Colour  knobColour = showArp ? ResonatorPalette::accentArp()
+                                             : ResonatorPalette::accentPrimary();
 
-    // Swap display listeners
-    envelopeDisplay->setParameters (prefix + "ATTACK", prefix + "DECAY",
-                                    prefix + "SUSTAIN", prefix + "RELEASE");
+    // Swap display listeners and accent colour
+    envelopeDisplay->setParameters  (prefix + "ATTACK", prefix + "DECAY",
+                                     prefix + "SUSTAIN", prefix + "RELEASE");
+    envelopeDisplay->setAccentColour (knobColour);
 
     // Destroy and recreate attachments pointing at the new parameter set
     attackAttachment.reset();
@@ -195,12 +201,16 @@ void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
     sustainAttachment    = std::make_unique<SliderAttachment> (apvts, prefix + "SUSTAIN", sustainKnob);
     releaseEnvAttachment = std::make_unique<SliderAttachment> (apvts, prefix + "RELEASE", releaseEnvKnob);
 
-    // Update button appearance
+    // Update knob arc colours
+    for (auto* knob : { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob })
+        knob->setColour (juce::Slider::rotarySliderFillColourId, knobColour);
+
+    // Update button colours
     chordEnvButton.setColour (juce::TextButton::buttonColourId,
                               showArp ? ResonatorPalette::backgroundWidget()
                                       : ResonatorPalette::accentPrimary());
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,
-                              showArp ? ResonatorPalette::accentPrimary()
+                              showArp ? ResonatorPalette::accentArp()
                                       : ResonatorPalette::backgroundWidget());
 }
 
@@ -335,22 +345,21 @@ void AudioPluginAudioProcessorEditor::resized()
     //==========================================================================
     // Envelope panel
     {
-        const int px       = m * 2 + panelW;
-        const int tabH     = 22;
-        const int tabW     = (panelW - pad * 2 - 4) / 2;
-        const int tabY     = panelY + Layout::titleHeight + pad;
+        const int px   = m * 2 + panelW;
+        const int tabH = 22;
+        const int tabW = (panelW - pad * 2 - 4) / 2;
+        const int tabY = panelY + Layout::titleHeight + pad;
 
         chordEnvButton.setBounds (px + pad,            tabY, tabW, tabH);
         arpEnvButton.setBounds   (px + pad + tabW + 4, tabY, tabW, tabH);
 
         const int available = bH - Layout::titleHeight - tabH - pad * 4 - kS - lH;
-        const int displayH  = available;
         envelopeDisplay->setBounds (px + pad,
                                     tabY + tabH + pad,
                                     panelW - pad * 2,
-                                    displayH);
+                                    available);
 
-        const int knobY = tabY + tabH + pad + displayH + pad;
+        const int knobY = tabY + tabH + pad + available + pad;
         knobRow (px, knobY, 4,
                 { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob },
                 { &attackLabel, &decayLabel, &sustainLabel, &releaseEnvLabel });
