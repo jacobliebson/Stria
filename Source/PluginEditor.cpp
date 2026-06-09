@@ -51,17 +51,25 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     // Envelope
     envelopeDisplay = std::make_unique<EnvelopeDisplay> (apvts,
-                          "ENV_ATTACK", "ENV_DECAY", "ENV_SUSTAIN", "ENV_RELEASE");
+                          "CHORD_ENV_ATTACK", "CHORD_ENV_DECAY", "CHORD_ENV_SUSTAIN", "CHORD_ENV_RELEASE");
     addAndMakeVisible (*envelopeDisplay);
 
+    // Tab buttons — default to Chord
+    chordEnvButton.setClickingTogglesState (false);
+    arpEnvButton.setClickingTogglesState   (false);
+    chordEnvButton.onClick = [this] { switchEnvelopeTo (false); };
+    arpEnvButton.onClick   = [this] { switchEnvelopeTo (true);  };
+    addAndMakeVisible (chordEnvButton);
+    addAndMakeVisible (arpEnvButton);
+
     setupKnob (attackKnob,     attackLabel,     "Attack",
-               attackAttachment,     "ENV_ATTACK", " s");
+               attackAttachment,     "CHORD_ENV_ATTACK", " s");
     setupKnob (decayKnob,      decayLabel,      "Decay",
-               decayAttachment,      "ENV_DECAY", " s");
+               decayAttachment,      "CHORD_ENV_DECAY", " s");
     setupKnob (sustainKnob,    sustainLabel,    "Sustain",
-               sustainAttachment,    "ENV_SUSTAIN", "%");
+               sustainAttachment,    "CHORD_ENV_SUSTAIN", "%");
     setupKnob (releaseEnvKnob, releaseEnvLabel, "Release",
-               releaseEnvAttachment, "ENV_RELEASE", " s");
+               releaseEnvAttachment, "CHORD_ENV_RELEASE", " s");
 
     // Arpeggiator
     arpDisplay = std::make_unique<ArpDisplay> (apvts,
@@ -104,6 +112,14 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     //bypassButton.setButtonText ("Bypass");
     //addAndMakeVisible (bypassButton);
     //bypassAttachment = std::make_unique<ButtonAttachment> (apvts, "ARP_BYPASS", bypassButton);
+
+    // Initialise tab button colours to reflect default (chord) selection
+    chordEnvButton.setColour (juce::TextButton::buttonColourId, ResonatorPalette::accentPrimary());
+    chordEnvButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
+    chordEnvButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    arpEnvButton.setColour   (juce::TextButton::buttonColourId, ResonatorPalette::backgroundWidget());
+    arpEnvButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
+    arpEnvButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
 
     startTimerHz (30);
 
@@ -155,6 +171,37 @@ void AudioPluginAudioProcessorEditor::setupDiscreteKnob (juce::Slider& slider,
                          static_cast<double> (range.end),
                          static_cast<double> (range.interval));
     }
+}
+
+void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
+{
+    showingArpEnv = showArp;
+
+    const juce::String prefix = showArp ? "ARP_ENV_" : "CHORD_ENV_";
+
+    // Swap display listeners
+    envelopeDisplay->setParameters (prefix + "ATTACK", prefix + "DECAY",
+                                    prefix + "SUSTAIN", prefix + "RELEASE");
+
+    // Destroy and recreate attachments pointing at the new parameter set
+    attackAttachment.reset();
+    decayAttachment.reset();
+    sustainAttachment.reset();
+    releaseEnvAttachment.reset();
+
+    auto& apvts = audioProcessor.apvts;
+    attackAttachment     = std::make_unique<SliderAttachment> (apvts, prefix + "ATTACK",  attackKnob);
+    decayAttachment      = std::make_unique<SliderAttachment> (apvts, prefix + "DECAY",   decayKnob);
+    sustainAttachment    = std::make_unique<SliderAttachment> (apvts, prefix + "SUSTAIN", sustainKnob);
+    releaseEnvAttachment = std::make_unique<SliderAttachment> (apvts, prefix + "RELEASE", releaseEnvKnob);
+
+    // Update button appearance
+    chordEnvButton.setColour (juce::TextButton::buttonColourId,
+                              showArp ? ResonatorPalette::backgroundWidget()
+                                      : ResonatorPalette::accentPrimary());
+    arpEnvButton.setColour   (juce::TextButton::buttonColourId,
+                              showArp ? ResonatorPalette::accentPrimary()
+                                      : ResonatorPalette::backgroundWidget());
 }
 
 void AudioPluginAudioProcessorEditor::drawPanel (juce::Graphics& g,
@@ -288,15 +335,22 @@ void AudioPluginAudioProcessorEditor::resized()
     //==========================================================================
     // Envelope panel
     {
-        const int px        = m * 2 + panelW;
-        const int available = bH - Layout::titleHeight - pad * 3 - kS - lH;
+        const int px       = m * 2 + panelW;
+        const int tabH     = 22;
+        const int tabW     = (panelW - pad * 2 - 4) / 2;
+        const int tabY     = panelY + Layout::titleHeight + pad;
+
+        chordEnvButton.setBounds (px + pad,            tabY, tabW, tabH);
+        arpEnvButton.setBounds   (px + pad + tabW + 4, tabY, tabW, tabH);
+
+        const int available = bH - Layout::titleHeight - tabH - pad * 4 - kS - lH;
         const int displayH  = available;
         envelopeDisplay->setBounds (px + pad,
-                                    panelY + Layout::titleHeight + pad,
+                                    tabY + tabH + pad,
                                     panelW - pad * 2,
                                     displayH);
 
-        const int knobY = panelY + Layout::titleHeight + pad + displayH + pad;
+        const int knobY = tabY + tabH + pad + displayH + pad;
         knobRow (px, knobY, 4,
                 { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob },
                 { &attackLabel, &decayLabel, &sustainLabel, &releaseEnvLabel });

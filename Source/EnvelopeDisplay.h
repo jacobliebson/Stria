@@ -19,6 +19,12 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override {}
 
+    // Swap the parameter set this display listens to
+    void setParameters (const juce::String& newAttackId,
+                        const juce::String& newDecayId,
+                        const juce::String& newSustainId,
+                        const juce::String& newReleaseId);
+
 private:
     void parameterChanged (const juce::String& paramId, float newValue) override;
     juce::Path buildCurve (juce::Rectangle<float> bounds) const;

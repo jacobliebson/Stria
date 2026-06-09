@@ -76,6 +76,39 @@ juce::Path EnvelopeDisplay::buildCurve (juce::Rectangle<float> bounds) const
     return path;
 }
 
+
+void EnvelopeDisplay::setParameters (const juce::String& newAttackId,
+                                      const juce::String& newDecayId,
+                                      const juce::String& newSustainId,
+                                      const juce::String& newReleaseId)
+{
+    // Remove old listeners
+    apvts.removeParameterListener (attackId,  this);
+    apvts.removeParameterListener (decayId,   this);
+    apvts.removeParameterListener (sustainId, this);
+    apvts.removeParameterListener (releaseId, this);
+
+    // Update IDs
+    attackId  = newAttackId;
+    decayId   = newDecayId;
+    sustainId = newSustainId;
+    releaseId = newReleaseId;
+
+    // Read current values for new parameters
+    if (auto* p = apvts.getRawParameterValue (attackId))  attack  = p->load();
+    if (auto* p = apvts.getRawParameterValue (decayId))   decay   = p->load();
+    if (auto* p = apvts.getRawParameterValue (sustainId)) sustain = p->load() / 100.0f;
+    if (auto* p = apvts.getRawParameterValue (releaseId)) release = p->load();
+
+    // Add new listeners
+    apvts.addParameterListener (attackId,  this);
+    apvts.addParameterListener (decayId,   this);
+    apvts.addParameterListener (sustainId, this);
+    apvts.addParameterListener (releaseId, this);
+
+    repaint();
+}
+
 void EnvelopeDisplay::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat().reduced (6.0f);

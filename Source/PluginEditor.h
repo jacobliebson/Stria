@@ -57,6 +57,12 @@ private:
     // Envelope panel
     std::unique_ptr<EnvelopeDisplay> envelopeDisplay;
 
+    // Tab selector — switches between chord and arp envelope parameter sets
+    juce::TextButton chordEnvButton { "Chord" };
+    juce::TextButton arpEnvButton   { "Arp"   };
+    bool showingArpEnv = false;
+    void switchEnvelopeTo (bool showArp);
+
     juce::Slider attackKnob,  decayKnob,  sustainKnob,  releaseEnvKnob;
     juce::Label  attackLabel, decayLabel, sustainLabel, releaseEnvLabel;
     std::unique_ptr<SliderAttachment> attackAttachment, decayAttachment,
