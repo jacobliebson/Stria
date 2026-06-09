@@ -43,9 +43,9 @@ private:
 
     //==========================================================================
     // Resonator panel
-    juce::Slider feedbackKnob,  dampingKnob;
-    juce::Label  feedbackLabel, dampingLabel;
-    std::unique_ptr<SliderAttachment> feedbackAttachment, dampingAttachment;
+    juce::Slider feedbackKnob,  dampingKnob, detuneKnob, detuneModeKnob;
+    juce::Label  feedbackLabel, dampingLabel, detuneLabel, detuneModeLabel;
+    std::unique_ptr<SliderAttachment> feedbackAttachment, dampingAttachment, detuneAttachment, detuneModeAttachment;
 
     //==========================================================================
     // Trigger panel

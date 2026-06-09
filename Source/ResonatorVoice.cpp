@@ -94,7 +94,7 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
     if (detuneMode != 0) 
     {
         // 1 = Drift (Slow), 2 = shake (Fast)
-        int threshold = (detuneMode == 1) ? 400 : 100;
+        int threshold = (detuneMode == 1) ? 600 : 100;
 
         if (++driftCounter >= threshold) 
         {
@@ -102,9 +102,11 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
             targetDetuneOffset = (targetDetuneOffset * 0.95f) + shake;
             driftCounter = 0;
         }
+
+        float smoothing = (detuneMode == 1) ? 0.999f : 0.99f;
         
         // Linear interpolation for smooth pitch movement
-        currentDetuneOffset = currentDetuneOffset * 0.99f + targetDetuneOffset * 0.01f;
+        currentDetuneOffset = currentDetuneOffset * smoothing + targetDetuneOffset * (1.0f - smoothing);
         
         float freq = baseFrequency * std::pow(2.0f, currentDetuneOffset / 12.0f);
         leftFilter.setTargetFrequency(freq);

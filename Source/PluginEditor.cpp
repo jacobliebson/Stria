@@ -35,6 +35,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
                feedbackAttachment, "FEEDBACK");
     setupKnob (dampingKnob,  dampingLabel,  "Damping",
                dampingAttachment,  "DAMPING");
+    setupKnob (detuneKnob,  detuneLabel,  "Detune",
+               detuneAttachment,  "DETUNE");
+    setupDiscreteKnob(detuneModeKnob, detuneModeLabel, "Mode",
+                detuneModeAttachment, "DETUNE_MODE");
+    
 
     // Trigger
     setupKnob (thresholdKnob, thresholdLabel, "Threshold",
@@ -188,7 +193,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     const int w  = getWidth();
 
     // Resonator panel (top left)
-    const int resonatorW = 200;
+    const int resonatorW = 80;
     drawPanel (g, { m, m, resonatorW, tH }, "Resonator");
 
     // Bottom panels — equal width
@@ -224,19 +229,27 @@ void AudioPluginAudioProcessorEditor::resized()
     //                         Layout::bypassH);
 
     //==========================================================================
-    // Resonator panel — two knobs centred horizontally
+    // Resonator panel — four knobs stacked vertically
     {
-        const int resonatorW = 200;
-        const int panelCentreY = m + tH / 2;
-        const int knobSpacing  = 8;
-        const int totalW       = kS * 2 + knobSpacing;
-        const int startX       = m + (resonatorW - totalW) / 2;
-        const int knobY        = panelCentreY - kS / 2 - lH / 2 + Layout::titleHeight / 2;
+        const int resonatorW = 80; // Narrower width for vertical stack
+        const int panelCentreX = m + resonatorW / 2;
+        const int knobSpacing  = 20; // Vertical space between groups
+        const int labelSpace   = 20; // Space for labels
+        
+        // Starting Y position at the top of the panel
+        int currentY = m + Layout::titleHeight + 10;
 
-        feedbackKnob.setBounds (startX,               knobY, kS, kS);
-        feedbackLabel.setBounds(startX,               knobY + kS + 2, kS, lH);
-        dampingKnob.setBounds  (startX + kS + knobSpacing, knobY, kS, kS);
-        dampingLabel.setBounds (startX + kS + knobSpacing, knobY + kS + 2, kS, lH);
+        // Helper to position a knob and its label
+        auto setKnobBounds = [&](juce::Slider& knob, juce::Label& label) {
+            knob.setBounds (panelCentreX - kS / 2, currentY, kS, kS);
+            label.setBounds(panelCentreX - kS / 2, currentY + kS, kS, lH);
+            currentY += kS + labelSpace;
+        };
+
+        setKnobBounds(feedbackKnob, feedbackLabel);
+        setKnobBounds(dampingKnob,  dampingLabel);
+        setKnobBounds(detuneKnob,   detuneLabel);
+        setKnobBounds(detuneModeKnob,     detuneModeLabel);
     }
 
     //==========================================================================
