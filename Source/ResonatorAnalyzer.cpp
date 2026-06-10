@@ -300,11 +300,11 @@ void ResonatorAnalyzer::paint (juce::Graphics& g)
         juce::ColourGradient fillGradient (
             ResonatorPalette::backgroundWidget().withAlpha(0.15f),  // colour at the bottom (low points)
             0.0f, rowBaseY,                          // position: front row baseline
-            ResonatorPalette::accentSecondary().withAlpha(0.15f),   // colour at the top (peaks)
+            ResonatorPalette::accentSecondary().withAlpha(0.0f),   // colour at the top (peaks)
             0.0f, rowPeakY,                             // position: horizon/vanishing point
             false                                  // linear, not radial
         );
-        fillGradient.addColour (0.5, ResonatorPalette::accentPrimary()); // purple midpoint
+        fillGradient.addColour (0.5, ResonatorPalette::accentPrimary().withAlpha(0.02f)); // purple midpoint
         
         g.setGradientFill(fillGradient);
         g.fillPath(rowPath);
