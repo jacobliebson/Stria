@@ -4,6 +4,7 @@
 #include "ResonatorLookAndFeel.h"
 #include "ArpDisplay.h"
 #include "EnvelopeDisplay.h"
+#include "ResonatorAnalyzer.h"
 #include <string>
 
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
@@ -54,6 +55,9 @@ private:
     std::unique_ptr<SliderAttachment> thresholdAttachment, releaseAttachment, softnessAttachment;
 
     //==========================================================================
+    // Analyzer panel
+    std::unique_ptr<ResonatorAnalyzer> resonatorAnalyzer;
+    
     // Envelope panel
     std::unique_ptr<EnvelopeDisplay> envelopeDisplay;
 

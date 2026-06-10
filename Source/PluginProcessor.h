@@ -39,6 +39,23 @@ public:
 
     juce::AudioProcessorValueTreeState apvts;
 
+    struct ActiveNoteInfo {
+        int   midiNote;
+        float amplitude;   // 0–1, from voice envelope
+        bool  isArp;
+    };
+
+    // Ring buffer — written audio thread, read GUI thread
+    static constexpr int noiseRingSize = 4096;
+    std::array<std::atomic<float>, noiseRingSize> noiseRingBuffer;
+    std::atomic<int> noiseWritePos { 0 };
+
+    // Active notes snapshot — written audio thread, read GUI thread
+    static constexpr int maxActiveNotes = 48; // numArpVoices + numChordVoices
+    std::array<ActiveNoteInfo, maxActiveNotes> activeNoteSnapshot;
+    std::atomic<int> activeNoteCount { 0 };
+
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 
@@ -65,6 +82,9 @@ private:
 
     bool   wasPlaying       = false;
     double lastProcessorPPQ = -1.0;
+
+    int noiseDecimationCounter = 0;
+    static constexpr int noiseDecimationFactor = 32;
 
     std::atomic<float>* feedback            = nullptr;
     std::atomic<float>* damping             = nullptr;
@@ -94,21 +114,8 @@ private:
     std::atomic<float>* chordEnvRelease     = nullptr;
 
 
-    struct ActiveNoteInfo {
-        int   midiNote;
-        float amplitude;   // 0–1, from voice envelope
-        bool  isArp;
-    };
+    
 
-    // Ring buffer — written audio thread, read GUI thread
-    static constexpr int waveRingSize = 4096;
-    std::array<std::atomic<float>, waveRingSize> noiseRingBuffer;
-    std::atomic<int> noiseWritePos { 0 };
-
-    // Active notes snapshot — written audio thread, read GUI thread
-    static constexpr int maxActiveNotes = 48; // numArpVoices + numChordVoices
-    std::array<ActiveNoteInfo, maxActiveNotes> activeNoteSnapshot;
-    std::atomic<int> activeNoteCount { 0 };
-
+    
     float calculateCoef (float timeMs, double sampleRate);
 };

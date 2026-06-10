@@ -165,6 +165,53 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
             voice->updateParameters (currentFeedback, currentDamping, chordEnvParams, currentDetune, currentDetuneMode);
 
+    
+    // --- Visualizer: snapshot active notes (once per block) ---
+    {
+        // Compute linear gains once before the loops
+        // Mirrors the existing silenceThresholdDB logic already in processBlock
+        const float arpLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f 
+                                : juce::Decibels::decibelsToGain (currentArpGainDB);
+        const float chordLinear = (currentChordGainDB <= silenceThresholdDB) ? 0.0f 
+                                : juce::Decibels::decibelsToGain (currentChordGainDB);
+
+        int count = 0;
+
+        for (int i = 0; i < arpSynth.getNumVoices() && count < maxActiveNotes; ++i)
+        {
+            if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
+            {
+                if (voice->isVoiceActive())
+                {
+                    activeNoteSnapshot[count].midiNote  = voice->getCurrentMidiNote();
+                    activeNoteSnapshot[count].amplitude = voice->getEnvelopeLevel() * arpLinear;
+                    activeNoteSnapshot[count].isArp     = true;
+                    ++count;
+                }
+            }
+        }
+
+        for (int i = 0; i < chordSynth.getNumVoices() && count < maxActiveNotes; ++i)
+        {
+            if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
+            {
+                if (voice->isVoiceActive())
+                {
+                    activeNoteSnapshot[count].midiNote  = voice->getCurrentMidiNote();
+                    activeNoteSnapshot[count].amplitude = voice->getEnvelopeLevel() * chordLinear;
+                    activeNoteSnapshot[count].isArp     = false;
+                    ++count;
+                }
+            }
+        }
+
+        activeNoteCount.store (count, std::memory_order_release);
+    }
+    // --- end visualizer snapshot ---
+
+
+
+
     // Snapshot transient follower parameters
     float attackTau         = 0.00001f;
     float attackCoef        = static_cast<float> (std::exp (-1.0f / (sampleRate * attackTau)));
@@ -258,6 +305,16 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         float inputL   = dryCopy.getSample (0, sample);
         float inputR   = (totalNumInputChannels > 1) ? dryCopy.getSample (1, sample) : inputL;
         float absInput = std::abs (inputL);
+
+        // --- Visualizer: decimated noise ring buffer ---
+        if (++noiseDecimationCounter >= noiseDecimationFactor)
+        {
+            noiseDecimationCounter = 0;
+            int pos = noiseWritePos.load (std::memory_order_relaxed);
+            noiseRingBuffer[pos].store (absInput, std::memory_order_relaxed);
+            noiseWritePos.store ((pos + 1) % noiseRingSize, std::memory_order_release);
+        }
+        // --- end ring buffer write ---
 
         envFast = (absInput > envFast)
                       ? (attackCoef * envFast) + ((1.0f - attackCoef) * absInput)

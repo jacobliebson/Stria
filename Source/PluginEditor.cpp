@@ -1,7 +1,9 @@
 // Source/PluginEditor.cpp
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ResonatorAnalyzer.h"
 #include "ResonatorPalette.h"
+#include <memory>
 #include <string_view>
 
 //==============================================================================
@@ -31,6 +33,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     setLookAndFeel (&lookAndFeel);
 
     auto& apvts = audioProcessor.apvts;
+
+    // Analyzer
+    resonatorAnalyzer = std::make_unique<ResonatorAnalyzer>(audioProcessor);
+    addAndMakeVisible (*resonatorAnalyzer);
 
     // Resonator
     setupKnob (feedbackKnob, feedbackLabel, "Feedback",
@@ -304,14 +310,15 @@ void AudioPluginAudioProcessorEditor::resized()
     const int pad    = Layout::panelPadding;
 
     //==========================================================================
-    // Bypass button — top right
-    // bypassButton.setBounds (w - Layout::bypassW - m,
-    //                         m + (tH - Layout::bypassH) / 2,
-    //                         Layout::bypassW,
-    //                         Layout::bypassH);
-
-    //==========================================================================
-
+    // Analyzer panel
+    {
+        const int resonatorW   = 80;
+        const int analyzerX    = m + resonatorW + m;
+        const int analyzerY    = m + hH;
+        const int analyzerW    = getWidth() - analyzerX - m;
+        const int analyzerH    = tH;
+        resonatorAnalyzer->setBounds (analyzerX, analyzerY, analyzerW, analyzerH);
+    }
     // Resonator panel — four knobs stacked vertically
     {
         const int resonatorW = 80; // Narrower width for vertical stack
@@ -320,7 +327,7 @@ void AudioPluginAudioProcessorEditor::resized()
         const int labelSpace   = 20; // Space for labels
         
         // Starting Y position at the top of the panel
-        int currentY = m + Layout::headerH + m + Layout::titleHeight;
+        int currentY = m + hH + m + Layout::titleHeight;
 
         // Helper to position a knob and its label
         auto setKnobBounds = [&](juce::Slider& knob, juce::Label& label) {
@@ -336,6 +343,7 @@ void AudioPluginAudioProcessorEditor::resized()
     }
 
     //==========================================================================
+    
     // Bottom panel layout helpers
     const int numPanels = 4;
     const int panelW    = (w - m * (numPanels + 1)) / numPanels;
@@ -359,6 +367,7 @@ void AudioPluginAudioProcessorEditor::resized()
     };
 
     //==========================================================================
+    
     // Trigger panel
     {
         const int px = m;
@@ -369,6 +378,7 @@ void AudioPluginAudioProcessorEditor::resized()
     }
 
     //==========================================================================
+    
     // Envelope panel
     {
         const int px   = m * 2 + panelW;
@@ -392,6 +402,7 @@ void AudioPluginAudioProcessorEditor::resized()
     }
 
     //==========================================================================
+    
     // Arpeggiator panel
     {
         const int px       = m * 3 + panelW * 2;
@@ -413,6 +424,7 @@ void AudioPluginAudioProcessorEditor::resized()
     }
 
     //==========================================================================
+    
     // Mixer panel
     {
         const int px        = m * 4 + panelW * 3;

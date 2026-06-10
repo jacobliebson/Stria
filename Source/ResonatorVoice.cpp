@@ -12,6 +12,12 @@ ResonatorVoice::ResonatorVoice()
     adsr.setParameters (params);
 }
 
+float ResonatorVoice::getEnvelopeLevel() 
+{ 
+    return adsr.getEnvLevel(); 
+}
+
+
 bool ResonatorVoice::canPlaySound (juce::SynthesiserSound* sound)
 {
     return dynamic_cast<ResonatorSound*> (sound) != nullptr;
