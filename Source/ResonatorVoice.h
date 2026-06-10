@@ -37,6 +37,8 @@ public:
 
     // Returns the current envelope level without consuming a sample.
     float getEnvelopeLevel();
+
+    float getCurrentFrequency();
  
     // Returns the MIDI note this voice was started on (0 if inactive)
     int getCurrentMidiNote() const { return isVoiceActive() ? getCurrentlyPlayingNote() : -1; }
@@ -47,6 +49,7 @@ private:
     CustomADSR adsr;
 
     float baseFrequency;
+    float currentFrequency;
     int detuneMode;
     float detuneAmount;
     int driftCounter;

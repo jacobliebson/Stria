@@ -113,8 +113,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     bool rewindDetected = isPlaying && lastProcessorPPQ >= 0.0 && currentPPQ < lastProcessorPPQ;
     bool stoppedPlaying = wasPlaying && !isPlaying;
 
-    if (rewindDetected || stoppedPlaying)
+    if (rewindDetected || stoppedPlaying) {
         arpSynth.allNotesOff (0, true);
+        smoothedGateValue.store (0.0f, std::memory_order_relaxed);
+    }
 
     wasPlaying        = isPlaying;
     lastProcessorPPQ  = isPlaying ? currentPPQ : -1.0;
@@ -183,7 +185,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             {
                 if (voice->isVoiceActive())
                 {
-                    activeNoteSnapshot[count].midiNote  = voice->getCurrentMidiNote();
+                    activeNoteSnapshot[count].frequency  = voice->getCurrentFrequency();
                     activeNoteSnapshot[count].amplitude = voice->getEnvelopeLevel() * arpLinear;
                     activeNoteSnapshot[count].isArp     = true;
                     ++count;
@@ -197,7 +199,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             {
                 if (voice->isVoiceActive())
                 {
-                    activeNoteSnapshot[count].midiNote  = voice->getCurrentMidiNote();
+                    activeNoteSnapshot[count].frequency  = voice->getCurrentFrequency();
                     activeNoteSnapshot[count].amplitude = voice->getEnvelopeLevel() * chordLinear;
                     activeNoteSnapshot[count].isArp     = false;
                     ++count;
@@ -313,6 +315,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             int pos = noiseWritePos.load (std::memory_order_relaxed);
             noiseRingBuffer[pos].store (absInput, std::memory_order_relaxed);
             noiseWritePos.store ((pos + 1) % noiseRingSize, std::memory_order_release);
+            smoothedGateValue.store (smoothedGate, std::memory_order_relaxed);
         }
         // --- end ring buffer write ---
 

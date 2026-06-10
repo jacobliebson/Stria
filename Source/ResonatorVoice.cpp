@@ -17,6 +17,10 @@ float ResonatorVoice::getEnvelopeLevel()
     return adsr.getEnvLevel(); 
 }
 
+float ResonatorVoice::getCurrentFrequency() 
+{ 
+    return currentFrequency; 
+}
 
 bool ResonatorVoice::canPlaySound (juce::SynthesiserSound* sound)
 {
@@ -40,6 +44,7 @@ void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::Synthe
     // 3. Convert to frequency
     baseFrequency = 440.0f * std::pow(2.0f, (baseMidi - 69.0f) / 12.0f);
     float processedFreq = 440.0f * std::pow(2.0f, (processedMidi - 69.0f) / 12.0f);
+    currentFrequency = processedFreq;
 
     leftFilter.setTargetFrequency(processedFreq);
     rightFilter.setTargetFrequency(processedFreq);
@@ -115,6 +120,7 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
         currentDetuneOffset = currentDetuneOffset * smoothing + targetDetuneOffset * (1.0f - smoothing);
         
         float freq = baseFrequency * std::pow(2.0f, currentDetuneOffset / 12.0f);
+        currentFrequency = freq;
         leftFilter.setTargetFrequency(freq);
         rightFilter.setTargetFrequency(freq);
     }

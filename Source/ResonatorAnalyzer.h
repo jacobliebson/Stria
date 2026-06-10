@@ -49,6 +49,8 @@ private:
     // Convert a column X [0,1] and MIDI note to the same scale
     static float midiNoteToLogX (int midiNote, int numCols);
 
+    static float hzToLogX (float hz);
+
     // Evaluate a gaussian peak: exp(-0.5 * ((x - centre) / sigma)^2)
     static float gaussian (float x, float centre, float sigma);
 

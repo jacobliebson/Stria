@@ -40,7 +40,7 @@ public:
     juce::AudioProcessorValueTreeState apvts;
 
     struct ActiveNoteInfo {
-        int   midiNote;
+        float frequency;
         float amplitude;   // 0–1, from voice envelope
         bool  isArp;
     };
@@ -54,6 +54,8 @@ public:
     static constexpr int maxActiveNotes = 48; // numArpVoices + numChordVoices
     std::array<ActiveNoteInfo, maxActiveNotes> activeNoteSnapshot;
     std::atomic<int> activeNoteCount { 0 };
+
+    std::atomic<float> smoothedGateValue { 0.0f };
 
 
 private:

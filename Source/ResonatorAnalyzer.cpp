@@ -38,7 +38,7 @@ void ResonatorAnalyzer::timerCallback()
     //    The ring buffer is a decimated amplitude signal, so each value
     //    is already in [0, ~1].  We scale it down so noise is subtle.
     // ------------------------------------------------------------------
-    const float noiseScale = 0.18f;
+    const float noiseScale = 0.1f;
 
     const int ringSize  = AudioPluginAudioProcessor::noiseRingSize;
     const int writePos  = proc.noiseWritePos.load (std::memory_order_acquire);
@@ -65,17 +65,19 @@ void ResonatorAnalyzer::timerCallback()
 
     const float damping      = dampingParam  ? dampingParam->load()  : 0.5f;
     const float feedback     = feedbackParam ? feedbackParam->load() : 0.8f;
-    const int maxHarmonics = 6;
+    const int maxHarmonics = 12;
 
     for (int n = 0; n < noteCount; ++n)
     {
         const auto& info = proc.activeNoteSnapshot[n];
-        if (info.midiNote < 0 || info.amplitude < 0.001f)
+        if (info.frequency < 0.0f || info.amplitude < 0.001f)
             continue;
 
+        const float gateLevel     = proc.smoothedGateValue.load (std::memory_order_relaxed);
+        const float compressedAmp = std::pow (info.amplitude, 0.4f) * gateLevel;
+
         // Fundamental frequency in Hz
-        const float compressedAmp = std::pow (info.amplitude, 0.2f);
-        const float fundHz = 440.0f * std::pow (2.0f, (info.midiNote - 69.0f) / 12.0f);
+        const float fundHz = info.frequency;
 
         const float feedbackAbs = std::abs (feedback);
         const bool  oddOnly     = feedback < 0.0f;
@@ -87,16 +89,15 @@ void ResonatorAnalyzer::timerCallback()
             // Harmonic frequency
             const float harmonicHz = fundHz * static_cast<float> (h);
 
-            // Convert back to MIDI for log-frequency X mapping
-            const float harmonicMidi = 69.0f + 12.0f * std::log2 (harmonicHz / 440.0f);
-            if (harmonicMidi > 96.0f) break; // outside display range
-
+            const float hzHigh = 440.0f * std::pow (2.0f, (96.0f - 69.0f) / 12.0f);
+            if (harmonicHz > hzHigh) break;
+            
             // Amplitude model:
             // - feedback scales overall energy (low feedback = dim everything)
             // - damping attenuates each successive harmonic exponentially
             // - fundamental (h=1) is unaffected by damping, only by feedback
             const float dampingAtten  = std::pow (1.0f - damping, static_cast<float> (h - 1));
-            const float harmonicAmp   = compressedAmp * peakScale * feedbackAbs * dampingAtten;
+            const float harmonicAmp   = compressedAmp * peakScale * feedbackAbs * dampingAtten * (h == 1 ? 1.0f : 0.5f);
 
             if (harmonicAmp < 0.005f)
             {
@@ -106,8 +107,8 @@ void ResonatorAnalyzer::timerCallback()
 
             // Harmonics above the fundamental get a narrower gaussian
             // so they look like distinct overtone peaks rather than blobs
-            const float harmonicSigma = sigma * (h == 1 ? 1.0f : 0.6f);
-            const float centreX       = midiNoteToLogX (static_cast<int> (harmonicMidi), gridCols);
+            const float harmonicSigma = sigma * (h == 1 ? 1.0f : 0.5f);
+            const float centreX = hzToLogX (harmonicHz);
 
             for (int col = 0; col < gridCols; ++col)
             {
@@ -173,6 +174,16 @@ float ResonatorAnalyzer::midiNoteToLogX (int midiNote, int /*numCols*/)
     return (std::log2 (hz / hzLow)) / (std::log2 (hzHi / hzLow));
 }
 
+float ResonatorAnalyzer::hzToLogX (float hz)
+{
+    constexpr float midiLow  = 24.0f;
+    constexpr float midiHigh = 96.0f;
+    const float hzLow  = 440.0f * std::pow (2.0f, (midiLow  - 69.0f) / 12.0f);
+    const float hzHigh = 440.0f * std::pow (2.0f, (midiHigh - 69.0f) / 12.0f);
+    const float clamped = juce::jlimit (hzLow, hzHigh, hz);
+    return std::log2 (clamped / hzLow) / std::log2 (hzHigh / hzLow);
+}
+
 float ResonatorAnalyzer::gaussian (float x, float centre, float sigma)
 {
     const float d = (x - centre) / sigma;
@@ -204,6 +215,7 @@ juce::Point<float> ResonatorAnalyzer::project (float gx, float gy, float gz) con
 
     // Perspective factor: 1 at front, 0 at vanishing point
     const float pf = 1.0f - gz / 1.5;
+    const float pf2 = 1.0f - gz*gz;
 
     // Row's left/right X at this depth
     const float rowLeft  = vpX + (frontLeft  - vpX) * pf;
@@ -221,7 +233,7 @@ juce::Point<float> ResonatorAnalyzer::project (float gx, float gy, float gz) con
     // with depth.  maxPeakHeight controls how tall a full-amplitude
     // peak is at the front row.
    const float maxPeakHeight = (frontY - vpY); // nearly fills front-to-horizon range
-   const float screenY       = rowBaseY - gy * maxPeakHeight * pf;
+   const float screenY       = rowBaseY - gy * maxPeakHeight * pf2;
 
     return { screenX, screenY };
 }
@@ -315,27 +327,5 @@ void ResonatorAnalyzer::paint (juce::Graphics& g)
                                                       juce::PathStrokeType::rounded));
     }
 
-    // ----------------------------------------------------------------
-    // Vertical connecting lines (columns), drawn back-to-front
-    // Drawn at reduced density to avoid visual clutter — every 4th col.
-    // ----------------------------------------------------------------
-    // const int vertStride = 4;
-
-    // for (int row = gridRows - 2; row >= 0; --row)
-    // {
-    //     const float gz        = static_cast<float> (row) / static_cast<float> (gridRows - 1);
-    //     const float depthFade = 0.08f + 0.35f * (1.0f - gz); // subtler than horizontal lines
-
-    //     for (int col = 0; col < gridCols; col += vertStride)
-    //     {
-    //         const float h0     = grid[row][col];
-    //         const float h1     = grid[row + 1][col];
-    //         const float avgH   = (h0 + h1) * 0.5f;
-
-    //         const juce::Colour lineColour = heightColour (avgH).withMultipliedAlpha (depthFade);
-    //         g.setColour (lineColour);
-
-    //         g.drawLine ({ pts[row][col], pts[row + 1][col] }, 0.5f);
-    //     }
-    // }
+   
 }
