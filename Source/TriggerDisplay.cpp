@@ -1,5 +1,6 @@
 // Source/TriggerDisplay.cpp
 #include "TriggerDisplay.h"
+#include "ResonatorPalette.h"
 
 TriggerDisplay::TriggerDisplay (AudioPluginAudioProcessor& processor)
     : proc (processor)
@@ -118,10 +119,14 @@ void TriggerDisplay::paint (juce::Graphics& g)
 
     filledPath.closeSubPath();
 
-    // Centre line
-    //g.setColour (ResonatorPalette::knobOutline());
-    //g.drawHorizontalLine (static_cast<int> (midY), innerX, innerX + innerW);
+    // Threshold line
+    g.setColour (ResonatorPalette::accentSecondary());
+    const float threshDB     = proc.apvts.getRawParameterValue ("TRIG_THRESHOLD")->load();
+    const float threshLinear = juce::Decibels::decibelsToGain (threshDB);
+    const float threshY      = midY - juce::jlimit (0.0f, 1.0f, threshLinear) * (innerH * 0.5f);
 
+    g.setColour (ResonatorPalette::accentSecondary());
+    g.drawHorizontalLine (static_cast<int> (threshY), innerX, innerX + innerW);
     float gradientAlpha = 0.8f;
     juce::ColourGradient waveGradient (
         ResonatorPalette::accentSecondary().withAlpha(gradientAlpha),                          // top peaks

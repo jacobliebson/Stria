@@ -2,6 +2,12 @@
 #include "ResonatorVoice.h"
 #include "PluginEditor.h"
 
+#include <fstream>
+#include <juce_core/juce_core.h>
+
+static std::ofstream gateLogFile;
+static int gateLogCounter = 0;
+
 juce::AudioProcessorValueTreeState::ParameterLayout
 AudioPluginAudioProcessor::createParameterLayout()
 {
@@ -23,6 +29,11 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 
     arpSynth.addSound   (new ResonatorSound());
     chordSynth.addSound (new ResonatorSound());
+
+    auto logPath = juce::File::getSpecialLocation (juce::File::userDesktopDirectory)
+                   .getChildFile ("gate_log.csv");
+gateLogFile.open (logPath.getFullPathName().toStdString());
+gateLogFile << "sample,absInput,thresholdLinear,isAboveThreshold,wasAboveThreshold,state,envelopeVal,holdCounter,gateGain\n";
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
@@ -51,9 +62,12 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     arpGainDB        = apvts.getRawParameterValue ("ARP_GAIN");
     chordGainDB      = apvts.getRawParameterValue ("CHORD_GAIN");
 
-    trigReleaseMS    = apvts.getRawParameterValue ("TRIG_RELEASE");
-    trigThreshDB     = apvts.getRawParameterValue ("TRIG_THRESHOLD");
-    trigSoftness     = apvts.getRawParameterValue ("TRIG_SOFTNESS");
+    
+    trigAttack       = apvts.getRawParameterValue ("TRIG_ATTACK");
+    trigHold       = apvts.getRawParameterValue ("TRIG_HOLD");
+    trigRelease      = apvts.getRawParameterValue ("TRIG_RELEASE");
+    trigThreshold    = apvts.getRawParameterValue ("TRIG_THRESHOLD");
+
 
     arpEnvAttack     = apvts.getRawParameterValue ("ARP_ENV_ATTACK");
     arpEnvDecay      = apvts.getRawParameterValue ("ARP_ENV_DECAY");
@@ -64,6 +78,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     chordEnvDecay      = apvts.getRawParameterValue ("CHORD_ENV_DECAY");
     chordEnvSustain    = apvts.getRawParameterValue ("CHORD_ENV_SUSTAIN");
     chordEnvRelease    = apvts.getRawParameterValue ("CHORD_ENV_RELEASE");
+
 
     arpRateIndex     = apvts.getRawParameterValue ("ARP_RATE");
     arpGateParam     = apvts.getRawParameterValue ("ARP_GATE");
@@ -115,7 +130,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     if (rewindDetected || stoppedPlaying) {
         arpSynth.allNotesOff (0, true);
-        smoothedGateValue.store (0.0f, std::memory_order_relaxed);
+        gateValue.store (0.0f, std::memory_order_relaxed);
     }
 
     wasPlaying        = isPlaying;
@@ -135,6 +150,15 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float currentDetune      = detune->load();
     int currentDetuneMode    = (int)detuneMode->load();
 
+    CustomADSR::Parameters gateParams;
+    gateParams.attack  = trigAttack->load() / 1000.0f;
+    gateParams.decay   = 0.0f;
+    gateParams.sustain = 1.0f;
+    gateParams.hold    = trigHold->load() / 1000.0f;
+    gateParams.release = trigRelease->load() / 1000.0f;
+    gateParams.useHoldPhase = true;
+    gateEnvelope.setParameters(gateParams);
+    float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshold->load());
 
     float currentMix         = mix->load() / 100.0f;
     float currentArpGainDB   = arpGainDB->load() + 12.0f;
@@ -149,12 +173,16 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     arpEnvParams.decay   = arpEnvDecay  ->load();
     arpEnvParams.sustain = arpEnvSustain->load() / 100.0f;
     arpEnvParams.release = arpEnvRelease->load();
+    arpEnvParams.hold    = 0.0f;
+    arpEnvParams.useHoldPhase = false;
 
     CustomADSR::Parameters chordEnvParams;
     chordEnvParams.attack  = chordEnvAttack ->load();
     chordEnvParams.decay   = chordEnvDecay  ->load();
     chordEnvParams.sustain = chordEnvSustain->load() / 100.0f;
     chordEnvParams.release = chordEnvRelease->load();
+    chordEnvParams.hold    = 0.0f;
+    chordEnvParams.useHoldPhase = false;
 
     // Broadcast parameters to both voice pools
     // NOTE: When independent envelopes are added, pass VoiceRole here to route
@@ -211,20 +239,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     }
     // --- end visualizer snapshot ---
 
-
-
-
-    // Snapshot transient follower parameters
-    float attackTau         = 0.00001f;
-    float attackCoef        = static_cast<float> (std::exp (-1.0f / (sampleRate * attackTau)));
-    float releaseTau        = trigReleaseMS->load() / 1000.0f;
-    float currentSoftness   = trigSoftness->load();
-    float releaseCoef       = static_cast<float> (std::exp (-1.0f / (sampleRate * releaseTau)));
-    float smoothCoef        = currentSoftness <= 0.0f
-                               ? 0.0f
-                               : static_cast<float> (std::exp (-1.0f / (getSampleRate() * (currentSoftness / 1000.0f))));
-    float thresholdLinear   = juce::Decibels::decibelsToGain (trigThreshDB->load());
-   
 
     // Safe read snapshot of dry input
     juce::AudioBuffer<float> dryCopy;
@@ -303,10 +317,41 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             ++chordMidiIt;
         }
 
-        // Transient follower
+
         float inputL   = dryCopy.getSample (0, sample);
         float inputR   = (totalNumInputChannels > 1) ? dryCopy.getSample (1, sample) : inputL;
         float absInput = std::abs (inputL);
+
+
+        bool isAboveThreshold = absInput > thresholdLinear;
+        
+        if (isAboveThreshold && !wasAboveThreshold && !gateEnvelope.isActive())
+            gateEnvelope.noteOn();
+     
+        wasAboveThreshold = isAboveThreshold;
+
+        constexpr float minThresh = 0.0011f;
+        float gateGain = thresholdLinear < minThresh? 1.0f : gateEnvelope.getNextSample();
+
+        // --- TEMP LOGGING ---
+        if (gateLogFile.is_open() && gateLogCounter < 200000) // cap to avoid huge files
+        {
+            gateLogFile << gateLogCounter << ","
+                        << absInput << ","
+                        << thresholdLinear << ","
+                        << (isAboveThreshold ? 1 : 0) << ","
+                        << (wasAboveThreshold ? 1 : 0) << ","
+                        << gateEnvelope.getStateInt() << ","
+                        << gateEnvelope.getEnvLevel() << ","
+                        << gateEnvelope.getHoldCounter() << ","
+                        << gateGain << "\n";
+            ++gateLogCounter;
+        }
+        // --- END TEMP LOGGING ---
+
+        float excitationL = inputL * gateGain;
+        float excitationR = inputR * gateGain;
+
 
         // --- Visualizer: decimated noise ring buffer ---
         if (++noiseDecimationCounter >= noiseDecimationFactor)
@@ -315,23 +360,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             int pos = noiseWritePos.load (std::memory_order_relaxed);
             noiseRingBuffer[pos].store (absInput, std::memory_order_relaxed);
             noiseWritePos.store ((pos + 1) % noiseRingSize, std::memory_order_release);
-            smoothedGateValue.store (smoothedGate, std::memory_order_relaxed);
+            gateValue.store (gateGain, std::memory_order_relaxed);
         }
         // --- end ring buffer write ---
-
-        envFast = (absInput > envFast)
-                      ? (attackCoef * envFast) + ((1.0f - attackCoef) * absInput)
-                      : (releaseCoef * envFast) + ((1.0f - releaseCoef) * absInput);
-
-        envSlow = (releaseCoef * envSlow) + ((1.0f - releaseCoef) * absInput);
-
-        float punchAmount = envFast - (envSlow * thresholdLinear);
-        float rawGate     = juce::jlimit (0.0f, 1.0f, punchAmount * 10.0f);
-        smoothedGate      = (smoothCoef * smoothedGate) + ((1.0f - smoothCoef) * rawGate);
-
-        float excitationL = inputL * smoothedGate;
-        float excitationR = inputR * smoothedGate;
-
+        
+        
         // Accumulate wet output from both voice pools
         float summedArpL = 0.0f;
         float summedArpR = 0.0f;

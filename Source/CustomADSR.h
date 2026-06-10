@@ -7,7 +7,8 @@ class CustomADSR
 public:
     struct Parameters
     {
-        float attack = 0.1f, decay = 0.1f, sustain = 1.0f, release = 0.1f;
+        float attack = 0.1f, decay = 0.1f, sustain = 1.0f, release = 0.1f, hold = 0.5f;
+        bool useHoldPhase = false;
     };
 
     CustomADSR() noexcept;
@@ -28,11 +29,15 @@ public:
     float getNextSample() noexcept;
 
     float getEnvLevel() noexcept;
+
+    // Add to public section
+    int getStateInt() const noexcept { return static_cast<int> (state); }
+    int32_t getHoldCounter() const noexcept { return holdCounter; }
     
 
 
 private:
-    enum class State { idle, attack, decay, sustain, release };
+    enum class State { idle, attack, decay, hold, sustain, release };
 
     void recalculateRates() noexcept;
     void goToNextState() noexcept;
@@ -42,4 +47,7 @@ private:
     double sampleRate = 44100.0;
     float envelopeVal = 0.0f;
     float attackRate = 0.0f, decayRate = 0.0f, releaseRate = 0.0f;
+   
+    int32_t holdCounter = 0;
+    int32_t holdSamples = 0;
 };

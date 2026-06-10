@@ -52,9 +52,10 @@ private:
 
     //==========================================================================
     // Trigger panel
-    juce::Slider thresholdKnob,  releaseKnob,  softnessKnob;
-    juce::Label  thresholdLabel, releaseLabel, softnessLabel;
-    std::unique_ptr<SliderAttachment> thresholdAttachment, releaseAttachment, softnessAttachment;
+    juce::Slider trigThresholdKnob,  trigAttackKnob,  trigHoldKnob, trigReleaseKnob;
+    juce::Label  trigThresholdLabel, trigAttackLabel, trigHoldLabel, trigReleaseLabel;
+    std::unique_ptr<SliderAttachment> trigThresholdAttachment, trigAttackAttachment, 
+                                      trigHoldAttachment, trigReleaseAttachment;
 
     std::unique_ptr<TriggerDisplay> triggerDisplay;
 

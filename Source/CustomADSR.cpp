@@ -28,6 +28,8 @@ float CustomADSR::getEnvLevel() noexcept
 
 void CustomADSR::noteOn() noexcept
 {
+    if (parameters.useHoldPhase)
+        holdCounter = holdSamples;
 
     if (attackRate > 0.0f)
     {
@@ -37,6 +39,11 @@ void CustomADSR::noteOn() noexcept
     {
         envelopeVal = 1.0f;
         state = State::decay;
+    }
+    else if (parameters.useHoldPhase)
+    {
+        envelopeVal = 1.0f;
+        state = State::hold;
     }
     else
     {
@@ -97,8 +104,16 @@ float CustomADSR::getNextSample() noexcept
         }
 
         case State::sustain:
-        {
+        {   
             envelopeVal = parameters.sustain;
+            break;
+        }
+
+        case State::hold:
+        {
+            envelopeVal = 1.0f; // Gate is open
+            if (--holdCounter <= 0)
+                goToNextState(); // Moves to release
             break;
         }
 
@@ -125,13 +140,20 @@ void CustomADSR::goToNextState() noexcept
 {
     if (state == State::attack)
     {
-        state = (decayRate > 0.0f ? State::decay : State::sustain);
+        state = (decayRate > 0.0f ? State::decay : 
+                 parameters.useHoldPhase ? State::hold : State::sustain);
         return;
     }
 
     if (state == State::decay)
     {
-        state = State::sustain;
+        state = (parameters.useHoldPhase ? State::hold : State::sustain);
+        return;
+    }
+
+    if (state == State::hold)
+    {
+        state = State::release;
         return;
     }
 
@@ -146,10 +168,10 @@ void CustomADSR::recalculateRates() noexcept
         return timeInSeconds > 0.0f ? (float) (distance / (timeInSeconds * sr)) : -1.0f;
     };
 
-    attackRate = getRate (1.0f, parameters.attack, sampleRate);
-    decayRate  = getRate (1.0f - parameters.sustain, parameters.decay, sampleRate);
-    // releaseRate is intentionally omitted — it's calculated dynamically in noteOff()
-    // based on envelopeVal at that moment, so it correctly covers only the remaining distance.
+    attackRate  = getRate (1.0f, parameters.attack, sampleRate);
+    decayRate   = getRate (1.0f - parameters.sustain, parameters.decay, sampleRate);
+    releaseRate = getRate (1.0f, parameters.release, sampleRate);  // add this
+    holdSamples = static_cast<int32_t>(parameters.hold * sampleRate);
 
     if ((state == State::attack && attackRate <= 0.0f)
         || (state == State::decay && (decayRate <= 0.0f || envelopeVal <= parameters.sustain))

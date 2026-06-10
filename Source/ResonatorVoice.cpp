@@ -8,7 +8,9 @@ ResonatorVoice::ResonatorVoice()
     params.attack  = 0.01f; 
     params.decay   = 0.1f;
     params.sustain = 1.0f;
-    params.release = 1.5f;  
+    params.release = 1.5f;
+    params.hold = 0.0f;
+    params.useHoldPhase = false;  
     adsr.setParameters (params);
 }
 

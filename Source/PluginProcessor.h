@@ -2,6 +2,7 @@
 #include "Arpeggiator.h"
 #include "CombFilter.h"
 #include "Parameters.h"
+#include "CustomADSR.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
 class AudioPluginAudioProcessor  : public juce::AudioProcessor
@@ -56,7 +57,7 @@ public:
     std::array<ActiveNoteInfo, maxActiveNotes> activeNoteSnapshot;
     std::atomic<int> activeNoteCount { 0 };
 
-    std::atomic<float> smoothedGateValue { 0.0f };
+    std::atomic<float> gateValue { 0.0f };
 
 
 private:
@@ -97,13 +98,12 @@ private:
     std::atomic<float>* arpGainDB           = nullptr;
     std::atomic<float>* chordGainDB         = nullptr;
 
-    float envFast      = 0.0f;
-    float envSlow      = 0.0f;
-    float smoothedGate = 0.0f;
-
-    std::atomic<float>* trigReleaseMS       = nullptr;
-    std::atomic<float>* trigThreshDB        = nullptr;
-    std::atomic<float>* trigSoftness        = nullptr;
+    CustomADSR gateEnvelope;
+    std::atomic<float>* trigThreshold = nullptr;
+    std::atomic<float>* trigAttack      = nullptr;
+    std::atomic<float>* trigHold        = nullptr;
+    std::atomic<float>* trigRelease     = nullptr;
+    bool wasAboveThreshold;
 
     std::atomic<float>* arpEnvAttack        = nullptr;
     std::atomic<float>* arpEnvDecay         = nullptr;

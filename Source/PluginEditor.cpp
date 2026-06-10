@@ -51,12 +51,16 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     
 
     // Trigger
-    setupKnob (thresholdKnob, thresholdLabel, "Threshold",
-               thresholdAttachment, "TRIG_THRESHOLD", " dB");
-    setupKnob (releaseKnob,   releaseLabel,   "Release",
-               releaseAttachment,   "TRIG_RELEASE", " ms");
-    setupKnob (softnessKnob,  softnessLabel,  "Attack",
-               softnessAttachment,  "TRIG_SOFTNESS", " ms");
+    setupKnob (trigThresholdKnob, trigThresholdLabel, "Threshold",
+               trigThresholdAttachment, "TRIG_THRESHOLD", " dB");
+    setupKnob (trigAttackKnob,  trigAttackLabel,  "Attack",
+               trigAttackAttachment,  "TRIG_ATTACK", " ms");
+    setupKnob (trigHoldKnob,  trigHoldLabel,  "Hold",
+               trigHoldAttachment,  "TRIG_HOLD", " ms");
+    setupKnob (trigReleaseKnob,   trigReleaseLabel,   "Release",
+               trigReleaseAttachment,   "TRIG_RELEASE", " ms");
+    
+    
 
     triggerDisplay = std::make_unique<TriggerDisplay>(audioProcessor);
     addAndMakeVisible(*triggerDisplay);
@@ -387,9 +391,9 @@ void AudioPluginAudioProcessorEditor::resized()
         triggerDisplay->setBounds(displayX, displayY, displayW, displayH);
 
         const int knobY = panelY + Layout::titleHeight + bH / 3 + pad + stride;
-        knobRow (px, knobY, 3,
-                 { &thresholdKnob, &releaseKnob, &softnessKnob },
-                 { &thresholdLabel, &releaseLabel, &softnessLabel });
+        knobRow (px, knobY, 4,
+                 { &trigThresholdKnob, &trigAttackKnob, &trigHoldKnob, &trigReleaseKnob },
+                 { &trigThresholdLabel, &trigAttackLabel, &trigHoldLabel, &trigReleaseLabel});
     }
 
     //==========================================================================

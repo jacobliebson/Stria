@@ -73,7 +73,7 @@ void ResonatorAnalyzer::timerCallback()
         if (info.frequency < 0.0f || info.amplitude < 0.001f)
             continue;
 
-        const float gateLevel     = proc.smoothedGateValue.load (std::memory_order_relaxed);
+        const float gateLevel     = proc.gateValue.load (std::memory_order_relaxed);
         const float compressedAmp = std::pow (info.amplitude, 0.4f) * gateLevel;
 
         // Fundamental frequency in Hz

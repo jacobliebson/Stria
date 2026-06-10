@@ -62,7 +62,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Arp gain
     juce::AudioParameterFloatAttributes arpGainAttributes;
     arpGainAttributes = arpGainAttributes.withLabel(" dB");
-    juce::NormalisableRange<float> arpGainRange(-60.0f, 24.0f, 0.1f);
+    juce::NormalisableRange<float> arpGainRange(-60.0f, 24.0f, 0.01f);
     arpGainRange.setSkewForCentre(0.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ARP_GAIN", 1),
@@ -75,7 +75,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Chord gain
     juce::AudioParameterFloatAttributes chordGainAttributes;
     chordGainAttributes = chordGainAttributes.withLabel(" dB");
-    juce::NormalisableRange<float> chordGainRange(-60.0f, 24.0f, 0.1f);
+    juce::NormalisableRange<float> chordGainRange(-60.0f, 24.0f, 0.01f);
     chordGainRange.setSkewForCentre(0.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("CHORD_GAIN", 1),
@@ -88,7 +88,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Dry wet mix
     juce::AudioParameterFloatAttributes mixAttributes;
     mixAttributes = mixAttributes.withLabel("%");
-    juce::NormalisableRange<float> mixRange(0.0f, 100.0f, 0.1f, 1.0f);
+    juce::NormalisableRange<float> mixRange(0.0f, 100.0f, 0.01f, 1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("MIX", 1),
         "Mix",
@@ -101,41 +101,55 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     
     // ============================================= TRIGGER ENVELOPE ============================================
 
+    // Trigger attack
+    juce::AudioParameterFloatAttributes trigAttackAttributes;
+    trigAttackAttributes = trigAttackAttributes.withLabel(" ms");
+    juce::NormalisableRange<float> trigAttackRange(0.0f, 500.0f, 0.01f);
+    trigAttackRange.setSkewForCentre(50.0f); // 50ms center
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("TRIG_ATTACK", 1),
+        "Trigger Attack",
+        trigAttackRange,
+        0.0f,
+        trigAttackAttributes
+    ));
+
     // Trigger release
     juce::AudioParameterFloatAttributes trigReleaseAttributes;
     trigReleaseAttributes = trigReleaseAttributes.withLabel(" ms");
-    juce::NormalisableRange<float> trigReleaseRange(1.0f, 500.0f, 0.1f);
+    juce::NormalisableRange<float> trigReleaseRange(1.0f, 500.0f, 0.01f);
     trigReleaseRange.setSkewForCentre(50.0f); // 50ms center
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_RELEASE", 1),
         "Trigger Release",
         trigReleaseRange,
-        100.0f,
+        1.0f,
         trigReleaseAttributes
     ));
 
-    // Trigger softness
-    juce::AudioParameterFloatAttributes trigAttackAttributes;
-    trigAttackAttributes = trigAttackAttributes.withLabel(" ms");
-    juce::NormalisableRange<float> trigSoftnessRange(0.0f, 200.0f, 0.1f);
-    trigSoftnessRange.setSkewForCentre(25.0f);
+    // Trigger hold
+    juce::AudioParameterFloatAttributes trigHoldAttributes;
+    trigHoldAttributes = trigHoldAttributes.withLabel(" ms");
+    juce::NormalisableRange<float> trigHoldRange(0.0f, 500.0f, 0.01f);
+    trigHoldRange.setSkewForCentre(50.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID("TRIG_SOFTNESS", 1),
-        "Trigger attack",
-        trigSoftnessRange,
-        0.0f,
-        trigAttackAttributes
+        juce::ParameterID("TRIG_HOLD", 1),
+        "Trigger Hold",
+        trigHoldRange,
+        0.02f,
+        trigHoldAttributes
     ));
 
     // Trigger threshold
     juce::AudioParameterFloatAttributes trigThreshAttributes;
     trigThreshAttributes = trigThreshAttributes.withLabel(" dB");
-    juce::NormalisableRange<float> trigThreshRange(0.0f, 24.0f, 0.1f);
+    juce::NormalisableRange<float> trigThreshRange(-60.0f, 0.0f, 0.01f);
+    trigThreshRange.setSkewForCentre(-12.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_THRESHOLD", 1),
         "Trigger threshold",
         trigThreshRange,
-        0.0f,
+        -27.0f,
         trigThreshAttributes
     ));
 
@@ -146,38 +160,38 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Chord voice attack
     juce::AudioParameterFloatAttributes chordAttackAttributes;
     chordAttackAttributes = chordAttackAttributes.withLabel(" s");
-    juce::NormalisableRange<float> chordAttackRange(0.001f, 2.0f, 0.001f);
-    chordAttackRange.setSkewForCentre(0.1f);
+    juce::NormalisableRange<float> chordAttackRange(0.0f, 2.0f, 0.001f);
+    chordAttackRange.setSkewForCentre(0.2f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("CHORD_ENV_ATTACK", 1),
         "Chord Env Attack",
         chordAttackRange,
-        0.01f,
+        0.5f,
         chordAttackAttributes
     ));
 
     // Chord voice decay
     juce::AudioParameterFloatAttributes chordDecayAttributes;
     chordDecayAttributes = chordDecayAttributes.withLabel(" s");
-    juce::NormalisableRange<float> chordDecayRange(0.01f, 3.0f, 0.01f);
+    juce::NormalisableRange<float> chordDecayRange(0.0f, 3.0f, 0.01f);
     chordDecayRange.setSkewForCentre(0.3f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("CHORD_ENV_DECAY", 1),
         "Chord Env Decay",
         chordDecayRange,
-        0.1f,
+        0.3f,
         chordDecayAttributes
     ));
 
     // Chord voice sustain
     juce::AudioParameterFloatAttributes chordSustainAttributes;
     chordSustainAttributes = chordSustainAttributes.withLabel("%");
-    juce::NormalisableRange<float> chordSustainRange(0.0f, 100.0f, 0.1f);
+    juce::NormalisableRange<float> chordSustainRange(0.0f, 100.0f, 1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("CHORD_ENV_SUSTAIN", 1),
         "Chord Env Sustain",
         chordSustainRange,
-        0.0f,
+        100.0f,
         chordSustainAttributes
     ));
 
@@ -190,7 +204,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         juce::ParameterID("CHORD_ENV_RELEASE", 1),
         "Chord Env Release",
         chordReleaseRange,
-        0.5f,
+        1.0f,
         chordReleaseAttributes
     ));
 
@@ -199,33 +213,33 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Arp voice attack
     juce::AudioParameterFloatAttributes arpAttackAttributes;
     arpAttackAttributes = arpAttackAttributes.withLabel(" s");
-    juce::NormalisableRange<float> arpAttackRange(0.001f, 2.0f, 0.001f);
+    juce::NormalisableRange<float> arpAttackRange(0.0f, 2.0f, 0.001f);
     arpAttackRange.setSkewForCentre(0.1f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ARP_ENV_ATTACK", 1),
         "Arp Env Attack",
         arpAttackRange,
-        0.01f,
+        0.0f,
         arpAttackAttributes
     ));
 
     // Arp voice decay
     juce::AudioParameterFloatAttributes arpDecayAttributes;
     arpDecayAttributes = arpDecayAttributes.withLabel(" s");
-    juce::NormalisableRange<float> arpDecayRange(0.01f, 3.0f, 0.01f);
+    juce::NormalisableRange<float> arpDecayRange(0.0f, 3.0f, 0.01f);
     arpDecayRange.setSkewForCentre(0.3f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ARP_ENV_DECAY", 1),
         "Arp Env Decay",
         arpDecayRange,
-        0.1f,
+        0.2f,
         arpDecayAttributes
     ));
 
     // Arp voice sustain
     juce::AudioParameterFloatAttributes arpSustainAttributes;
     arpSustainAttributes = arpSustainAttributes.withLabel("%");
-    juce::NormalisableRange<float> arpSustainRange(0.0f, 100.0f, 0.1f);
+    juce::NormalisableRange<float> arpSustainRange(0.0f, 100.0f, 1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ARP_ENV_SUSTAIN", 1),
         "Arp Env Sustain",
@@ -237,7 +251,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Arp voice release
     juce::AudioParameterFloatAttributes arpReleaseAttributes;
     arpReleaseAttributes = arpReleaseAttributes.withLabel(" s");
-    juce::NormalisableRange<float> arpReleaseRange(0.01f, 5.0f, 0.01f);
+    juce::NormalisableRange<float> arpReleaseRange(0.0f, 5.0f, 0.01f);
     arpReleaseRange.setSkewForCentre(1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("ARP_ENV_RELEASE", 1),
@@ -291,7 +305,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_GATE", 1 },
         "Arp Gate Length",
-        juce::NormalisableRange<float> (10.00f, 400.0f, 0.1f), // 10% to 400%
+        juce::NormalisableRange<float> (10.00f, 400.0f, 1.0f), // 10% to 400%
         100.0f,
         arpGateAttributes
     ));
@@ -333,7 +347,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_DEVIATION", 1 },
         "Deviation",
-        juce::NormalisableRange<float> (0.0f, 100.0f, 0.1f), // 0% to 100%
+        juce::NormalisableRange<float> (0.0f, 100.0f, 1.0f), // 0% to 100%
         0.0f,
         arpDevAttributes
     ));
@@ -344,7 +358,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "ARP_SCATTER", 1 },
         "Scatter",
-        juce::NormalisableRange<float> (0.0f, 100.0f, 0.1f), // 0% to 100%
+        juce::NormalisableRange<float> (0.0f, 100.0f, 1.0f), // 0% to 100%
         0.0f,
         arpScatAttributes
     ));
