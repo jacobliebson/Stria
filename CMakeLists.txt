@@ -51,6 +51,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/EnvelopeDisplay.cpp
     Source/ResonatorAnalyzer.h
     Source/ResonatorAnalyzer.cpp
+    Source/TriggerDisplay.h
+    Source/TriggerDisplay.cpp
 )
 
 # 4. Compile Features and Definitions

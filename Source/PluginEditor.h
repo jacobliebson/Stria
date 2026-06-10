@@ -5,6 +5,8 @@
 #include "ArpDisplay.h"
 #include "EnvelopeDisplay.h"
 #include "ResonatorAnalyzer.h"
+#include "TriggerDisplay.h"
+#include <memory>
 #include <string>
 
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
@@ -53,6 +55,8 @@ private:
     juce::Slider thresholdKnob,  releaseKnob,  softnessKnob;
     juce::Label  thresholdLabel, releaseLabel, softnessLabel;
     std::unique_ptr<SliderAttachment> thresholdAttachment, releaseAttachment, softnessAttachment;
+
+    std::unique_ptr<TriggerDisplay> triggerDisplay;
 
     //==========================================================================
     // Analyzer panel

@@ -3,6 +3,7 @@
 #include "PluginEditor.h"
 #include "ResonatorAnalyzer.h"
 #include "ResonatorPalette.h"
+#include "TriggerDisplay.h"
 #include <memory>
 #include <string_view>
 
@@ -56,6 +57,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
                releaseAttachment,   "TRIG_RELEASE", " ms");
     setupKnob (softnessKnob,  softnessLabel,  "Attack",
                softnessAttachment,  "TRIG_SOFTNESS", " ms");
+
+    triggerDisplay = std::make_unique<TriggerDisplay>(audioProcessor);
+    addAndMakeVisible(*triggerDisplay);
 
     // Envelope
     envelopeDisplay = std::make_unique<EnvelopeDisplay> (apvts,
@@ -296,7 +300,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    if (arpDisplay == nullptr || envelopeDisplay == nullptr)
+    if (arpDisplay == nullptr || envelopeDisplay == nullptr || triggerDisplay == nullptr)
         return;
 
     const int m      = Layout::margin;
@@ -371,8 +375,19 @@ void AudioPluginAudioProcessorEditor::resized()
     // Trigger panel
     {
         const int px = m;
-        const int contentY = panelY + Layout::titleHeight + pad;
-        knobRow (px, contentY, 3,
+        const int contentY = panelY + Layout::titleHeight;
+        const int available = bH - Layout::titleHeight - pad * 3 - kS - lH;
+
+        
+        int displayX = px + pad;
+        int displayY = contentY;
+        int displayW = panelW - 2 * pad;
+        int displayH = available;
+        
+        triggerDisplay->setBounds(displayX, displayY, displayW, displayH);
+
+        const int knobY = panelY + Layout::titleHeight + bH / 3 + pad + stride;
+        knobRow (px, knobY, 3,
                  { &thresholdKnob, &releaseKnob, &softnessKnob },
                  { &thresholdLabel, &releaseLabel, &softnessLabel });
     }

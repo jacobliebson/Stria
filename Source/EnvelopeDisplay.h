@@ -42,7 +42,7 @@ private:
     float release = 0.5f;
 
     // Max times in seconds used to normalise the display
-    juce::Colour accentColour = juce::Colour (0xff9b6dff); // defaults to purple
+    juce::Colour accentColour = ResonatorPalette::accentPrimary(); // defaults to purple
 
     static constexpr float maxAttack  = 2.0f;
     static constexpr float maxDecay   = 2.0f;

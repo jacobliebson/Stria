@@ -49,6 +49,7 @@ public:
     static constexpr int noiseRingSize = 4096;
     std::array<std::atomic<float>, noiseRingSize> noiseRingBuffer;
     std::atomic<int> noiseWritePos { 0 };
+    static constexpr int noiseDecimationFactor = 32;
 
     // Active notes snapshot — written audio thread, read GUI thread
     static constexpr int maxActiveNotes = 48; // numArpVoices + numChordVoices
@@ -86,7 +87,6 @@ private:
     double lastProcessorPPQ = -1.0;
 
     int noiseDecimationCounter = 0;
-    static constexpr int noiseDecimationFactor = 32;
 
     std::atomic<float>* feedback            = nullptr;
     std::atomic<float>* damping             = nullptr;
