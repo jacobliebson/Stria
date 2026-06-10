@@ -111,6 +111,7 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
         {
             float shake = (juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f) * detuneAmount;
             targetDetuneOffset = (targetDetuneOffset * 0.95f) + shake;
+            targetDetuneOffset = juce::jlimit (-detuneAmount, detuneAmount, targetDetuneOffset);
             driftCounter = 0;
         }
 
