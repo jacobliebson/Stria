@@ -110,6 +110,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         spreadAttributes
     ));
 
+    // Pan
+    juce::AudioParameterFloatAttributes panAttributes;
+    spreadAttributes = spreadAttributes.withLabel("%");
+    juce::NormalisableRange<float> panRange(-100.0f, 100.0f, 1.0f, 1.0f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("PAN", 1),
+        "Pan",
+        panRange,
+        0.0f,
+        panAttributes
+    ));
+
     
     
     // ============================================= TRIGGER ENVELOPE ============================================

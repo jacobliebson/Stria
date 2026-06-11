@@ -129,11 +129,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     chordGainAttachment = std::make_unique<SliderAttachment> (apvts, "CHORD_GAIN", chordGainSlider);
 
     setupKnob (mixKnob, mixLabel, "Mix", mixAttachment, "MIX", "%");
-
-    // Bypass
-    //bypassButton.setButtonText ("Bypass");
-    //addAndMakeVisible (bypassButton);
-    //bypassAttachment = std::make_unique<ButtonAttachment> (apvts, "ARP_BYPASS", bypassButton);
+    setupKnob (spreadKnob, spreadLabel, "Spread", spreadAttachment, "SPREAD", "%");
+    setupKnob (panKnob, panLabel, "Pan", panAttachment, "PAN", "%");
 
     // Initialise tab button and knob colours — Chord selected by default
     chordEnvButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary().withAlpha(0.3f));
@@ -391,6 +388,7 @@ void AudioPluginAudioProcessorEditor::resized()
     // Bottom panel layout helpers
     const int numPanels = 4;
     const int panelW    = (w - m * (numPanels + 1)) / numPanels;
+    const int panelH    = Layout::bottomH;
     const int panelY    = m + hH + m + tH + m;
 
     auto knobRow = [&] (int panelX, int panelContentY, int count,
@@ -407,6 +405,28 @@ void AudioPluginAudioProcessorEditor::resized()
             (*lit)->setBounds (startX, panelContentY + kS + 2, kS, lH);
             startX += kS + 6;
             ++sit; ++lit;
+        }
+    };
+
+    auto knobColumn = [&] (int panelY, int panelContentX, int count,
+                       std::initializer_list<juce::Slider*> sliders,
+                       std::initializer_list<juce::Label*>  labels)
+    {
+        const int totalKnobH = count * (kS + lH + 2) + (count - 1) * 6;
+        int startY = panelY + (panelH - totalKnobH) / 2;
+
+        auto sit = sliders.begin();
+        auto lit = labels.begin();
+
+        for (int i = 0; i < count; ++i)
+        {
+            (*sit)->setBounds (panelContentX, startY, kS, kS);
+            (*lit)->setBounds (panelContentX, startY + kS + 2, kS, lH);
+
+            startY += kS + lH + 2 + 6;
+
+            ++sit;
+            ++lit;
         }
     };
 
@@ -490,10 +510,10 @@ void AudioPluginAudioProcessorEditor::resized()
     // Mixer panel
     {
         const int px        = m * 4 + panelW * 3;
-        const int sliderH   = bH - Layout::titleHeight - stride - pad * 3;
+        const int sliderH   = bH - Layout::titleHeight - 3 * pad + 12 - stride + kS;
         const int sliderW   = 36;
-        const int sliderY   = panelY + Layout::titleHeight + pad;
-        const int spacing   = 10;
+        const int sliderY   = panelY + Layout::titleHeight + pad - 6;
+        const int spacing   = 15;
         const int totalSliderW = sliderW * 2 + spacing;
         const int sliderStartX = px + (panelW - totalSliderW - kS - spacing) / 2;
 
@@ -502,9 +522,10 @@ void AudioPluginAudioProcessorEditor::resized()
         chordGainSlider.setBounds (sliderStartX + sliderW + spacing, sliderY, sliderW, sliderH);
         chordGainLabel.setBounds  (sliderStartX + sliderW + spacing, sliderY + sliderH + 2, sliderW, lH);
 
-        const int mixX = sliderStartX + totalSliderW + spacing;
-        const int mixY = sliderY + (sliderH - kS) / 2;
-        mixKnob.setBounds  (mixX, mixY,     kS, kS);
-        mixLabel.setBounds (mixX, mixY + kS + 2, kS, lH);
+        int knobX = m * 4 + panelW * 4 - kS - 6 - 2 * pad;
+        knobColumn(panelY, knobX, 3, 
+            {&mixKnob, &spreadKnob, &panKnob},
+            {&mixLabel, &spreadLabel, &panLabel});
+
     }
 }

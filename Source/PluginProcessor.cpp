@@ -72,17 +72,19 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     detuneMode       = apvts.getRawParameterValue ("DETUNE_MODE");
 
 
-    mix              = apvts.getRawParameterValue ("MIX");
     arpGainDB        = apvts.getRawParameterValue ("ARP_GAIN");
     chordGainDB      = apvts.getRawParameterValue ("CHORD_GAIN");
+    mix              = apvts.getRawParameterValue ("MIX");
     spread           = apvts.getRawParameterValue("SPREAD");
-
+    pan              = apvts.getRawParameterValue ("PAN");
     
+
     trigAttack       = apvts.getRawParameterValue ("TRIG_ATTACK");
     trigHold         = apvts.getRawParameterValue ("TRIG_HOLD");
     trigRelease      = apvts.getRawParameterValue ("TRIG_RELEASE");
     trigThreshold    = apvts.getRawParameterValue ("TRIG_THRESHOLD");
     legatoModeParam  = apvts.getRawParameterValue("TRIG_MODE");
+
 
     arpEnvAttack     = apvts.getRawParameterValue ("ARP_ENV_ATTACK");
     arpEnvDecay      = apvts.getRawParameterValue ("ARP_ENV_DECAY");
@@ -176,10 +178,12 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     gateEnvelope.setParameters(gateParams);
     float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshold->load());
 
-    float currentMix         = mix->load() / 100.0f;
+
     float currentArpGainDB   = arpGainDB->load() + 12.0f;
     float currentChordGainDB = chordGainDB->load() + 12.0f;
+    float currentMix         = mix->load() / 100.0f;
     float currentSpread      = spread->load() / 100.0f;
+    float currentPan         = 0.5f + pan->load() / 200.0f;
 
     static constexpr float silenceThresholdDB = -60.0f;
     float arpGainLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f : juce::Decibels::decibelsToGain (currentArpGainDB);
@@ -400,10 +404,16 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         float blendedL = (inputL * (1.0f - currentMix)) + (finalWetL * currentMix);
         float blendedR = (inputR * (1.0f - currentMix)) + (finalWetR * currentMix);
 
-        buffer.setSample (0, sample, blendedL);
+        float leftGain  = std::cos (currentPan * juce::MathConstants<float>::halfPi);
+        float rightGain = std::sin (currentPan * juce::MathConstants<float>::halfPi);
+
+        float leftOut = blendedL * leftGain;
+        float rightOut = blendedR * rightGain;
+
+        buffer.setSample (0, sample, leftOut);
 
         if (totalNumInputChannels > 1)
-            buffer.setSample (1, sample, blendedR);
+            buffer.setSample (1, sample, rightOut);
     }
 
     midiMessages.clear();

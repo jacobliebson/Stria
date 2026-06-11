@@ -96,10 +96,11 @@ private:
     std::atomic<float>* detune              = nullptr;
     std::atomic<float>* detuneMode          = nullptr;
 
-    std::atomic<float>* mix                 = nullptr;
     std::atomic<float>* arpGainDB           = nullptr;
     std::atomic<float>* chordGainDB         = nullptr;
+    std::atomic<float>* mix                 = nullptr;
     std::atomic<float>* spread              = nullptr;
+    std::atomic<float>* pan                 = nullptr;
 
     CustomADSR gateEnvelope;
     std::atomic<float>* trigThreshold = nullptr;
@@ -108,7 +109,6 @@ private:
     std::atomic<float>* trigRelease     = nullptr;
     std::atomic<float>* legatoModeParam = nullptr;
     bool wasAboveThreshold;
-    //bool legatoMode;
 
     std::atomic<float>* arpEnvAttack        = nullptr;
     std::atomic<float>* arpEnvDecay         = nullptr;
