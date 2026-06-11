@@ -28,9 +28,18 @@ float CustomADSR::getEnvLevel() noexcept
 
 void CustomADSR::noteOn() noexcept
 {
+    // Non-legato: only (re)trigger from idle. While the envelope is already
+    // active, ignore further noteOn() calls and let it run to completion.
+    if (!parameters.legatoRetrigger && state != State::idle)
+        return;
+
     if (parameters.useHoldPhase)
         holdCounter = holdSamples;
 
+    // Legato retrigger from an active state (attack/decay/hold/sustain/release):
+    // re-enter the attack/hold/sustain chain without forcing envelopeVal back
+    // to 0, so there's no hard reset click. From idle, this is identical to
+    // the non-legato path below.
     if (attackRate > 0.0f)
     {
         state = State::attack;
@@ -153,6 +162,10 @@ void CustomADSR::goToNextState() noexcept
 
     if (state == State::hold)
     {
+        if (parameters.release > 0.0f)
+            releaseRate = (float) (envelopeVal / (parameters.release * sampleRate));
+        else
+            releaseRate = 1.0f; // Instant release if time is 0
         state = State::release;
         return;
     }
@@ -168,10 +181,11 @@ void CustomADSR::recalculateRates() noexcept
         return timeInSeconds > 0.0f ? (float) (distance / (timeInSeconds * sr)) : -1.0f;
     };
 
-    attackRate  = getRate (1.0f, parameters.attack, sampleRate);
-    decayRate   = getRate (1.0f - parameters.sustain, parameters.decay, sampleRate);
-    releaseRate = getRate (1.0f, parameters.release, sampleRate);  // add this
+    attackRate = getRate (1.0f, parameters.attack, sampleRate);
+    decayRate  = getRate (1.0f - parameters.sustain, parameters.decay, sampleRate);
     holdSamples = static_cast<int32_t>(parameters.hold * sampleRate);
+    // releaseRate is intentionally omitted — it's calculated dynamically in noteOff()
+    // based on envelopeVal at that moment, so it correctly covers only the remaining distance.
 
     if ((state == State::attack && attackRate <= 0.0f)
         || (state == State::decay && (decayRate <= 0.0f || envelopeVal <= parameters.sustain))

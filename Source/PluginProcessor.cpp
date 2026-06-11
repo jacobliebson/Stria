@@ -157,6 +157,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     gateParams.hold    = trigHold->load() / 1000.0f;
     gateParams.release = trigRelease->load() / 1000.0f;
     gateParams.useHoldPhase = true;
+    gateParams.legatoRetrigger = legatoMode;
     gateEnvelope.setParameters(gateParams);
     float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshold->load());
 
@@ -172,7 +173,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     arpEnvParams.attack  = arpEnvAttack ->load();
     arpEnvParams.decay   = arpEnvDecay  ->load();
     arpEnvParams.sustain = arpEnvSustain->load() / 100.0f;
-    arpEnvParams.release = arpEnvRelease->load();
+    arpEnvParams.release = std::max(0.01f,arpEnvRelease->load());
     arpEnvParams.hold    = 0.0f;
     arpEnvParams.useHoldPhase = false;
 
@@ -180,7 +181,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     chordEnvParams.attack  = chordEnvAttack ->load();
     chordEnvParams.decay   = chordEnvDecay  ->load();
     chordEnvParams.sustain = chordEnvSustain->load() / 100.0f;
-    chordEnvParams.release = chordEnvRelease->load();
+    chordEnvParams.release = std::max(0.01f,chordEnvRelease->load());
     chordEnvParams.hold    = 0.0f;
     chordEnvParams.useHoldPhase = false;
 
@@ -200,10 +201,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     {
         // Compute linear gains once before the loops
         // Mirrors the existing silenceThresholdDB logic already in processBlock
-        const float arpLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f 
-                                : juce::Decibels::decibelsToGain (currentArpGainDB);
-        const float chordLinear = (currentChordGainDB <= silenceThresholdDB) ? 0.0f 
-                                : juce::Decibels::decibelsToGain (currentChordGainDB);
+        const float arpLinear   = juce::Decibels::decibelsToGain (currentArpGainDB);
+        const float chordLinear = juce::Decibels::decibelsToGain (currentChordGainDB);
 
         int count = 0;
 
@@ -325,29 +324,14 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
         bool isAboveThreshold = absInput > thresholdLinear;
         
-        if (isAboveThreshold && !wasAboveThreshold && !gateEnvelope.isActive())
+        if (isAboveThreshold && !wasAboveThreshold)
             gateEnvelope.noteOn();
+
      
         wasAboveThreshold = isAboveThreshold;
 
         constexpr float minThresh = 0.0011f;
         float gateGain = thresholdLinear < minThresh? 1.0f : gateEnvelope.getNextSample();
-
-        // --- TEMP LOGGING ---
-        if (gateLogFile.is_open() && gateLogCounter < 200000) // cap to avoid huge files
-        {
-            gateLogFile << gateLogCounter << ","
-                        << absInput << ","
-                        << thresholdLinear << ","
-                        << (isAboveThreshold ? 1 : 0) << ","
-                        << (wasAboveThreshold ? 1 : 0) << ","
-                        << gateEnvelope.getStateInt() << ","
-                        << gateEnvelope.getEnvLevel() << ","
-                        << gateEnvelope.getHoldCounter() << ","
-                        << gateGain << "\n";
-            ++gateLogCounter;
-        }
-        // --- END TEMP LOGGING ---
 
         float excitationL = inputL * gateGain;
         float excitationR = inputR * gateGain;

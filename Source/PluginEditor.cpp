@@ -51,7 +51,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     
 
     // Trigger
-    setupKnob (trigThresholdKnob, trigThresholdLabel, "Threshold",
+    setupKnob (trigThresholdKnob, trigThresholdLabel, "Thresh",
                trigThresholdAttachment, "TRIG_THRESHOLD", " dB");
     setupKnob (trigAttackKnob,  trigAttackLabel,  "Attack",
                trigAttackAttachment,  "TRIG_ATTACK", " ms");

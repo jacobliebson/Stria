@@ -104,7 +104,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Trigger attack
     juce::AudioParameterFloatAttributes trigAttackAttributes;
     trigAttackAttributes = trigAttackAttributes.withLabel(" ms");
-    juce::NormalisableRange<float> trigAttackRange(0.0f, 500.0f, 0.01f);
+    juce::NormalisableRange<float> trigAttackRange(0.0f, 500.0f, 0.1f);
     trigAttackRange.setSkewForCentre(50.0f); // 50ms center
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_ATTACK", 1),
@@ -117,7 +117,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Trigger release
     juce::AudioParameterFloatAttributes trigReleaseAttributes;
     trigReleaseAttributes = trigReleaseAttributes.withLabel(" ms");
-    juce::NormalisableRange<float> trigReleaseRange(1.0f, 500.0f, 0.01f);
+    juce::NormalisableRange<float> trigReleaseRange(0.0f, 500.0f, 0.1f);
     trigReleaseRange.setSkewForCentre(50.0f); // 50ms center
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_RELEASE", 1),
@@ -130,7 +130,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Trigger hold
     juce::AudioParameterFloatAttributes trigHoldAttributes;
     trigHoldAttributes = trigHoldAttributes.withLabel(" ms");
-    juce::NormalisableRange<float> trigHoldRange(0.0f, 500.0f, 0.01f);
+    juce::NormalisableRange<float> trigHoldRange(0.0f, 500.0f, 0.1f);
     trigHoldRange.setSkewForCentre(50.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_HOLD", 1),
@@ -143,7 +143,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Trigger threshold
     juce::AudioParameterFloatAttributes trigThreshAttributes;
     trigThreshAttributes = trigThreshAttributes.withLabel(" dB");
-    juce::NormalisableRange<float> trigThreshRange(-60.0f, 0.0f, 0.01f);
+    juce::NormalisableRange<float> trigThreshRange(-60.0f, 0.0f, 0.1f);
     trigThreshRange.setSkewForCentre(-12.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("TRIG_THRESHOLD", 1),
@@ -198,7 +198,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     // Chord voice release
     juce::AudioParameterFloatAttributes chordReleaseAttributes;
     chordReleaseAttributes = chordReleaseAttributes.withLabel(" s");
-    juce::NormalisableRange<float> chordReleaseRange(0.01f, 5.0f, 0.01f);
+    juce::NormalisableRange<float> chordReleaseRange(0.0f, 5.0f, 0.01f);
     chordReleaseRange.setSkewForCentre(1.0f);
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("CHORD_ENV_RELEASE", 1),

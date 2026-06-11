@@ -9,6 +9,7 @@ public:
     {
         float attack = 0.1f, decay = 0.1f, sustain = 1.0f, release = 0.1f, hold = 0.5f;
         bool useHoldPhase = false;
+        bool legatoRetrigger = false;
     };
 
     CustomADSR() noexcept;

@@ -104,6 +104,7 @@ private:
     std::atomic<float>* trigHold        = nullptr;
     std::atomic<float>* trigRelease     = nullptr;
     bool wasAboveThreshold;
+    bool legatoMode = false;
 
     std::atomic<float>* arpEnvAttack        = nullptr;
     std::atomic<float>* arpEnvDecay         = nullptr;

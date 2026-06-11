@@ -26,6 +26,7 @@ public:
     // The main processing pipeline called at the top of PluginProcessor::processBlock
     void processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead);
 
+
 private:
     struct ActiveNote
     {
@@ -71,6 +72,7 @@ private:
     int    nextStepIndex     = 0;     // Grid step index of the next note to fire
     size_t    poolIndex      = 0;     // Position within heldNotes for Up/Down modes
     bool arpGoingUp             = false; 
+
 
     juce::Random randomEngine;
 
