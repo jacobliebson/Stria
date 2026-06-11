@@ -59,11 +59,17 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
                trigHoldAttachment,  "TRIG_HOLD", " ms");
     setupKnob (trigReleaseKnob,   trigReleaseLabel,   "Release",
                trigReleaseAttachment,   "TRIG_RELEASE", " ms");
-    
-    
 
     triggerDisplay = std::make_unique<TriggerDisplay>(audioProcessor);
     addAndMakeVisible(*triggerDisplay);
+
+    // default to legato
+    legatoButton.setClickingTogglesState(false);
+    retriggerButton.setClickingTogglesState(false);
+    legatoButton.onClick = [this] { switchTriggerModeTo(true); };
+    retriggerButton.onClick = [this] { switchTriggerModeTo(false); };
+    addAndMakeVisible(legatoButton);
+    addAndMakeVisible(retriggerButton);
 
     // Envelope
     envelopeDisplay = std::make_unique<EnvelopeDisplay> (apvts,
@@ -138,6 +144,17 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     arpEnvButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
     chordEnvButton.setColour (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
     arpEnvButton.setColour   (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
+    
+    // Initialise trigger mode selector - legato selected by default
+    legatoButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary().withAlpha(0.3f));
+    legatoButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
+    legatoButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    retriggerButton.setColour   (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
+    retriggerButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
+    retriggerButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    legatoButton.setColour (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
+    retriggerButton.setColour   (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
+
 
     for (auto* knob : { &attackKnob, &decayKnob, &sustainKnob, &releaseEnvKnob })
         knob->setColour (juce::Slider::rotarySliderFillColourId, ResonatorPalette::accentPrimary());
@@ -230,6 +247,25 @@ void AudioPluginAudioProcessorEditor::switchEnvelopeTo (bool showArp)
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,
                               showArp ? ResonatorPalette::accentSecondary().withAlpha(0.3f)
                                       : ResonatorPalette::backgroundWidget());
+}
+
+void AudioPluginAudioProcessorEditor::switchTriggerModeTo (bool legato) {
+    legatoMode = legato;
+
+    if (auto* param = dynamic_cast<juce::AudioParameterBool*>(
+            audioProcessor.apvts.getParameter("TRIG_MODE")))
+    {
+        param->beginChangeGesture();
+        param->setValueNotifyingHost(legato ?  1.0f : 0.0f);
+        param->endChangeGesture();
+    }
+
+    legatoButton.setColour(juce::TextButton::buttonColourId,
+                           !legatoMode? ResonatorPalette::backgroundWidget()
+                                    : ResonatorPalette::accentPrimary().withAlpha(0.3f));
+    retriggerButton.setColour(juce::TextButton::buttonColourId,
+                           legatoMode? ResonatorPalette::backgroundWidget()
+                                    : ResonatorPalette::accentSecondary().withAlpha(0.3f));  
 }
 
 void AudioPluginAudioProcessorEditor::drawPanel (juce::Graphics& g,
@@ -387,6 +423,13 @@ void AudioPluginAudioProcessorEditor::resized()
         int displayY = contentY;
         int displayW = panelW - 2 * pad;
         int displayH = available;
+        int tabY = panelY - m + 6;
+        const int tabH = 12;
+        const int tabW = 35;
+        
+
+        legatoButton.setBounds (px + panelW - 2 * (tabW + 6),            tabY, tabW, tabH);
+        retriggerButton.setBounds   (px + panelW - tabW - 6, tabY, tabW, tabH);
         
         triggerDisplay->setBounds(displayX, displayY, displayW, displayH);
 
@@ -401,12 +444,12 @@ void AudioPluginAudioProcessorEditor::resized()
     // Envelope panel
     {
         const int px   = m * 2 + panelW;
+        int tabY = panelY - m + 6;
         const int tabH = 12;
         const int tabW = 30;
-        const int tabY = panelY + pad;
 
-        chordEnvButton.setBounds (px + panelW - 2 * (tabW + 6),            panelY + 6, tabW, tabH);
-        arpEnvButton.setBounds   (px + panelW - tabW - 6, panelY + 6, tabW, tabH);
+        chordEnvButton.setBounds (px + panelW - 2 * (tabW + 6),           tabY, tabW, tabH);
+        arpEnvButton.setBounds   (px + panelW - tabW - 6, tabY, tabW, tabH);
 
         const int available = bH - Layout::titleHeight - pad * 3 - kS - lH;
         envelopeDisplay->setBounds (px + pad,

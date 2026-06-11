@@ -59,6 +59,11 @@ private:
 
     std::unique_ptr<TriggerDisplay> triggerDisplay;
 
+    juce::TextButton legatoButton { "Legato" };
+    juce::TextButton retriggerButton   { "Retrigger"   };
+    bool legatoMode = false;
+    void switchTriggerModeTo (bool legato);
+
     //==========================================================================
     // Analyzer panel
     std::unique_ptr<ResonatorAnalyzer> resonatorAnalyzer;

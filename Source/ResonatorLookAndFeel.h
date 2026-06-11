@@ -22,7 +22,7 @@ public:
     // Labels
     void drawLabel (juce::Graphics&, juce::Label&) override;
 
-    // Toggle buttons (used for Bypass)
+    // Toggle buttons
     void drawToggleButton (juce::Graphics&, juce::ToggleButton&,
                            bool shouldDrawButtonAsHighlighted,
                            bool shouldDrawButtonAsDown) override;

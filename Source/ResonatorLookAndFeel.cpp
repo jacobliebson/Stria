@@ -274,3 +274,6 @@ void ResonatorLookAndFeel::drawToggleButton (juce::Graphics& g,
                       button.getLocalBounds(),
                       juce::Justification::centred, 1);
 }
+
+
+
