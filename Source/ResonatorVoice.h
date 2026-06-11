@@ -2,6 +2,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "CombFilter.h"
 #include "CustomADSR.h"
+#include "HaltonGenerator.h"
 
 // JUCE Synthesizer requires a sound definition to match voices against
 class ResonatorSound : public juce::SynthesiserSound
@@ -17,7 +18,7 @@ public:
 class ResonatorVoice : public juce::SynthesiserVoice
 {
 public:
-    ResonatorVoice();
+    ResonatorVoice(HaltonGenerator& generator);
     ~ResonatorVoice() override = default;
 
     bool canPlaySound (juce::SynthesiserSound* sound) override;
@@ -39,6 +40,8 @@ public:
     float getEnvelopeLevel();
 
     float getCurrentFrequency();
+
+    void setHaltonGenerator(HaltonGenerator& generator);
  
     // Returns the MIDI note this voice was started on (0 if inactive)
     int getCurrentMidiNote() const { return isVoiceActive() ? getCurrentlyPlayingNote() : -1; }
@@ -50,9 +53,13 @@ private:
 
     float baseFrequency;
     float currentFrequency;
+
     int detuneMode;
     float detuneAmount;
     int driftCounter;
     float currentDetuneOffset;
     float targetDetuneOffset;
+
+    HaltonGenerator& haltonPanner;
+    float currentPan = 0.5f;
 };

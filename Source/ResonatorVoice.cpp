@@ -1,7 +1,8 @@
 // Source/ResonatorVoice.cpp
 #include "ResonatorVoice.h"
+#include "HaltonGenerator.h"
 
-ResonatorVoice::ResonatorVoice()
+ResonatorVoice::ResonatorVoice(HaltonGenerator& generator) : haltonPanner(generator)
 {
     // 1. Initialize your custom parameters mapping layout
     CustomADSR::Parameters params;
@@ -12,6 +13,7 @@ ResonatorVoice::ResonatorVoice()
     params.hold = 0.0f;
     params.useHoldPhase = false;  
     adsr.setParameters (params);
+    
 }
 
 float ResonatorVoice::getEnvelopeLevel() 
@@ -42,6 +44,9 @@ void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::Synthe
         float randomRange = juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f;
         processedMidi += randomRange * detuneAmount;
     }
+
+    // calculate pan position
+    currentPan = haltonPanner.getNextValue();
 
     // 3. Convert to frequency
     baseFrequency = 440.0f * std::pow(2.0f, (baseMidi - 69.0f) / 12.0f);
@@ -130,8 +135,12 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
 
     // Standard audio processing
     float envelopeGain = adsr.getNextSample();
-    float wetL = leftFilter.processSample (inputL * envelopeGain);
-    float wetR = rightFilter.processSample (inputR * envelopeGain);
+
+    float leftGain  = std::cos (currentPan * juce::MathConstants<float>::halfPi);
+    float rightGain = std::sin (currentPan * juce::MathConstants<float>::halfPi);
+
+    float wetL = leftFilter.processSample (inputL * envelopeGain) * leftGain;
+    float wetR = rightFilter.processSample (inputR * envelopeGain) * rightGain;
 
     outputL += wetL;
     outputR += wetR;

@@ -1,4 +1,5 @@
 #include "Parameters.h"
+#include <memory>
 
 juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParameters () {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -97,6 +98,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         mixAttributes
     ));
 
+    // Stereo spread
+    juce::AudioParameterFloatAttributes spreadAttributes;
+    spreadAttributes = spreadAttributes.withLabel("%");
+    juce::NormalisableRange<float> spreadRange(0.0f, 100.0f, 1.0f, 1.0f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("SPREAD", 1),
+        "Spread",
+        spreadRange,
+        0.0f,
+        spreadAttributes
+    ));
+
     
     
     // ============================================= TRIGGER ENVELOPE ============================================
@@ -152,6 +165,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         -27.0f,
         trigThreshAttributes
     ));
+
+    // Legato mode toggle
+    juce::AudioParameterBoolAttributes triggerModeAttributes;
+    triggerModeAttributes = triggerModeAttributes.withStringFromValueFunction([](bool value, int maxLen) -> juce::String {
+        if (value) 
+            return "Legato";
+        else 
+            return "Retrigger";
+    });
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("TRIG_MODE", 1),
+        "Mode",
+        true,
+        triggerModeAttributes
+    ));
+
 
     
     

@@ -53,6 +53,7 @@ target_sources(MyJucePlugin PRIVATE
     Source/ResonatorAnalyzer.cpp
     Source/TriggerDisplay.h
     Source/TriggerDisplay.cpp
+    Source/HaltonGenerator.h
 )
 
 # 4. Compile Features and Definitions

@@ -3,6 +3,7 @@
 #include "CombFilter.h"
 #include "Parameters.h"
 #include "CustomADSR.h"
+#include "HaltonGenerator.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
 class AudioPluginAudioProcessor  : public juce::AudioProcessor
@@ -30,8 +31,8 @@ public:
     const juce::String getProgramName (int index) override { juce::ignoreUnused (index); return {}; }
     void changeProgramName (int index, const juce::String& newName) override { juce::ignoreUnused (index); juce::ignoreUnused (newName); }
 
-    void getStateInformation (juce::MemoryBlock& destData) override { juce::ignoreUnused (destData); }
-    void setStateInformation (const void* data, int sizeInBytes) override { juce::ignoreUnused (data); juce::ignoreUnused (sizeInBytes); }
+    void getStateInformation (juce::MemoryBlock& destData) override;
+    void setStateInformation (const void* data, int sizeInBytes) override;
 
     static constexpr int numArpVoices   = 32;
     static constexpr int numChordVoices = 16;
@@ -75,6 +76,7 @@ private:
     // updateParameters so each pool can receive different envParams.
     juce::Synthesiser arpSynth;
     juce::Synthesiser chordSynth;
+    HaltonGenerator haltonPanner;
 
     Arpeggiator arp;
     std::atomic<float>* arpRateIndex        = nullptr;
@@ -97,14 +99,16 @@ private:
     std::atomic<float>* mix                 = nullptr;
     std::atomic<float>* arpGainDB           = nullptr;
     std::atomic<float>* chordGainDB         = nullptr;
+    std::atomic<float>* spread              = nullptr;
 
     CustomADSR gateEnvelope;
     std::atomic<float>* trigThreshold = nullptr;
     std::atomic<float>* trigAttack      = nullptr;
     std::atomic<float>* trigHold        = nullptr;
     std::atomic<float>* trigRelease     = nullptr;
+    std::atomic<float>* legatoModeParam = nullptr;
     bool wasAboveThreshold;
-    bool legatoMode = false;
+    //bool legatoMode;
 
     std::atomic<float>* arpEnvAttack        = nullptr;
     std::atomic<float>* arpEnvDecay         = nullptr;

@@ -22,21 +22,35 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
       apvts (*this, nullptr, "PARAMETERS", createParameterLayout())
 {
     for (int i = 0; i < numArpVoices; ++i)
-        arpSynth.addVoice (new ResonatorVoice());
+        arpSynth.addVoice (new ResonatorVoice(haltonPanner));
 
     for (int i = 0; i < numChordVoices; ++i)
-        chordSynth.addVoice (new ResonatorVoice());
+        chordSynth.addVoice (new ResonatorVoice(haltonPanner));
 
     arpSynth.addSound   (new ResonatorSound());
     chordSynth.addSound (new ResonatorSound());
 
-    auto logPath = juce::File::getSpecialLocation (juce::File::userDesktopDirectory)
-                   .getChildFile ("gate_log.csv");
-gateLogFile.open (logPath.getFullPathName().toStdString());
-gateLogFile << "sample,absInput,thresholdLinear,isAboveThreshold,wasAboveThreshold,state,envelopeVal,holdCounter,gateGain\n";
+    haltonPanner.setMin(0.0f);
+    haltonPanner.setMax(1.0f);
+
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
+
+void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData) 
+{
+    auto state = apvts.copyState();
+    std::unique_ptr<juce::XmlElement> xml (state.createXml());
+    copyXmlToBinary (*xml, destData);
+}
+
+void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes) 
+{
+    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName (apvts.state.getType()))
+            apvts.replaceState (juce::ValueTree::fromXml (*xmlState));
+}
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -61,13 +75,14 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     mix              = apvts.getRawParameterValue ("MIX");
     arpGainDB        = apvts.getRawParameterValue ("ARP_GAIN");
     chordGainDB      = apvts.getRawParameterValue ("CHORD_GAIN");
+    spread           = apvts.getRawParameterValue("SPREAD");
 
     
     trigAttack       = apvts.getRawParameterValue ("TRIG_ATTACK");
-    trigHold       = apvts.getRawParameterValue ("TRIG_HOLD");
+    trigHold         = apvts.getRawParameterValue ("TRIG_HOLD");
     trigRelease      = apvts.getRawParameterValue ("TRIG_RELEASE");
     trigThreshold    = apvts.getRawParameterValue ("TRIG_THRESHOLD");
-
+    legatoModeParam  = apvts.getRawParameterValue("TRIG_MODE");
 
     arpEnvAttack     = apvts.getRawParameterValue ("ARP_ENV_ATTACK");
     arpEnvDecay      = apvts.getRawParameterValue ("ARP_ENV_DECAY");
@@ -157,13 +172,14 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     gateParams.hold    = trigHold->load() / 1000.0f;
     gateParams.release = trigRelease->load() / 1000.0f;
     gateParams.useHoldPhase = true;
-    gateParams.legatoRetrigger = legatoMode;
+    gateParams.legatoRetrigger = legatoModeParam->load() > 0.5f;
     gateEnvelope.setParameters(gateParams);
     float thresholdLinear = juce::Decibels::decibelsToGain (trigThreshold->load());
 
     float currentMix         = mix->load() / 100.0f;
     float currentArpGainDB   = arpGainDB->load() + 12.0f;
     float currentChordGainDB = chordGainDB->load() + 12.0f;
+    float currentSpread      = spread->load() / 100.0f;
 
     static constexpr float silenceThresholdDB = -60.0f;
     float arpGainLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f : juce::Decibels::decibelsToGain (currentArpGainDB);
@@ -184,6 +200,9 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     chordEnvParams.release = std::max(0.01f,chordEnvRelease->load());
     chordEnvParams.hold    = 0.0f;
     chordEnvParams.useHoldPhase = false;
+
+    haltonPanner.setMin(0.5f - currentSpread / 2.0f);
+    haltonPanner.setMax(0.5f + currentSpread / 2.0f);
 
     // Broadcast parameters to both voice pools
     // NOTE: When independent envelopes are added, pass VoiceRole here to route
