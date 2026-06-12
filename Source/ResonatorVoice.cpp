@@ -66,6 +66,12 @@ void ResonatorVoice::stopNote (float velocity, bool allowTailOff)
 {
     juce::ignoreUnused(velocity);
 
+    if (sustainStatePtr && sustainStatePtr->load())
+    {
+        isSustainHeld = true; 
+        return; 
+    }
+
     if (allowTailOff)
     {
         adsr.noteOff();
@@ -108,6 +114,11 @@ void ResonatorVoice::updateParameters (float feedback, float damping, const Cust
 
 void ResonatorVoice::processExcitation (float inputL, float inputR, float& outputL, float& outputR)
 {
+    if (isSustainHeld && sustainStatePtr && !sustainStatePtr->load())
+    {
+        adsr.noteOff();
+        isSustainHeld = false;
+    }
     // Update drift/shake logic if mode is 1 (Drift) or 2 (shake)
     if (detuneMode != 0) 
     {

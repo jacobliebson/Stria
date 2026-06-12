@@ -6,7 +6,6 @@
 
 void Arpeggiator::prepare (double newSampleRate)
 {
-    // Reserved for future sample-accurate event placement
     juce::ignoreUnused (newSampleRate);
     reset();
 }
@@ -14,6 +13,7 @@ void Arpeggiator::prepare (double newSampleRate)
 void Arpeggiator::reset()
 {
     heldNotes.clear();
+    sustainedNotes.clear();
     activeNotes.clear();
     expandedNotes.clear();
     lastPPQ           = -1.0;
@@ -21,6 +21,7 @@ void Arpeggiator::reset()
     pendingStepLength = -1.0;
     nextStepIndex     = 0;
     poolIndex         = 0;
+    wasSustainActive  = false;
 }
 
 Arpeggiator::ArpMode Arpeggiator::modeFromIndex (int index)
@@ -58,9 +59,8 @@ void Arpeggiator::scheduleNextTrigger()
     nextTargetPPQ          = gridBoundaryPPQ + scatterOffset;
 }
 
-void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead)
+void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead, bool sustainActive)
 {
-
     if (playHead == nullptr)
         return;
 
@@ -77,7 +77,6 @@ void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioP
 
     if (! isPlaying)
     {
-        // Transport stopped: pass MIDI through and reset sequencing state
         releaseAllActiveNotes (midiMessages);
         updateHeldNotes (midiMessages);
         lastPPQ           = -1.0;
@@ -95,9 +94,6 @@ void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioP
 
     lastPPQ = currentPPQ;
 
-    // Apply a pending rate change now that we have currentPPQ. Recompute
-    // nextStepIndex and nextTargetPPQ from scratch against the new step length
-    // so the target always lands in the near future regardless of direction.
     if (pendingStepLength > 0.0)
     {
         stepLengthInBeats = pendingStepLength;
@@ -107,9 +103,14 @@ void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioP
         scheduleNextTrigger();
     }
 
-    // Update heldNotes from incoming MIDI, stripping note events from the
-    // output buffer so they don't bleed through as raw notes while playing.
-    consumeIncomingMidi (midiMessages);
+    // Update heldNotes from incoming MIDI, deferring note-offs while sustain is active
+    consumeIncomingMidi (midiMessages, sustainActive);
+
+    // Sustain released this block: flush any deferred note-offs
+    if (wasSustainActive && ! sustainActive)
+        flushSustainedNotes();
+
+    wasSustainActive = sustainActive;
 
     if (heldNotes.empty())
     {
@@ -118,14 +119,12 @@ void Arpeggiator::processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioP
         return;
     }
 
-    // On the very first block (or after a reset), schedule the first trigger
     if (nextTargetPPQ < 0.0)
     {
         nextStepIndex = static_cast<int> (std::floor (currentPPQ / stepLengthInBeats)) + 1;
         scheduleNextTrigger();
     }
 
-    // Edge-trigger: has the playhead crossed the scattered target time?
     if (currentPPQ >= nextTargetPPQ)
     {
         triggerNextNote (midiMessages, currentPPQ);
@@ -161,13 +160,11 @@ void Arpeggiator::updateHeldNotes (const juce::MidiBuffer& incomingMidi)
         }
     }
 
-    // Keep sorted lowest-to-highest so Up/Down modes have a predictable base
     std::sort (heldNotes.begin(), heldNotes.end());
-
     rebuildExpandedNotes();
 }
 
-void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi)
+void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi, bool sustainActive)
 {
     juce::MidiBuffer filteredMidi;
 
@@ -179,16 +176,30 @@ void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi)
         {
             int note = message.getNoteNumber();
 
+            // If this note was pending sustained removal, cancel that
+            auto sit = std::find (sustainedNotes.begin(), sustainedNotes.end(), note);
+            if (sit != sustainedNotes.end())
+                sustainedNotes.erase (sit);
+
             if (std::find (heldNotes.begin(), heldNotes.end(), note) == heldNotes.end())
                 heldNotes.push_back (note);
         }
         else if (message.isNoteOff())
         {
             int note = message.getNoteNumber();
-            auto it  = std::find (heldNotes.begin(), heldNotes.end(), note);
 
-            if (it != heldNotes.end())
-                heldNotes.erase (it);
+            if (sustainActive)
+            {
+                // Defer removal until sustain is released
+                if (std::find (sustainedNotes.begin(), sustainedNotes.end(), note) == sustainedNotes.end())
+                    sustainedNotes.push_back (note);
+            }
+            else
+            {
+                auto it = std::find (heldNotes.begin(), heldNotes.end(), note);
+                if (it != heldNotes.end())
+                    heldNotes.erase (it);
+            }
         }
         else
         {
@@ -199,9 +210,24 @@ void Arpeggiator::consumeIncomingMidi (juce::MidiBuffer& incomingMidi)
 
     incomingMidi.swapWith (filteredMidi);
 
-    // Keep sorted lowest-to-highest so Up/Down modes have a predictable base
     std::sort (heldNotes.begin(), heldNotes.end());
+    rebuildExpandedNotes();
+}
 
+void Arpeggiator::flushSustainedNotes()
+{
+    if (sustainedNotes.empty())
+        return;
+
+    for (int note : sustainedNotes)
+    {
+        auto it = std::find (heldNotes.begin(), heldNotes.end(), note);
+        if (it != heldNotes.end())
+            heldNotes.erase (it);
+    }
+    sustainedNotes.clear();
+
+    std::sort (heldNotes.begin(), heldNotes.end());
     rebuildExpandedNotes();
 }
 
@@ -232,7 +258,6 @@ void Arpeggiator::rebuildExpandedNotes()
         }
     }
 
-    // Keep sorted so Up/Down modes have a predictable base
     std::sort (expandedNotes.begin(), expandedNotes.end());
 }
 
@@ -252,7 +277,7 @@ int Arpeggiator::selectNextNote()
         {
             if (poolIndex < 0 || poolIndex >= size)
                 poolIndex = 0;
-            
+
             int note = useRandomNote? randomNote : expandedNotes[poolIndex];
             poolIndex++;
             return note;
@@ -262,7 +287,7 @@ int Arpeggiator::selectNextNote()
         {
             if (poolIndex < 0 || poolIndex >= size)
                 poolIndex = size - 1;
-            
+
             int note = useRandomNote? randomNote : expandedNotes[poolIndex];
             poolIndex--;
             return note;
@@ -303,7 +328,6 @@ int Arpeggiator::selectNextNote()
 
             return note;
         }
-
     }
 }
 
@@ -313,8 +337,6 @@ void Arpeggiator::triggerNextNote (juce::MidiBuffer& outputMidi, double currentP
         return;
 
     int noteToPlay = selectNextNote();
-    
-    // Clamp to valid MIDI range
     noteToPlay = juce::jlimit (0, 127, noteToPlay);
 
     int velocity = 90;

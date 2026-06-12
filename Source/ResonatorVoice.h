@@ -25,6 +25,7 @@ public:
     
     void startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition) override;
     void stopNote (float velocity, bool allowTailOff) override;
+    void setSustainStatePointer(std::atomic<bool>* ptr) { sustainStatePtr = ptr; }
     
     void pitchWheelMoved (int newPitchWheelValue) override;
     void controllerMoved (int controllerNumber, int newControllerValue) override;
@@ -50,6 +51,9 @@ private:
     CombFilter leftFilter;
     CombFilter rightFilter;
     CustomADSR adsr;
+
+    std::atomic<bool>* sustainStatePtr = nullptr;
+    bool isSustainHeld; // if note is being held due to sustain
 
     float baseFrequency;
     float currentFrequency;

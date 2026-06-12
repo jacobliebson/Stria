@@ -24,7 +24,7 @@ public:
     void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, float deviation, int newOctaveRange);
 
     // The main processing pipeline called at the top of PluginProcessor::processBlock
-    void processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead);
+    void processMidiBlock (juce::MidiBuffer& midiMessages, juce::AudioPlayHead* playHead, bool sustainActive);
 
 
 private:
@@ -43,7 +43,7 @@ private:
 
     // Reads note events into heldNotes and rebuilds the buffer with them stripped,
     // so they don't bleed through to the output as raw notes
-    void consumeIncomingMidi (juce::MidiBuffer& incomingMidi);
+    void consumeIncomingMidi (juce::MidiBuffer& incomingMidi, bool sustainActive);
 
     // Expands active notes to the specified octave range
     void rebuildExpandedNotes();
@@ -51,6 +51,8 @@ private:
     void triggerNextNote (juce::MidiBuffer& outputMidi, double currentPPQ);
     void checkScheduledNoteOffs (juce::MidiBuffer& outputMidi, double currentPPQ);
     void releaseAllActiveNotes (juce::MidiBuffer& outputMidi);
+
+    void flushSustainedNotes();
 
     int selectNextNote();
 
@@ -76,7 +78,10 @@ private:
 
     juce::Random randomEngine;
 
+    bool wasSustainActive = false;
+
     // Note pools
     std::vector<int>        heldNotes;   // MIDI note numbers of physically held keys
+    std::vector<int>        sustainedNotes;
     std::vector<ActiveNote> activeNotes; // Notes currently sounding
 };

@@ -78,6 +78,9 @@ private:
     juce::Synthesiser chordSynth;
     HaltonGenerator haltonPanner;
 
+    std::atomic<bool> isSustainPressed {false};
+    bool currentSustainState;
+
     Arpeggiator arp;
     std::atomic<float>* arpRateIndex        = nullptr;
     std::atomic<float>* arpGateParam        = nullptr;

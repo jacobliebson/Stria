@@ -212,12 +212,16 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // NOTE: When independent envelopes are added, pass VoiceRole here to route
     // different envParams to arpSynth vs chordSynth voices.
     for (int i = 0; i < arpSynth.getNumVoices(); ++i)
-        if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i)))
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (arpSynth.getVoice (i))) {
             voice->updateParameters (currentFeedback, currentDamping, arpEnvParams, currentDetune, currentDetuneMode);
+            voice->setSustainStatePointer(nullptr); // to avoid individual notes ringing out endlessly
+        }
 
     for (int i = 0; i < chordSynth.getNumVoices(); ++i)
-        if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i)))
+        if (auto* voice = dynamic_cast<ResonatorVoice*> (chordSynth.getVoice (i))) {
             voice->updateParameters (currentFeedback, currentDamping, chordEnvParams, currentDetune, currentDetuneMode);
+            voice->setSustainStatePointer(&isSustainPressed);
+        }
 
     
     // --- Visualizer: snapshot active notes (once per block) ---
@@ -294,10 +298,23 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         default:                                break;   
     }
 
+    bool sustainActive = currentSustainState; // class member, updated below
+
+    for (const auto metadata : chordMidi)
+    {
+        auto msg = metadata.getMessage();
+
+        if (msg.isController() && msg.getControllerNumber() == 64)
+        {
+            sustainActive = msg.getControllerValue() >= 64;
+            currentSustainState = sustainActive; // persist across blocks
+        }
+    }
+
     if (rateIndex < 7)
     {
         arp.updateSettings (subdivisionInBeats, gateLength, mode, scatter, deviation, range);
-        arp.processMidiBlock (midiMessages, getPlayHead());
+        arp.processMidiBlock (midiMessages, getPlayHead(), sustainActive);
          
     }
     // midiMessages now contains arp notes; chordMidi contains raw held notes.
@@ -320,6 +337,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                 arpSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
             else if (message.isAllNotesOff())
                 arpSynth.allNotesOff (false, true);
+            else if (message.isController())
+            {
+                if (message.getControllerNumber() == 64)
+                    isSustainPressed.store(message.getControllerValue() >= 64);
+            }
 
             ++arpMidiIt;
         }
@@ -335,6 +357,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                 chordSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
             else if (message.isAllNotesOff())
                 chordSynth.allNotesOff (false, true);
+            else if (message.isController())
+            {
+                if (message.getControllerNumber() == 64)
+                    isSustainPressed.store(message.getControllerValue() >= 64);
+            }
 
             ++chordMidiIt;
         }
