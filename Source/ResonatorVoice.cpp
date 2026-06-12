@@ -169,3 +169,12 @@ void ResonatorVoice::renderNextBlock (juce::AudioBuffer<float>& outputBuffer, in
     juce::ignoreUnused(startSample);
     juce::ignoreUnused(numSamples);
 }
+
+void ResonatorVoice::forceStop()
+{
+    isSustainHeld = false;
+    adsr.reset();
+    leftFilter.reset();
+    rightFilter.reset();
+    clearCurrentNote();
+}

@@ -142,11 +142,18 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         }
     }
 
-    bool rewindDetected = isPlaying && lastProcessorPPQ >= 0.0 && currentPPQ < lastProcessorPPQ;
+    bool rewindDetected = isPlaying && lastProcessorPPQ >= 0.0 && std::abs(currentPPQ - lastProcessorPPQ) > 0.1f;
     bool stoppedPlaying = wasPlaying && !isPlaying;
 
     if (rewindDetected || stoppedPlaying) {
-        arpSynth.allNotesOff (0, true);
+        for (int i = 0; i < arpSynth.getNumVoices(); ++i)
+            if (auto* voice = dynamic_cast<ResonatorVoice*>(arpSynth.getVoice(i)))
+                voice->forceStop();
+
+        for (int i = 0; i < chordSynth.getNumVoices(); ++i)
+            if (auto* voice = dynamic_cast<ResonatorVoice*>(chordSynth.getVoice(i)))
+                voice->forceStop();
+
         gateValue.store (0.0f, std::memory_order_relaxed);
     }
 

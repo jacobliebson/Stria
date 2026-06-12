@@ -26,6 +26,7 @@ public:
     void startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition) override;
     void stopNote (float velocity, bool allowTailOff) override;
     void setSustainStatePointer(std::atomic<bool>* ptr) { sustainStatePtr = ptr; }
+    void forceStop();
     
     void pitchWheelMoved (int newPitchWheelValue) override;
     void controllerMoved (int controllerNumber, int newControllerValue) override;
