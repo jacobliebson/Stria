@@ -13,7 +13,7 @@ ResonatorVoice::ResonatorVoice(HaltonGenerator& generator) : haltonPanner(genera
     params.hold = 0.0f;
     params.useHoldPhase = false;  
     adsr.setParameters (params);
-    
+    logger = std::make_unique<DebugLogger>(juce::File::getSpecialLocation(juce::File::userDesktopDirectory).getChildFile("voice_debug_log.txt").getFullPathName());
 }
 
 float ResonatorVoice::getEnvelopeLevel() 

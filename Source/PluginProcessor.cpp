@@ -146,6 +146,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     bool stoppedPlaying = wasPlaying && !isPlaying;
 
     if (rewindDetected || stoppedPlaying) {
+        arp.forceStop(midiMessages);
+        
         for (int i = 0; i < arpSynth.getNumVoices(); ++i)
             if (auto* voice = dynamic_cast<ResonatorVoice*>(arpSynth.getVoice(i)))
                 voice->forceStop();
@@ -153,7 +155,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         for (int i = 0; i < chordSynth.getNumVoices(); ++i)
             if (auto* voice = dynamic_cast<ResonatorVoice*>(chordSynth.getVoice(i)))
                 voice->forceStop();
-
+        
         gateValue.store (0.0f, std::memory_order_relaxed);
     }
 

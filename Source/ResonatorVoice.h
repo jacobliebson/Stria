@@ -1,7 +1,9 @@
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <mutex>
 #include "CombFilter.h"
 #include "CustomADSR.h"
+#include "DebugLogger.h"
 #include "HaltonGenerator.h"
 
 // JUCE Synthesizer requires a sound definition to match voices against
@@ -52,6 +54,8 @@ private:
     CombFilter leftFilter;
     CombFilter rightFilter;
     CustomADSR adsr;
+
+    std::unique_ptr<DebugLogger> logger;
 
     std::atomic<bool>* sustainStatePtr = nullptr;
     bool isSustainHeld; // if note is being held due to sustain

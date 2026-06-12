@@ -19,6 +19,7 @@ public:
 
     // Called during your plugin's prepareToPlay
     void prepare (double newSampleRate);
+    void forceStop(juce::MidiBuffer& outputMidi);
 
     // Updates the settings from your UI sliders/menus
     void updateSettings (double subdivision, float gateLength, ArpMode mode, float scatter, float deviation, int newOctaveRange);
@@ -53,6 +54,7 @@ private:
     void releaseAllActiveNotes (juce::MidiBuffer& outputMidi);
 
     void flushSustainedNotes();
+    
 
     int selectNextNote();
 

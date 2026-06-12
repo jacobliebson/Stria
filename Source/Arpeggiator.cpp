@@ -376,3 +376,19 @@ void Arpeggiator::releaseAllActiveNotes (juce::MidiBuffer& outputMidi)
     }
     activeNotes.clear();
 }
+
+void Arpeggiator::forceStop (juce::MidiBuffer& outputMidi)
+{
+    for (const auto& note : activeNotes)
+        outputMidi.addEvent (juce::MidiMessage::noteOff (1, note.midiNoteNumber), 0);
+
+    activeNotes.clear();
+    sustainedNotes.clear();
+    heldNotes.clear();
+    expandedNotes.clear();
+
+    nextTargetPPQ     = -1.0;
+    lastPPQ           = -1.0;
+    pendingStepLength = -1.0;
+    wasSustainActive  = false;
+}
