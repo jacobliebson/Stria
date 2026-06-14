@@ -103,7 +103,8 @@ private:
     std::atomic<float>* chordGainDB         = nullptr;
     std::atomic<float>* mix                 = nullptr;
     std::atomic<float>* spread              = nullptr;
-    std::atomic<float>* pan                 = nullptr;
+    std::atomic<float>* arpPan              = nullptr;
+    std::atomic<float>* chordPan            = nullptr;
 
     CustomADSR gateEnvelope;
     std::atomic<float>* trigThreshold = nullptr;

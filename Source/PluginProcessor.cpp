@@ -76,7 +76,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     chordGainDB      = apvts.getRawParameterValue ("CHORD_GAIN");
     mix              = apvts.getRawParameterValue ("MIX");
     spread           = apvts.getRawParameterValue("SPREAD");
-    pan              = apvts.getRawParameterValue ("PAN");
+    arpPan           = apvts.getRawParameterValue ("ARP_PAN");
+    chordPan         = apvts.getRawParameterValue ("CHORD_PAN");
     
 
     trigAttack       = apvts.getRawParameterValue ("TRIG_ATTACK");
@@ -130,12 +131,14 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto playHead = getPlayHead();
     bool isPlaying = false;
     double currentPPQ = 0.0;
+    double tempo = 120.0; // fallback
 
     if (playHead != nullptr)
     {
         auto position = playHead->getPosition();
         if (position.hasValue())
         {
+            tempo = *position->getBpm();
             isPlaying = position->getIsPlaying();
             if (auto ppq = position->getPpqPosition())
                 currentPPQ = *ppq;
@@ -147,7 +150,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     if (rewindDetected || stoppedPlaying) {
         arp.forceStop(midiMessages);
-        
+
         for (int i = 0; i < arpSynth.getNumVoices(); ++i)
             if (auto* voice = dynamic_cast<ResonatorVoice*>(arpSynth.getVoice(i)))
                 voice->forceStop();
@@ -177,6 +180,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     int currentDetuneMode    = (int)detuneMode->load();
 
     CustomADSR::Parameters gateParams;
+
+    // calculations for synced tempo control
+    // float targetSubdiv = 0.5f;
+    // float ms = (60000.0f * targetSubdiv) / tempo;
+
     gateParams.attack  = trigAttack->load() / 1000.0f;
     gateParams.decay   = 0.0f;
     gateParams.sustain = 1.0f;
@@ -192,7 +200,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     float currentChordGainDB = chordGainDB->load() + 12.0f;
     float currentMix         = mix->load() / 100.0f;
     float currentSpread      = spread->load() / 100.0f;
-    float currentPan         = 0.5f + pan->load() / 200.0f;
+    float currentArpPan      = 0.5f + arpPan->load() / 200.0f;
+    float currentChordPan    = 0.5f + chordPan->load() / 200.0f;
 
     static constexpr float silenceThresholdDB = -60.0f;
     float arpGainLinear   = (currentArpGainDB   <= silenceThresholdDB) ? 0.0f : juce::Decibels::decibelsToGain (currentArpGainDB);
@@ -295,6 +304,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     double subdivisionInBeats = 0.25; // Default fallback (1/16th)
     int rateIndex = static_cast<int> (arpRateIndex->load());
 
+    
+
     switch (rateIndex)
     {
         case 0: subdivisionInBeats = 1.0;       break; // 1/4 note
@@ -306,6 +317,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         case 6: subdivisionInBeats = 0.125;     break; // 1/32 note
         default:                                break;   
     }
+
+
+    // calculations for free tempo control
+    // float targetMs = 1000.0f;
+    // subdivisionInBeats = (tempo * targetMs) / 60000.0f;
 
     bool sustainActive = currentSustainState; // class member, updated below
 
@@ -427,24 +443,27 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
         // Scale each by voice count so summed output stays at a consistent level
         float scaleFactorArp = 1.0f / static_cast<float> (arpSynth.getNumVoices());
-        float finalArpL = summedArpL * scaleFactorArp * arpGainLinear;
-        float finalArpR = summedArpR * scaleFactorArp * arpGainLinear;
+        float arpL = summedArpL * scaleFactorArp * arpGainLinear;
+        float arpR = summedArpR * scaleFactorArp * arpGainLinear;
+
+        float pannedArpL = arpL * std::cos (currentArpPan * juce::MathConstants<float>::halfPi);
+        float pannedArpR = arpR * std::sin (currentArpPan * juce::MathConstants<float>::halfPi);
 
         float scaleFactorChords = 1.0f / static_cast<float> (chordSynth.getNumVoices());
-        float finalChordsL = summedChordsL * scaleFactorChords * chordGainLinear;
-        float finalChordsR = summedChordsR * scaleFactorChords * chordGainLinear;
+        float chordL = summedChordsL * scaleFactorChords * chordGainLinear;
+        float chordR = summedChordsR * scaleFactorChords * chordGainLinear;
 
-        float finalWetL = finalArpL + finalChordsL;
-        float finalWetR = finalArpR + finalChordsR;
+        float pannedChordL = chordL * std::cos (currentArpPan * juce::MathConstants<float>::halfPi);
+        float pannedChordR = chordR * std::sin (currentArpPan * juce::MathConstants<float>::halfPi);
+
+        float finalWetL = pannedArpL + pannedChordL;
+        float finalWetR = pannedArpR + pannedChordR;
         
         float blendedL = (inputL * (1.0f - currentMix)) + (finalWetL * currentMix);
         float blendedR = (inputR * (1.0f - currentMix)) + (finalWetR * currentMix);
 
-        float leftGain  = std::cos (currentPan * juce::MathConstants<float>::halfPi);
-        float rightGain = std::sin (currentPan * juce::MathConstants<float>::halfPi);
-
-        float leftOut = blendedL * leftGain;
-        float rightOut = blendedR * rightGain;
+        float leftOut = blendedL;
+        float rightOut = blendedR;
 
         buffer.setSample (0, sample, leftOut);
 

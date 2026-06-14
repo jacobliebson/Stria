@@ -115,22 +115,39 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     // Mixer
     arpGainSlider.setSliderStyle   (juce::Slider::LinearVertical);
     chordGainSlider.setSliderStyle (juce::Slider::LinearVertical);
+    mixSlider.setSliderStyle (juce::Slider::LinearVertical);
+
     arpGainSlider.setTextBoxStyle   (juce::Slider::TextBoxBelow, false, 50, 16);
     chordGainSlider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 16);
+    mixSlider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 16);
+
     addAndMakeVisible (arpGainSlider);
     addAndMakeVisible (chordGainSlider);
+    addAndMakeVisible (mixSlider);
+
     arpGainLabel.setText   ("Arp",   juce::dontSendNotification);
     chordGainLabel.setText ("Chord", juce::dontSendNotification);
+    mixLabel.setText ("Mix", juce::dontSendNotification);
+
+    arpGainSlider.setTextValueSuffix(" dB");
+    chordGainSlider.setTextValueSuffix(" dB");
+    mixSlider.setTextValueSuffix("%");
+
     arpGainLabel.setJustificationType   (juce::Justification::centred);
     chordGainLabel.setJustificationType (juce::Justification::centred);
+    mixLabel.setJustificationType (juce::Justification::centred);
+
     addAndMakeVisible (arpGainLabel);
     addAndMakeVisible (chordGainLabel);
+    addAndMakeVisible (mixLabel);
+
     arpGainAttachment   = std::make_unique<SliderAttachment> (apvts, "ARP_GAIN",   arpGainSlider);
     chordGainAttachment = std::make_unique<SliderAttachment> (apvts, "CHORD_GAIN", chordGainSlider);
+    mixAttachment = std::make_unique<SliderAttachment> (apvts, "MIX", mixSlider);
 
-    setupKnob (mixKnob, mixLabel, "Mix", mixAttachment, "MIX", "%");
     setupKnob (spreadKnob, spreadLabel, "Spread", spreadAttachment, "SPREAD", "%");
-    setupKnob (panKnob, panLabel, "Pan", panAttachment, "PAN", "%");
+    setupKnob (arpPanKnob, arpPanLabel, "Pan", arpPanAttachment, "ARP_PAN", "%");
+    setupKnob (chordPanKnob, chordPanLabel, "Pan", chordPanAttachment, "CHORD_PAN", "%");
 
     // Initialise tab button and knob colours — Chord selected by default
     chordEnvButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary().withAlpha(0.3f));
@@ -314,7 +331,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     juce::FontOptions options = juce::FontOptions().withHeight (Layout::headerH);
     g.setFont (juce::Font (options));
 
-    g.drawText ("S T R I A",
+    g.drawText ("NAME HERE",
                 m, 0,
                 w - m * 2,
                 hH,
@@ -510,22 +527,31 @@ void AudioPluginAudioProcessorEditor::resized()
     // Mixer panel
     {
         const int px        = m * 4 + panelW * 3;
-        const int sliderH   = bH - Layout::titleHeight - 3 * pad + 12 - stride + kS;
-        const int sliderW   = 36;
-        const int sliderY   = panelY + Layout::titleHeight + pad - 6;
-        const int spacing   = 15;
-        const int totalSliderW = sliderW * 2 + spacing;
-        const int sliderStartX = px + (panelW - totalSliderW - kS - spacing) / 2;
+        const int sliderH   = bH - Layout::titleHeight - 4 * pad + 12 - 2 * stride + kS;
+        const int sliderW   = kS;
+        const int sliderY   = panelY + Layout::titleHeight + lH + pad - 6;
+        const int spacing   = (panelW - (3 * sliderW) - (2 * pad)) / 2;
+        const int sliderStartX = px + pad;
+        const int knobY = panelY + Layout::titleHeight + bH / 3 + pad + stride;
 
         arpGainSlider.setBounds   (sliderStartX,               sliderY, sliderW, sliderH);
-        arpGainLabel.setBounds    (sliderStartX,               sliderY + sliderH + 2, sliderW, lH);
+        arpGainLabel.setBounds    (sliderStartX,               sliderY - lH - 2, sliderW, lH);
+
         chordGainSlider.setBounds (sliderStartX + sliderW + spacing, sliderY, sliderW, sliderH);
-        chordGainLabel.setBounds  (sliderStartX + sliderW + spacing, sliderY + sliderH + 2, sliderW, lH);
+        chordGainLabel.setBounds  (sliderStartX + sliderW + spacing, sliderY - lH - 2, sliderW, lH);
+        
+        mixSlider.setBounds (sliderStartX + 2 * (sliderW + spacing), sliderY, sliderW, sliderH);
+        mixLabel.setBounds  (sliderStartX + 2 * (sliderW + spacing), sliderY - lH - 2, sliderW, lH);
 
-        int knobX = m * 4 + panelW * 4 - kS - 6 - 2 * pad;
-        knobColumn(panelY, knobX, 3, 
-            {&mixKnob, &spreadKnob, &panKnob},
-            {&mixLabel, &spreadLabel, &panLabel});
+        arpPanKnob.setBounds(sliderStartX, knobY, kS, kS);
+        arpPanLabel.setBounds(sliderStartX, knobY + kS + 2, kS, lH);
 
+        chordPanKnob.setBounds(sliderStartX + sliderW + spacing, knobY, kS, kS);
+        chordPanLabel.setBounds(sliderStartX + sliderW + spacing, knobY + kS + 2, kS, lH);
+
+        spreadKnob.setBounds(sliderStartX + 2 * (sliderW + spacing), knobY, kS, kS);
+        spreadLabel.setBounds(sliderStartX + 2 * (sliderW + spacing), knobY + kS + 2, kS, lH);
+
+        
     }
 }

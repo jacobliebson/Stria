@@ -93,10 +93,10 @@ private:
 
     //==========================================================================
     // Mixer panel
-    juce::Slider arpGainSlider,  chordGainSlider,  mixKnob, spreadKnob, panKnob;
-    juce::Label  arpGainLabel,   chordGainLabel,   mixLabel, spreadLabel, panLabel;
+    juce::Slider arpGainSlider,  chordGainSlider,  mixSlider, spreadKnob, arpPanKnob, chordPanKnob;
+    juce::Label  arpGainLabel,   chordGainLabel,   mixLabel, spreadLabel, arpPanLabel, chordPanLabel;
     std::unique_ptr<SliderAttachment> arpGainAttachment, chordGainAttachment, 
-                                      mixAttachment, spreadAttachment, panAttachment;
+                                      mixAttachment, spreadAttachment, arpPanAttachment, chordPanAttachment;
 
     //==========================================================================
     // Bypass toggle (global, outside panels)
