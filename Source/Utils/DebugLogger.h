@@ -15,7 +15,7 @@ public:
         startThread();
     }
 
-    ~DebugLogger() { stopThread(2000); }
+    ~DebugLogger() override { stopThread(2000); }
 
     // Call this from the audio thread - it is non-blocking!
     void log(const juce::String& message)

@@ -118,9 +118,9 @@ void ResonatorAnalyzer::timerCallback()
         }
     }
 
-    // Clamp to [0, 1] and set ends
+    // limit and set ends
     for (auto& v : scratchRow)
-        v = juce::jlimit (0.0f, 1.0f, v);
+        v = std::tanh(v);
 
     scratchRow[0] = 0.0f;
     scratchRow[gridCols-1] = 0.0f;
@@ -213,7 +213,7 @@ juce::Point<float> ResonatorAnalyzer::project (float gx, float gy, float gz) con
     const float frontRight = vpX + halfFrontW;
 
     // Perspective factor: 1 at front, 0 at vanishing point
-    const float pf = 1.0f - gz / 1.5;
+    const float pf = 1.0f - gz / 1.5f;
     const float pf2 = 1.0f - gz*gz;
 
     // Row's left/right X at this depth
@@ -279,7 +279,6 @@ void ResonatorAnalyzer::paint (juce::Graphics& g)
     for (int row = gridRows - 1; row >= 0; --row)
     {
         const float gz        = static_cast<float> (row) / static_cast<float> (gridRows - 1);
-        const float depthFade = gz > 0.75f ? juce::jmap (gz, 0.75f, 1.0f, 0.5f, 0.04f) : 0.5f;
         const float strokeW   = juce::jmap (gz, 0.0f, 1.0f, 2.0f, 0.4f);
 
         juce::Path rowPath;
@@ -288,13 +287,6 @@ void ResonatorAnalyzer::paint (juce::Graphics& g)
         for (int col = 1; col < gridCols; ++col)
             rowPath.lineTo (pts[row][col]);
 
-
-
-
-        // vpY is the vanishing point Y (top of the usable range)
-        // frontY is the front row base Y (bottom of the usable range)
-        const float vpY    = getHeight() * horizonFrac;
-        const float frontY = getHeight() * frontFrac;
 
         const float rowBaseY = project (0.5f, 0.0f, gz).getY();
         const float rowPeakY = project (0.5f, 1.0f, gz).getY();

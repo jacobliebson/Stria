@@ -17,9 +17,6 @@ namespace Layout
     constexpr int knobSize      = 50;
     constexpr int labelHeight   = 16;
     constexpr int knobStride    = knobSize + labelHeight + 6;
-    constexpr int bypassW       = 72;
-    constexpr int bypassH       = 24;
-
 }
 
 //==============================================================================
@@ -376,7 +373,6 @@ void AudioPluginAudioProcessorEditor::resized()
     {
         const int resonatorW = 80; // Narrower width for vertical stack
         const int panelCentreX = m + resonatorW / 2;
-        const int knobSpacing  = 20; // Vertical space between groups
         const int labelSpace   = 20; // Space for labels
         
         // Starting Y position at the top of the panel
@@ -400,7 +396,6 @@ void AudioPluginAudioProcessorEditor::resized()
     // Bottom panel layout helpers
     const int numPanels = 4;
     const int panelW    = (w - m * (numPanels + 1)) / numPanels;
-    const int panelH    = Layout::bottomH;
     const int panelY    = m + hH + m + tH + m;
 
     auto knobRow = [&] (int panelX, int panelContentY, int count,
@@ -417,28 +412,6 @@ void AudioPluginAudioProcessorEditor::resized()
             (*lit)->setBounds (startX, panelContentY + kS + 2, kS, lH);
             startX += kS + 6;
             ++sit; ++lit;
-        }
-    };
-
-    auto knobColumn = [&] (int panelY, int panelContentX, int count,
-                       std::initializer_list<juce::Slider*> sliders,
-                       std::initializer_list<juce::Label*>  labels)
-    {
-        const int totalKnobH = count * (kS + lH + 2) + (count - 1) * 6;
-        int startY = panelY + (panelH - totalKnobH) / 2;
-
-        auto sit = sliders.begin();
-        auto lit = labels.begin();
-
-        for (int i = 0; i < count; ++i)
-        {
-            (*sit)->setBounds (panelContentX, startY, kS, kS);
-            (*lit)->setBounds (panelContentX, startY + kS + 2, kS, lH);
-
-            startY += kS + lH + 2 + 6;
-
-            ++sit;
-            ++lit;
         }
     };
 

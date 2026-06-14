@@ -326,6 +326,7 @@ int Arpeggiator::selectNextNote()
 
             return note;
         }
+        case ArpMode::Count: return -1;
     }
 }
 

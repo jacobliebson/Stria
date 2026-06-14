@@ -33,6 +33,8 @@ bool ResonatorVoice::canPlaySound (juce::SynthesiserSound* sound)
 
 void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
+    juce::ignoreUnused(velocity, sound, currentPitchWheelPosition);
+
     // 1. Cache the base MIDI note as a float
     float baseMidi = static_cast<float>(midiNoteNumber);
     float processedMidi = baseMidi;

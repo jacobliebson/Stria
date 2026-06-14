@@ -3,9 +3,6 @@
 
 
 
-static std::ofstream gateLogFile;
-static int gateLogCounter = 0;
-
 juce::AudioProcessorValueTreeState::ParameterLayout
 AudioPluginAudioProcessor::createParameterLayout()
 {
@@ -170,8 +167,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.clear (i, 0, buffer.getNumSamples());
 
     // Snapshot parameters
-    double sampleRate = getSampleRate();
-
     float currentFeedback    = feedback->load();
     float currentDamping     = damping->load();
     float currentDetune      = detune->load();
