@@ -1,7 +1,6 @@
 // Source/ResonatorAnalyzer.cpp
 #include "ResonatorAnalyzer.h"
-#include "ResonatorPalette.h"
-#include "juce_graphics/native/juce_EventTracing.h"
+
 
 // ============================================================
 // Constructor / Destructor

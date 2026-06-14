@@ -1,10 +1,12 @@
 // Source/Arpeggiator.h
 #pragma once
 
-#include <cstddef>
+
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <vector>
 #include <algorithm>
+#include <cstddef>
+#include <cstdlib>
 
 class Arpeggiator
 {

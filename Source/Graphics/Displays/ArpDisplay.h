@@ -1,7 +1,11 @@
 // Source/ArpDisplay.h
 #pragma once
+
+#include "../ResonatorPalette.h"
+
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "ResonatorPalette.h"
+
+
 
 // A read-only arpeggiator pattern visualizer.
 // Shows relative note heights, gate length, and scatter as a row of bars.

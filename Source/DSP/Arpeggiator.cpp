@@ -1,8 +1,6 @@
 // Source/Arpeggiator.cpp
 #include "Arpeggiator.h"
-#include <algorithm>
-#include <cstddef>
-#include <cstdlib>
+
 
 void Arpeggiator::prepare (double newSampleRate)
 {

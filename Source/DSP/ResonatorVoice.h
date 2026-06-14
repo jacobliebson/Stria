@@ -1,10 +1,18 @@
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
-#include <mutex>
+
+// DSP Libraries
 #include "CombFilter.h"
 #include "CustomADSR.h"
-#include "DebugLogger.h"
-#include "HaltonGenerator.h"
+
+// Utilities
+#include "../Utils/DebugLogger.h"
+#include "../Utils/HaltonGenerator.h"
+
+// JUCE
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <mutex>
+
+
 
 // JUCE Synthesizer requires a sound definition to match voices against
 class ResonatorSound : public juce::SynthesiserSound

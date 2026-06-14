@@ -1,7 +1,14 @@
 // Source/ResonatorLookAndFeel.h
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
+
 #include "ResonatorPalette.h"
+
+#include <juce_audio_processors/juce_audio_processors.h>
+
+
+
+
+
 
 class ResonatorLookAndFeel : public juce::LookAndFeel_V4
 {

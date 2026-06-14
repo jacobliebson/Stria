@@ -1,6 +1,6 @@
 // Source/ResonatorVoice.cpp
 #include "ResonatorVoice.h"
-#include "HaltonGenerator.h"
+
 
 ResonatorVoice::ResonatorVoice(HaltonGenerator& generator) : haltonPanner(generator)
 {

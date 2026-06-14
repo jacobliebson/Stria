@@ -1,9 +1,7 @@
 #include "PluginProcessor.h"
-#include "ResonatorVoice.h"
-#include "PluginEditor.h"
+#include "../Graphics/PluginEditor.h"
 
-#include <fstream>
-#include <juce_core/juce_core.h>
+
 
 static std::ofstream gateLogFile;
 static int gateLogCounter = 0;

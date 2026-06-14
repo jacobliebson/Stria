@@ -1,10 +1,19 @@
 #pragma once
+
+// DSP Libraries
 #include "Arpeggiator.h"
 #include "CombFilter.h"
-#include "Parameters.h"
 #include "CustomADSR.h"
-#include "HaltonGenerator.h"
+#include "ResonatorVoice.h"
+
+// Utilities
+#include "../Utils/HaltonGenerator.h"
+#include "../Utils/Parameters.h"
+
+// JUCE
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <fstream>
+#include <juce_core/juce_core.h>
 
 class AudioPluginAudioProcessor  : public juce::AudioProcessor
 {

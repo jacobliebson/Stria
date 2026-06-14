@@ -1,7 +1,11 @@
 #pragma once
+
 #include <juce_core/juce_core.h>
 #include <fstream>
 #include <queue>
+
+
+
 
 class DebugLogger : private juce::Thread
 {

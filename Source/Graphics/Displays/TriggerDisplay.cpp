@@ -1,6 +1,6 @@
 // Source/TriggerDisplay.cpp
 #include "TriggerDisplay.h"
-#include "ResonatorPalette.h"
+
 
 TriggerDisplay::TriggerDisplay (AudioPluginAudioProcessor& processor)
     : proc (processor)

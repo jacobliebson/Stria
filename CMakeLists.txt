@@ -28,33 +28,40 @@ juce_add_plugin(MyJucePlugin
 
 # 3. Add Source Files
 target_sources(MyJucePlugin PRIVATE
-    Source/PluginProcessor.h
-    Source/PluginProcessor.cpp
-    Source/PluginEditor.h
-    Source/PluginEditor.cpp
-    Source/ResonatorVoice.h
-    Source/ResonatorVoice.cpp
-    Source/CombFilter.h
-    Source/CombFilter.cpp
-    Source/CustomADSR.h
-    Source/CustomADSR.cpp
-    Source/Arpeggiator.h
-    Source/Arpeggiator.cpp
-    Source/Parameters.h
-    Source/Parameters.cpp
-    Source/ResonatorPalette.h
-    Source/ResonatorLookAndFeel.h
-    Source/ResonatorLookAndFeel.cpp
-    Source/ArpDisplay.h
-    Source/ArpDisplay.cpp
-    Source/EnvelopeDisplay.h
-    Source/EnvelopeDisplay.cpp
-    Source/ResonatorAnalyzer.h
-    Source/ResonatorAnalyzer.cpp
-    Source/TriggerDisplay.h
-    Source/TriggerDisplay.cpp
-    Source/HaltonGenerator.h
-    Source/DebugLogger.h
+    # DSP Libraries
+    Source/DSP/Arpeggiator.h
+    Source/DSP/Arpeggiator.cpp
+    Source/DSP/CombFilter.h
+    Source/DSP/CombFilter.cpp
+    Source/DSP/CustomADSR.h
+    Source/DSP/CustomADSR.cpp
+    Source/DSP/PluginProcessor.h
+    Source/DSP/PluginProcessor.cpp
+    Source/DSP/ResonatorVoice.h
+    Source/DSP/ResonatorVoice.cpp
+    
+    # Graphics
+    Source/Graphics/PluginEditor.h
+    Source/Graphics/PluginEditor.cpp
+    Source/Graphics/ResonatorLookAndFeel.h
+    Source/Graphics/ResonatorLookAndFeel.cpp
+    Source/Graphics/ResonatorPalette.h
+
+    # Graphics displays
+    Source/Graphics/Displays/ArpDisplay.h
+    Source/Graphics/Displays/ArpDisplay.cpp
+    Source/Graphics/Displays/EnvelopeDisplay.h
+    Source/Graphics/Displays/EnvelopeDisplay.cpp
+    Source/Graphics/Displays/ResonatorAnalyzer.h
+    Source/Graphics/Displays/ResonatorAnalyzer.cpp
+    Source/Graphics/Displays/TriggerDisplay.h
+    Source/Graphics/Displays/TriggerDisplay.cpp
+    
+    # Utilities
+    Source/Utils/DebugLogger.h
+    Source/Utils/HaltonGenerator.h
+    Source/Utils/Parameters.h
+    Source/Utils/Parameters.cpp
 )
 
 # 4. Compile Features and Definitions

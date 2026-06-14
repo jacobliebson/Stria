@@ -1,8 +1,11 @@
 // Source/ResonatorAnalyzer.h
 #pragma once
+
+#include "../../DSP/PluginProcessor.h"
+#include "../ResonatorPalette.h"
+
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "PluginProcessor.h"
-#include "ResonatorPalette.h"
+#include "juce_graphics/native/juce_EventTracing.h"
 
 // ============================================================
 // ResonatorAnalyzer

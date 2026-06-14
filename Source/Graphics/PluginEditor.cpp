@@ -1,11 +1,6 @@
 // Source/PluginEditor.cpp
-#include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "ResonatorAnalyzer.h"
-#include "ResonatorPalette.h"
-#include "TriggerDisplay.h"
-#include <memory>
-#include <string_view>
+
 
 //==============================================================================
 // Layout constants

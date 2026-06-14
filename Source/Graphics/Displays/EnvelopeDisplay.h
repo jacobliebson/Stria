@@ -1,7 +1,12 @@
 // Source/EnvelopeDisplay.h
 #pragma once
+
+#include "../ResonatorPalette.h"
+
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "ResonatorPalette.h"
+
+
+
 
 // A read-only ADSR curve visualizer driven by APVTS parameter values.
 class EnvelopeDisplay : public juce::Component,

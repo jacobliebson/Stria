@@ -1,13 +1,27 @@
 // Source/PluginEditor.h
 #pragma once
-#include "PluginProcessor.h"
-#include "ResonatorLookAndFeel.h"
-#include "ArpDisplay.h"
-#include "EnvelopeDisplay.h"
-#include "ResonatorAnalyzer.h"
-#include "TriggerDisplay.h"
+
+// C++ Libraries
 #include <memory>
 #include <string>
+#include <string_view>
+
+// Display modules
+#include "Displays/ArpDisplay.h"
+#include "Displays/EnvelopeDisplay.h"
+#include "Displays/ResonatorAnalyzer.h"
+#include "Displays/TriggerDisplay.h"
+
+// Graphics helpers
+#include "ResonatorLookAndFeel.h"
+#include "ResonatorPalette.h"
+
+#include "../DSP/PluginProcessor.h"
+
+
+
+
+
 
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
                                          public juce::Timer

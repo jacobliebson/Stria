@@ -1,5 +1,5 @@
 #include "Parameters.h"
-#include <memory>
+
 
 juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParameters () {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;

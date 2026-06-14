@@ -1,6 +1,6 @@
 // Source/ResonatorLookAndFeel.cpp
 #include "ResonatorLookAndFeel.h"
-#include "ResonatorPalette.h"
+
 
 ResonatorLookAndFeel::ResonatorLookAndFeel()
 {
