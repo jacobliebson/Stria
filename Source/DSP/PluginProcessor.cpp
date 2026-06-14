@@ -451,8 +451,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         float chordL = summedChordsL * scaleFactorChords * chordGainLinear;
         float chordR = summedChordsR * scaleFactorChords * chordGainLinear;
 
-        float pannedChordL = chordL * std::cos (currentArpPan * juce::MathConstants<float>::halfPi);
-        float pannedChordR = chordR * std::sin (currentArpPan * juce::MathConstants<float>::halfPi);
+        float pannedChordL = chordL * std::cos (currentChordPan * juce::MathConstants<float>::halfPi);
+        float pannedChordR = chordR * std::sin (currentChordPan * juce::MathConstants<float>::halfPi);
 
         float finalWetL = pannedArpL + pannedChordL;
         float finalWetR = pannedArpR + pannedChordR;
