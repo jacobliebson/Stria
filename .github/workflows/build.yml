@@ -1,0 +1,33 @@
+name: Build VST3
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Important if JUCE is a git submodule
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -S . ^
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PluginTest-VST3-Windows
+          path: build/MyJucePlugin_artefacts/Release/VST3/
+          if-no-files-found: error
