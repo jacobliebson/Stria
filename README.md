@@ -1,2 +1,1 @@
-To clone, use: 
-git clone --recurse-submodules --shallow-submodules git@github.com:jacobliebson/Juce-fft-template.git <your-new-project-name>
+A high-performance, polyphonic resonator synthesizer built with C++ and the JUCE framework. This plugin utilizes custom-designed physical modeling DSP to simulate complex resonant structures. Key features include sample-accurate excitation processing, dynamic voice management, a sophisticated arpeggiator module, and separate ADSR envelopes for the main and arpeggiator voices.
