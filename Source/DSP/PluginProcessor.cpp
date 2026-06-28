@@ -316,18 +316,18 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // float targetMs = 1000.0f;
     // subdivisionInBeats = (tempo * targetMs) / 60000.0f;
 
-    bool sustainActive = currentSustainState; // class member, updated below
+    bool sustainActive = isSustainPressed.load(); // class member, updated below
 
-    for (const auto metadata : chordMidi)
-    {
-        auto msg = metadata.getMessage();
+    // for (const auto metadata : chordMidi)
+    // {
+    //     auto msg = metadata.getMessage();
 
-        if (msg.isController() && msg.getControllerNumber() == 64)
-        {
-            sustainActive = msg.getControllerValue() >= 64;
-            currentSustainState = sustainActive; // persist across blocks
-        }
-    }
+    //     if (msg.isController() && msg.getControllerNumber() == 64)
+    //     {
+    //         sustainActive = msg.getControllerValue() >= 64;
+    //         currentSustainState = sustainActive; // persist across blocks
+    //     }
+    // }
 
     if (rateIndex < 7)
     {

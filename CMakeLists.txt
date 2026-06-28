@@ -13,11 +13,11 @@ add_subdirectory(JUCE)
 juce_add_plugin(MyJucePlugin
     # Set your unique Plugin Code and Manufacturer Code (4 characters each)
     PLUGIN_MANUFACTURER_CODE    Jclb
-    PLUGIN_CODE                Rest
+    PLUGIN_CODE                Plg1
     
     # Formats to build (VST3, AU, Standalone, etc.)
     FORMATS                     VST3 AU Standalone
-    PRODUCT_NAME                "Resonator test"
+    PRODUCT_NAME                "Plugin test"
     COMPANY_NAME                "Jacob Liebson"
     COPY_PLUGIN_AFTER_BUILD     TRUE
 
