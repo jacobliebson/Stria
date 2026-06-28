@@ -114,6 +114,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
             voice->prepare (spec);
 
     arp.prepare (sampleRate);
+    this->sampleRate = sampleRate;
 }
 
 void AudioPluginAudioProcessor::releaseResources() {}
@@ -318,16 +319,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     bool sustainActive = isSustainPressed.load(); // class member, updated below
 
-    // for (const auto metadata : chordMidi)
-    // {
-    //     auto msg = metadata.getMessage();
-
-    //     if (msg.isController() && msg.getControllerNumber() == 64)
-    //     {
-    //         sustainActive = msg.getControllerValue() >= 64;
-    //         currentSustainState = sustainActive; // persist across blocks
-    //     }
-    // }
 
     if (rateIndex < 7)
     {
@@ -350,7 +341,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             auto message = (*arpMidiIt).getMessage();
 
             if (message.isNoteOn())
+            {
                 arpSynth.noteOn (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity());
+                if (!sampler.getTriggerFromRawMidi()) sampler.triggerPlayback();
+            }
             else if (message.isNoteOff())
                 arpSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
             else if (message.isAllNotesOff())
@@ -370,7 +364,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             auto message = (*chordMidiIt).getMessage();
 
             if (message.isNoteOn())
+            {
                 chordSynth.noteOn (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity());
+                sampler.triggerPlayback();
+            }
             else if (message.isNoteOff())
                 chordSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);
             else if (message.isAllNotesOff())
@@ -385,9 +382,22 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         }
 
 
-        float inputL   = dryCopy.getSample (0, sample);
-        float inputR   = (totalNumInputChannels > 1) ? dryCopy.getSample (1, sample) : inputL;
+        float inputL;
+        float inputR;
+
+        if (useSampler) {
+            inputL   = sampler.getNextSampleL();
+            inputR   = (totalNumInputChannels > 1) ? sampler.getNextSampleR() : inputL;
+            sampler.advance(sampleRate);
+        } else {
+            inputL   = dryCopy.getSample (0, sample);
+            inputR   = (totalNumInputChannels > 1) ? dryCopy.getSample (1, sample) : inputL;
+        }
         float absInput = std::abs (inputL);
+
+        
+
+        
 
 
         bool isAboveThreshold = absInput > thresholdLinear;

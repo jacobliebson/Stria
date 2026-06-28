@@ -5,6 +5,7 @@
 #include "CombFilter.h"
 #include "CustomADSR.h"
 #include "ResonatorVoice.h"
+#include "SamplerEngine.h"
 
 // Utilities
 #include "../Utils/HaltonGenerator.h"
@@ -69,6 +70,9 @@ public:
 
     std::atomic<float> gateValue { 0.0f };
 
+    SamplerEngine sampler;
+    double sampleRate;
+
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
@@ -79,6 +83,10 @@ private:
     inline float midiToHz (int midiNote);
 
     static constexpr int numChannels = 2;
+    
+
+    
+    std::atomic<bool> useSampler {true};
 
     // Separate voice pools for arp and chord streams.
     // NOTE: When independent envelopes are added, pass a VoiceRole to

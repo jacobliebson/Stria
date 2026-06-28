@@ -39,6 +39,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/DSP/PluginProcessor.cpp
     Source/DSP/ResonatorVoice.h
     Source/DSP/ResonatorVoice.cpp
+    Source/DSP/SamplerEngine.h
+    Source/DSP/SamplerEngine.cpp
     
     # Graphics
     Source/Graphics/PluginEditor.h
@@ -46,6 +48,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/Graphics/ResonatorLookAndFeel.h
     Source/Graphics/ResonatorLookAndFeel.cpp
     Source/Graphics/ResonatorPalette.h
+    Source/Graphics/SamplerPanel.h
+    Source/Graphics/SamplerPanel.cpp
 
     # Graphics displays
     Source/Graphics/Displays/ArpDisplay.h
@@ -56,6 +60,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/Graphics/Displays/ResonatorAnalyzer.cpp
     Source/Graphics/Displays/TriggerDisplay.h
     Source/Graphics/Displays/TriggerDisplay.cpp
+    Source/Graphics/Displays/SamplerWaveformDisplay.h
+    Source/Graphics/Displays/SamplerWaveformDisplay.cpp
     
     # Utilities
     Source/Utils/DebugLogger.h

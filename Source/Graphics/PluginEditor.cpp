@@ -1,5 +1,6 @@
 // Source/PluginEditor.cpp
 #include "PluginEditor.h"
+#include "SamplerPanel.h"
 
 
 //==============================================================================
@@ -30,6 +31,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     // Analyzer
     resonatorAnalyzer = std::make_unique<ResonatorAnalyzer>(audioProcessor);
     addAndMakeVisible (*resonatorAnalyzer);
+
+    samplerPanel = std::make_unique<SamplerPanel>(audioProcessor.sampler, audioProcessor.sampleRate);
+    addAndMakeVisible (*samplerPanel);
 
     // Resonator
     setupKnob (feedbackKnob, feedbackLabel, "Feedback",
@@ -367,7 +371,8 @@ void AudioPluginAudioProcessorEditor::resized()
         const int analyzerY    = m + hH;
         const int analyzerW    = getWidth() - analyzerX - m;
         const int analyzerH    = tH;
-        resonatorAnalyzer->setBounds (analyzerX, analyzerY, analyzerW, analyzerH);
+        //resonatorAnalyzer->setBounds (analyzerX, analyzerY, analyzerW, analyzerH);
+        samplerPanel->setBounds(analyzerX, analyzerY, analyzerW, analyzerH);
     }
     // Resonator panel — four knobs stacked vertically
     {

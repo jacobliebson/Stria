@@ -11,12 +11,16 @@
 #include "Displays/EnvelopeDisplay.h"
 #include "Displays/ResonatorAnalyzer.h"
 #include "Displays/TriggerDisplay.h"
+//#include "Displays/SamplerWaveformDisplay.h"
+
 
 // Graphics helpers
 #include "ResonatorLookAndFeel.h"
 #include "ResonatorPalette.h"
+#include "SamplerPanel.h"
 
 #include "../DSP/PluginProcessor.h"
+#include "../DSP/SamplerEngine.h"
 
 
 
@@ -81,6 +85,9 @@ private:
     //==========================================================================
     // Analyzer panel
     std::unique_ptr<ResonatorAnalyzer> resonatorAnalyzer;
+
+    // Sampler panel
+    std::unique_ptr<SamplerPanel> samplerPanel;
     
     // Envelope panel
     std::unique_ptr<EnvelopeDisplay> envelopeDisplay;
