@@ -1,4 +1,3 @@
-// Source/Graphics/Displays/SamplerPanel.h
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
@@ -7,18 +6,13 @@
 #include "ResonatorPalette.h"
 #include "ResonatorLookAndFeel.h"
 
-// ============================================================
-// SamplerPanel
-//
-// The full sampler UI — waveform display, file loading,
-// and playback controls. Swapped in place of ResonatorAnalyzer
-// when the Sampler tab is active.
-// ============================================================
-class SamplerPanel : public juce::Component
+class SamplerPanel : public juce::Component,
+                      private juce::AudioProcessorValueTreeState::Listener,
+                      private juce::ChangeListener
 {
 public:
-    SamplerPanel (SamplerEngine& engine, double& sampleRateRef);
-    ~SamplerPanel() override = default;
+    SamplerPanel (SamplerEngine& engine, double& sampleRateRef, juce::AudioProcessorValueTreeState& apvts);
+    ~SamplerPanel() override;
 
     void paint  (juce::Graphics&) override;
     void resized() override;
@@ -27,42 +21,50 @@ private:
     void loadFile (const juce::File& file);
     void updateControlStates();
 
+    // Forwards a parameter change (from the UI, host automation, or a preset
+    // load) into the engine. This is the single place engine state gets set
+    // from — nothing else should call the engine's setters directly.
+    void parameterChanged (const juce::String& parameterID, float newValue) override;
+
+    void changeListenerCallback (juce::ChangeBroadcaster* source) override;
+
     SamplerEngine& engine;
     double&        sampleRate;
+    juce::AudioProcessorValueTreeState& apvts;
 
     SamplerWaveformDisplay waveformDisplay;
 
-    // Playback mode selector
     juce::ComboBox playbackModeBox;
     juce::Label    playbackModeLabel;
 
-    // Trigger source toggle (raw MIDI vs post-arp)
     juce::ToggleButton triggerSourceButton { "Trigger from raw MIDI" };
-
-    // Reverse toggle
     juce::ToggleButton reverseButton { "Reverse" };
-
-    // Trim button
     juce::TextButton trimButton {"Trim"};
-
-    // Reset button
     juce::TextButton resetButton {"Reset"};
 
-    // Gain knob
     juce::Slider gainKnob;
     juce::Label  gainLabel;
-
-    // Pitch knob
     juce::Slider pitchKnob;
     juce::Label  pitchLabel;
 
-    // File name display
     juce::Label fileNameLabel;
-
-    // Load button (alternative to drag-and-drop)
     juce::TextButton loadButton { "Load File" };
 
     std::unique_ptr<juce::FileChooser> fileChooser;
+
+    using SliderAttachment   = juce::AudioProcessorValueTreeState::SliderAttachment;
+    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+    using ButtonAttachment   = juce::AudioProcessorValueTreeState::ButtonAttachment;
+
+    std::unique_ptr<SliderAttachment>   gainAttachment;
+    std::unique_ptr<SliderAttachment>   pitchAttachment;
+    std::unique_ptr<ComboBoxAttachment> playbackModeAttachment;
+    std::unique_ptr<ButtonAttachment>   reverseAttachment;
+
+    static constexpr const char* gainParamID         = "SAMPLE_GAIN";
+    static constexpr const char* pitchParamID        = "SAMPLE_PITCH";
+    static constexpr const char* playbackModeParamID = "SAMPLE_PLAYBACK_MODE";
+    static constexpr const char* reverseParamID      = "SAMPLE_REVERSE";
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SamplerPanel)
 };

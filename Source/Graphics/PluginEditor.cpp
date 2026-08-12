@@ -32,7 +32,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     resonatorAnalyzer = std::make_unique<ResonatorAnalyzer>(audioProcessor);
     addAndMakeVisible (*resonatorAnalyzer);
 
-    samplerPanel = std::make_unique<SamplerPanel>(audioProcessor.sampler, audioProcessor.sampleRate);
+    samplerPanel = std::make_unique<SamplerPanel>(audioProcessor.sampler, audioProcessor.sampleRate, apvts);
     addAndMakeVisible (*samplerPanel);
 
     // Resonator

@@ -73,6 +73,42 @@ bool SamplerEngine::loadFile (const juce::File& file, double targetSampleRate)
     if (playbackMode.load() == PlaybackMode::ContinuousLoop)
         isPlaying.store (true);
 
+    sendChangeMessage();
+    return true;
+}
+
+// SamplerEngine.cpp
+bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
+                                          double targetSampleRate, const juce::String& fileName)
+{
+    juce::ignoreUnused (targetSampleRate); // buffer was already saved at processing rate
+
+    juce::MemoryInputStream stream (data, static_cast<size_t> (sizeInBytes), false);
+
+    const int numChannels = stream.readInt();
+    const int numSamples  = stream.readInt();
+
+    if (numChannels <= 0 || numSamples <= 0)
+        return false;
+
+    auto newBuf = std::make_unique<juce::AudioBuffer<float>> (numChannels, numSamples);
+
+    for (int ch = 0; ch < numChannels; ++ch)
+        stream.read (newBuf->getWritePointer (ch),
+                     static_cast<int> (numSamples * sizeof (float)));
+
+    previousBuffer.reset (activeBuffer.exchange (newBuf.release()));
+
+    if (! fileName.isEmpty())
+        loadedFileName = fileName;
+
+    readPosition = 0.0;
+    normalisedReadPosition.store (0.0f);
+
+    if (playbackMode.load() == PlaybackMode::ContinuousLoop)
+        isPlaying.store (true);
+
+    sendChangeMessage();
     return true;
 }
 
@@ -83,6 +119,8 @@ void SamplerEngine::clearSample()
     readPosition = 0.0;
     normalisedReadPosition.store (0.0f);
     loadedFileName = {};
+
+    sendChangeMessage();
 }
 
 void SamplerEngine::saveToMemoryBlock (juce::MemoryBlock& destData) const
@@ -91,14 +129,24 @@ void SamplerEngine::saveToMemoryBlock (juce::MemoryBlock& destData) const
     if (buf == nullptr)
         return;
 
+    const int totalSamples = buf->getNumSamples();
+    const float start = startPoint.load();
+    const float end   = endPoint.load();
+
+    const int startSample = juce::jlimit (0, totalSamples - 1,
+                                           static_cast<int> (start * (totalSamples - 1)));
+    const int endSampleExclusive = juce::jlimit (startSample + 1, totalSamples,
+                                                  static_cast<int> (end * (totalSamples - 1)) + 1);
+    const int numSamplesToSave = endSampleExclusive - startSample;
+
     juce::MemoryOutputStream stream (destData, false);
 
     stream.writeInt (buf->getNumChannels());
-    stream.writeInt (buf->getNumSamples());
+    stream.writeInt (numSamplesToSave);
 
     for (int ch = 0; ch < buf->getNumChannels(); ++ch)
-        stream.write (buf->getReadPointer (ch),
-                      static_cast<size_t> (buf->getNumSamples()) * sizeof (float));
+        stream.write (buf->getReadPointer (ch, startSample),
+                      static_cast<size_t> (numSamplesToSave) * sizeof (float));
 }
 
 bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
@@ -125,6 +173,8 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
 
     if (playbackMode.load() == PlaybackMode::ContinuousLoop)
         isPlaying.store (true);
+
+    sendChangeMessage();
 
     return true;
 }

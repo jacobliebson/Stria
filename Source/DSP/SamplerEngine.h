@@ -3,6 +3,7 @@
 
 #include <juce_audio_formats/juce_audio_formats.h>
 #include <juce_audio_basics/juce_audio_basics.h>
+#include <juce_events/juce_events.h>
 #include <atomic>
 #include <memory>
 
@@ -16,7 +17,7 @@
 //                     stopPlayback(), advance()
 // Message thread calls: loadFile(), all parameter setters
 // ============================================================
-class SamplerEngine
+class SamplerEngine : public juce::ChangeBroadcaster
 {
 public:
     // --------------------------------------------------------
@@ -39,6 +40,9 @@ public:
     // Load a file and decode it to the internal buffer.
     // Returns true on success. Safe to call while audio is running.
     bool loadFile (const juce::File& file, double targetSampleRate);
+
+    bool loadFromMemoryBlock (const void* data, int sizeInBytes,
+                            double targetSampleRate, const juce::String& fileName = {});
 
     // Clear the loaded sample
     void clearSample();
@@ -74,8 +78,9 @@ public:
     void setReverse        (bool shouldReverse) { reverse.store (shouldReverse);                    }
     void setStartPoint     (float normalised)   { startPoint.store (juce::jlimit (0.0f, 1.0f, normalised)); }
     void setEndPoint       (float normalised)   { endPoint.store   (juce::jlimit (0.0f, 1.0f, normalised)); }
+    void setReadPos        (float normalised)   {readPosition = juce::jlimit(0.0f, 1.0f, normalised); }
     void setPitchSemitones (float semitones)    { pitchSemitones.store (semitones);                 }
-    void setTriggerSource  (bool useRawMidi)    { triggerFromRawMidi.store (useRawMidi);            }
+
 
     PlaybackMode getPlaybackMode()   const { return playbackMode.load();      }
     float        getGain()           const { return gain.load();              }
@@ -83,7 +88,7 @@ public:
     float        getStartPoint()     const { return startPoint.load();        }
     float        getEndPoint()       const { return endPoint.load();          }
     float        getPitchSemitones() const { return pitchSemitones.load();    }
-    bool         getTriggerFromRawMidi() const { return triggerFromRawMidi.load(); }
+
 
     // --------------------------------------------------------
     // Audio thread — call these from processBlock

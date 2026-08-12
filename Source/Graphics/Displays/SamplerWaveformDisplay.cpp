@@ -167,6 +167,14 @@ void SamplerWaveformDisplay::resized()
     waveformDirty = true;
 }
 
+void SamplerWaveformDisplay::resetTrim()
+{
+    trimStartPos = 0.0f;
+    trimEndPos = 1.0f;
+    startHandlePos = 0.0f;
+    endHandlePos = 1.0f;
+}
+
 //==============================================================================
 // File drag and drop
 //==============================================================================
@@ -227,6 +235,7 @@ void SamplerWaveformDisplay::mouseDrag (const juce::MouseEvent& e)
         const float clamped = juce::jlimit (0.0f, endHandlePos - 0.01f, normX);
         engine.setStartPoint (trimmedToFull(clamped));
         startHandlePos = clamped;
+
         if (onStartPointChanged) onStartPointChanged (trimmedToFull(clamped));
     }
     else if (activeDrag == DragTarget::EndHandle)

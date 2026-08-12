@@ -36,15 +36,48 @@ void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData
 {
     auto state = apvts.copyState();
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
+
+    // The saved audio below is already cropped to the current trim, so the
+    // *exported* trim parameters should read as the full extent (0..1).
+    // This only edits the XML copy — the live plugin's own trim values are
+    // untouched, so the UI you're looking at right now doesn't jump.
+    // if (auto* trimStartXml = xml->getChildByAttribute ("id", "SAMPLE_TRIM_START"))
+    //     trimStartXml->setAttribute ("value", 0.0);
+
+    // if (auto* trimEndXml = xml->getChildByAttribute ("id", "SAMPLE_TRIM_END"))
+    //     trimEndXml->setAttribute ("value", 1.0);
+
+    juce::MemoryBlock sampleData;
+    sampler.saveToMemoryBlock (sampleData);
+    if (sampleData.getSize() > 0)
+    {
+        xml->setAttribute ("sampleAudioData", sampleData.toBase64Encoding());
+        xml->setAttribute ("sampleFileName",  sampler.getLoadedFileName());
+    }
+
     copyXmlToBinary (*xml, destData);
 }
 
 void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes) 
 {
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
-    if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName (apvts.state.getType()))
-            apvts.replaceState (juce::ValueTree::fromXml (*xmlState));
+    if (xmlState.get() == nullptr || ! xmlState->hasTagName (apvts.state.getType()))
+        return;
+
+    // Restore parameters first, including SAMPLE_TRIM_START/END, so the
+    // trim points are already correct by the time the audio is loaded below.
+    apvts.replaceState (juce::ValueTree::fromXml (*xmlState));
+
+    if (xmlState->hasAttribute ("sampleAudioData"))
+    {
+        juce::MemoryBlock sampleData;
+        sampleData.fromBase64Encoding (xmlState->getStringAttribute ("sampleAudioData"));
+
+        sampler.loadFromMemoryBlock (sampleData.getData(),
+                                      static_cast<int> (sampleData.getSize()),
+                                      sampleRate,
+                                      xmlState->getStringAttribute ("sampleFileName"));
+    }
 }
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -343,7 +376,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             if (message.isNoteOn())
             {
                 arpSynth.noteOn (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity());
-                if (!sampler.getTriggerFromRawMidi()) sampler.triggerPlayback();
+
             }
             else if (message.isNoteOff())
                 arpSynth.noteOff (message.getChannel(), message.getNoteNumber(), message.getFloatVelocity(), true);

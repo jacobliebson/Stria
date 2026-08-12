@@ -425,5 +425,60 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         0.0f
     ));
 
+    // ============================================= SAMPLER =============================================
+
+    // Sampler gain
+    juce::NormalisableRange<float> sampleGainRange(0.0f, 2.0f, 0.01f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("SAMPLE_GAIN", 1),
+        "Sample Gain",
+        sampleGainRange,
+        1.0f
+    ));
+
+    // Sampler pitch (semitones)
+    juce::AudioParameterFloatAttributes samplePitchAttributes;
+    samplePitchAttributes = samplePitchAttributes.withLabel(" st");
+    juce::NormalisableRange<float> samplePitchRange(-24.0f, 24.0f, 0.1f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("SAMPLE_PITCH", 1),
+        "Sample Pitch",
+        samplePitchRange,
+        0.0f,
+        samplePitchAttributes
+    ));
+
+    // Sampler playback mode
+    juce::AudioParameterIntAttributes samplePlaybackModeAttributes;
+    samplePlaybackModeAttributes = samplePlaybackModeAttributes.withStringFromValueFunction([](float value, int maxLen) -> juce::String {
+        switch (static_cast<int> (value))
+        {
+            case 0:  return "Continuous Loop";
+            case 1:  return "Key Trigger - Start";
+            case 2:  return "Key Trigger - Random";
+            default: return "Unknown";
+        }
+    });
+    samplePlaybackModeAttributes = samplePlaybackModeAttributes.withValueFromStringFunction([](const juce::String& text) -> float {
+        if (text.equalsIgnoreCase ("Continuous Loop"))      return 0.0f;
+        if (text.equalsIgnoreCase ("Key Trigger - Start"))  return 1.0f;
+        if (text.equalsIgnoreCase ("Key Trigger - Random")) return 2.0f;
+        return 0.0f;
+    });
+
+    layout.add (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { "SAMPLE_PLAYBACK_MODE", 1 },
+        "Sample Playback Mode",
+        0, 2, 0,  // min, max, default (Continuous Loop)
+        samplePlaybackModeAttributes
+    ));
+
+    // Sampler reverse
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("SAMPLE_REVERSE", 1),
+        "Sample Reverse",
+        false
+    ));
+
     return layout;
 }
