@@ -28,6 +28,8 @@ public:
     // rebuild the waveform thumbnail
     void sampleLoaded (const juce::AudioBuffer<float>* buffer);
 
+    void rebuildWaveformPath();
+
     // FileDragAndDropTarget
     bool isInterestedInFileDrag (const juce::StringArray& files) override;
     void filesDropped (const juce::StringArray& files, int x, int y) override;
@@ -43,9 +45,10 @@ public:
     void mouseDrag  (const juce::MouseEvent&) override;
     void mouseUp    (const juce::MouseEvent&) override;
 
+
 private:
     void timerCallback() override;
-    void rebuildWaveformPath();
+    
 
     juce::Rectangle<float> getInnerBounds() const;
     float normalisedXToPixel (float normX) const;
@@ -54,6 +57,16 @@ private:
     enum class DragTarget { None, StartHandle, EndHandle };
 
     SamplerEngine& engine;
+
+    // Start and end position of audio file - update on trim
+    std::atomic<float> trimStartPos;
+    std::atomic<float> trimEndPos;
+    
+    // Visual positions of handles - update on trim
+    std::atomic<float> startHandlePos;
+    std::atomic<float> endHandlePos;
+
+    float trimmedToFull (float trimmedX);
 
     // Downsampled peak data for drawing — rebuilt on load
     std::vector<float> waveformPeaks;

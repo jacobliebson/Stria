@@ -30,15 +30,6 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef)
     playbackModeLabel.setJustificationType (juce::Justification::centredLeft);
     addAndMakeVisible (playbackModeLabel);
 
-    // Trigger source
-    triggerSourceButton.setToggleState (engine.getTriggerFromRawMidi(),
-                                        juce::dontSendNotification);
-    triggerSourceButton.onClick = [this]
-    {
-        engine.setTriggerSource (triggerSourceButton.getToggleState());
-    };
-    addAndMakeVisible (triggerSourceButton);
-
     // Reverse
     reverseButton.setToggleState (engine.getReverse(), juce::dontSendNotification);
     reverseButton.onClick = [this]
@@ -46,6 +37,22 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef)
         engine.setReverse (reverseButton.getToggleState());
     };
     addAndMakeVisible (reverseButton);
+
+    // Trim
+    trimButton.onClick = [this]->void
+    {
+        waveformDisplay.rebuildWaveformPath();
+    };
+    addAndMakeVisible(trimButton);
+
+    // Reset
+    resetButton.onClick = [this]->void
+    {
+        engine.setStartPoint(0.0f);
+        engine.setEndPoint(1.0f);
+        waveformDisplay.rebuildWaveformPath();
+    };
+    addAndMakeVisible(resetButton);
 
     // Gain knob
     gainKnob.setSliderStyle (juce::Slider::RotaryVerticalDrag);
@@ -138,61 +145,97 @@ void SamplerPanel::paint (juce::Graphics& g)
     g.fillAll (ResonatorPalette::backgroundPanel());
 }
 
-void SamplerPanel::resized()
+namespace SamplerPanelLayout
 {
-    auto bounds = getLocalBounds().reduced (10);
+    // Outer margin
+    constexpr int margin = 10;
 
-    // File name and load button across the top
-    const int topH   = 24;
-    auto topRow      = bounds.removeFromTop (topH);
-    loadButton.setBounds    (topRow.removeFromRight (90));
-    topRow.removeFromRight  (6);
-    fileNameLabel.setBounds (topRow);
+    // Top row (file name + load button)
+    constexpr int topRowHeight   = 24;
+    constexpr int loadButtonW    = 90;
+    constexpr int topRowGap      = 6;
 
-    bounds.removeFromTop (6);
+    // Gap between top row and waveform
+    constexpr int waveformTopGap = 6;
 
-    // Waveform display takes the bulk of the space
-    const int controlH = 80;
-    auto waveformArea  = bounds.removeFromTop (bounds.getHeight() - controlH - 6);
-    waveformDisplay.setBounds (waveformArea);
+    // Bottom control strip
+    constexpr int controlHeight  = 80;
+    constexpr int controlTopGap  = 6;
 
-    bounds.removeFromTop (6);
-
-    // Controls row at the bottom
-    auto controlRow = bounds;
-
-    const int knobW  = 64;
-    const int knobH  = 50;
-    const int labelH = 16;
-
-    // Gain knob
-    gainKnob.setBounds   (controlRow.removeFromLeft (knobW).removeFromTop (knobH));
-    gainLabel.setBounds  (juce::Rectangle<int> (controlRow.getX() - knobW,
-                                                 gainKnob.getBottom(), knobW, labelH));
-
-    controlRow.removeFromLeft (8);
-
-    // Pitch knob
-    pitchKnob.setBounds  (controlRow.removeFromLeft (knobW).removeFromTop (knobH));
-    pitchLabel.setBounds (juce::Rectangle<int> (controlRow.getX() - knobW,
-                                                 pitchKnob.getBottom(), knobW, labelH));
-
-    controlRow.removeFromLeft (16);
+    // Knobs
+    constexpr int knobW    = 64;
+    constexpr int knobH    = 50;
+    constexpr int labelH   = 16;
+    constexpr int knobGap  = 8;
 
     // Mode selector
-    const int modeW = 180;
-    playbackModeLabel.setBounds (controlRow.removeFromLeft (40).withHeight (24).withCentre (
-        juce::Point<int> (controlRow.getX() - 20, controlRow.getCentreY())));
-    playbackModeBox.setBounds (controlRow.removeFromLeft (modeW).withHeight (24)
-                                          .withY (controlRow.getCentreY() - 12));
+    constexpr int modeGap        = 16;
+    constexpr int modeLabelW     = 40;
+    constexpr int modeBoxW       = 180;
+    constexpr int modeControlH   = 24;
 
-    controlRow.removeFromLeft (16);
-
-    // Toggle buttons stacked
-    const int toggleH = 22;
-    const int toggleW = 160;
-    triggerSourceButton.setBounds (controlRow.removeFromLeft (toggleW).removeFromTop (toggleH));
-    controlRow.removeFromLeft (8);
-    reverseButton.setBounds (controlRow.removeFromLeft (80).removeFromTop (toggleH));
+    // Toggles
+    constexpr int toggleGap      = 16;   // gap before the toggle group starts
+    constexpr int toggleH        = 22;
+    constexpr int toggleSpacing  = 8;    // gap between toggle buttons
+    constexpr int reverseW       = 60;
+    constexpr int trimW          = 60;
+    constexpr int resetW         = 60;
 }
 
+void SamplerPanel::resized()
+{
+    using namespace SamplerPanelLayout;
+
+    auto bounds = getLocalBounds().reduced (margin);
+    const int left  = bounds.getX();
+    const int top   = bounds.getY();
+    const int right = bounds.getRight();
+
+    // ---- Top row: file name + load button ----
+    const int topRowY = top;
+    loadButton.setBounds (right - loadButtonW, topRowY, loadButtonW, topRowHeight);
+
+    const int fileNameW = (right - loadButtonW - topRowGap) - left;
+    fileNameLabel.setBounds (left, topRowY, fileNameW, topRowHeight);
+
+    // ---- Waveform display ----
+    const int waveformY = topRowY + topRowHeight + waveformTopGap;
+    const int waveformH = bounds.getHeight() - topRowHeight - waveformTopGap
+                                              - controlHeight - controlTopGap;
+    waveformDisplay.setBounds (left, waveformY, bounds.getWidth(), waveformH);
+
+    // ---- Bottom control row ----
+    const int controlY = waveformY + waveformH + controlTopGap;
+    int x = left;
+
+    // Gain knob
+    gainKnob.setBounds  (x, controlY, knobW, knobH);
+    gainLabel.setBounds (x, controlY + knobH, knobW, labelH);
+    x += knobW + knobGap;
+
+    // Pitch knob
+    pitchKnob.setBounds  (x, controlY, knobW, knobH);
+    pitchLabel.setBounds (x, controlY + knobH, knobW, labelH);
+    x += knobW + modeGap;
+    int x2 = x;
+
+    // Mode selector
+    const int modeControlY = controlY;
+    playbackModeLabel.setBounds (x, modeControlY, modeLabelW, modeControlH);
+    x += modeLabelW;
+    playbackModeBox.setBounds (x, modeControlY, modeBoxW, modeControlH);
+    x += modeBoxW + toggleGap;
+
+    // Toggle buttons — trigger-source button removed, reverse/trim/reset remain
+    const int toggleY = controlY + modeControlH + toggleSpacing;
+    x = x2; 
+
+    reverseButton.setBounds (x, toggleY, reverseW, toggleH);
+    x += reverseW + toggleSpacing;
+
+    trimButton.setBounds (x, toggleY, trimW, toggleH);
+    x += trimW + toggleSpacing;
+
+    resetButton.setBounds (x, toggleY, resetW, toggleH);
+}

@@ -42,6 +42,12 @@ private:
     // Reverse toggle
     juce::ToggleButton reverseButton { "Reverse" };
 
+    // Trim button
+    juce::TextButton trimButton {"Trim"};
+
+    // Reset button
+    juce::TextButton resetButton {"Reset"};
+
     // Gain knob
     juce::Slider gainKnob;
     juce::Label  gainLabel;

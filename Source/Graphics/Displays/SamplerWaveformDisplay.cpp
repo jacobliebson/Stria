@@ -15,6 +15,11 @@ SamplerWaveformDisplay::~SamplerWaveformDisplay()
 //==============================================================================
 void SamplerWaveformDisplay::sampleLoaded (const juce::AudioBuffer<float>* buffer)
 {
+    trimStartPos = 0.0f;
+    trimEndPos = 1.0f;
+    startHandlePos = 0.0f;
+    endHandlePos = 1.0f;
+
     waveformPeaks.clear();
 
     if (buffer == nullptr || buffer->getNumSamples() == 0)
@@ -53,6 +58,13 @@ void SamplerWaveformDisplay::sampleLoaded (const juce::AudioBuffer<float>* buffe
 
 void SamplerWaveformDisplay::rebuildWaveformPath()
 {
+
+    trimStartPos = engine.getStartPoint();
+    trimEndPos = engine.getEndPoint();
+
+    startHandlePos = 0.0f;
+    endHandlePos = 1.0f;
+
     waveformPath.clear();
 
     if (waveformPeaks.empty())
@@ -63,19 +75,24 @@ void SamplerWaveformDisplay::rebuildWaveformPath()
     const float halfH = inner.getHeight() * 0.45f;
     const int   n     = static_cast<int> (waveformPeaks.size());
 
+    
+
+    int startIndex = (int)(n * trimStartPos);
+    int endIndex = (int)(n * trimEndPos);
+
     waveformPath.startNewSubPath (inner.getX(), midY);
 
     // Top half
-    for (int i = 0; i < n; ++i)
+    for (int i = startIndex; i < endIndex; ++i)
     {
-        const float x = inner.getX() + (static_cast<float> (i) / n) * inner.getWidth();
+        const float x = inner.getX() + (inner.getWidth() * (i - startIndex) / (endIndex - startIndex));
         waveformPath.lineTo (x, midY - waveformPeaks[i] * halfH);
     }
 
     // Bottom half (mirror)
-    for (int i = n - 1; i >= 0; --i)
+    for (int i = endIndex; i >= startIndex; --i)
     {
-        const float x = inner.getX() + (static_cast<float> (i) / n) * inner.getWidth();
+        const float x = inner.getX() + (inner.getWidth() * (i - startIndex) / (endIndex - startIndex));
         waveformPath.lineTo (x, midY + waveformPeaks[i] * halfH);
     }
 
@@ -107,8 +124,8 @@ void SamplerWaveformDisplay::paint (juce::Graphics& g)
     auto inner = getInnerBounds();
 
     // Shaded region between start and end handles
-    const float startX = normalisedXToPixel (engine.getStartPoint());
-    const float endX   = normalisedXToPixel (engine.getEndPoint());
+    const float startX = normalisedXToPixel (startHandlePos);
+    const float endX   = normalisedXToPixel (endHandlePos);
 
     g.setColour (ResonatorPalette::accentPrimary().withAlpha (0.08f));
     g.fillRect  (juce::Rectangle<float> (inner.getX(), inner.getY(),
@@ -139,7 +156,7 @@ void SamplerWaveformDisplay::paint (juce::Graphics& g)
     // Playhead
     if (engine.isPlaying.load())
     {
-        const float playX = normalisedXToPixel (engine.normalisedReadPosition.load());
+        const float playX = normalisedXToPixel ((engine.normalisedReadPosition.load() - trimStartPos) / (trimEndPos - trimStartPos));
         g.setColour (ResonatorPalette::textPrimary().withAlpha (0.8f));
         g.drawVerticalLine (static_cast<int> (playX), inner.getY(), inner.getBottom());
     }
@@ -186,8 +203,8 @@ void SamplerWaveformDisplay::mouseDown (const juce::MouseEvent& e)
     if (waveformPeaks.empty())
         return;
 
-    const float startX = normalisedXToPixel (engine.getStartPoint());
-    const float endX   = normalisedXToPixel (engine.getEndPoint());
+    const float startX = normalisedXToPixel (startHandlePos);
+    const float endX   = normalisedXToPixel (endHandlePos);
     const float mx     = static_cast<float> (e.x);
 
     if (std::abs (mx - startX) < handleWidth * 2.0f)
@@ -207,23 +224,27 @@ void SamplerWaveformDisplay::mouseDrag (const juce::MouseEvent& e)
 
     if (activeDrag == DragTarget::StartHandle)
     {
-        const float clamped = juce::jlimit (0.0f, engine.getEndPoint() - 0.01f, normX);
-        engine.setStartPoint (clamped);
-        if (onStartPointChanged) onStartPointChanged (clamped);
+        const float clamped = juce::jlimit (0.0f, endHandlePos - 0.01f, normX);
+        engine.setStartPoint (trimmedToFull(clamped));
+        startHandlePos = clamped;
+        if (onStartPointChanged) onStartPointChanged (trimmedToFull(clamped));
     }
     else if (activeDrag == DragTarget::EndHandle)
     {
-        const float clamped = juce::jlimit (engine.getStartPoint() + 0.01f, 1.0f, normX);
-        engine.setEndPoint (clamped);
-        if (onEndPointChanged) onEndPointChanged (clamped);
+        const float clamped = juce::jlimit (startHandlePos + 0.01f, 1.0f, normX);
+        engine.setEndPoint (trimmedToFull(clamped));
+        endHandlePos = clamped;
+        if (onEndPointChanged) onEndPointChanged (trimmedToFull(clamped));
     }
 
     repaint();
+
 }
 
 void SamplerWaveformDisplay::mouseUp (const juce::MouseEvent&)
 {
     activeDrag = DragTarget::None;
+    //waveformDirty = true;
 }
 
 //==============================================================================
@@ -252,3 +273,9 @@ float SamplerWaveformDisplay::pixelToNormalisedX (float pixelX) const
     auto inner = getInnerBounds();
     return (pixelX - inner.getX()) / inner.getWidth();
 }
+
+float SamplerWaveformDisplay::trimmedToFull (float trimmedX)
+{
+    return (trimEndPos - trimStartPos) * trimmedX + trimStartPos;
+}
+

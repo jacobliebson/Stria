@@ -20,6 +20,8 @@ SamplerEngine::~SamplerEngine()
 
 bool SamplerEngine::loadFile (const juce::File& file, double targetSampleRate)
 {
+    startPoint = 0.0f;
+    endPoint = 1.0f;
     juce::AudioFormatManager formatManager;
     formatManager.registerBasicFormats();
 
