@@ -59,7 +59,17 @@ public:
     // --------------------------------------------------------
     // Parameter setters — safe to call from any thread
     // --------------------------------------------------------
-    void setPlaybackMode   (PlaybackMode mode)  { playbackMode.store (mode);                        }
+    void setPlaybackMode (PlaybackMode mode)
+    {
+        playbackMode.store (mode);
+
+        if (mode == PlaybackMode::ContinuousLoop && hasSample())
+        {
+            readPosition = static_cast<double> (
+                static_cast<int> (startPoint.load() * (activeBuffer.load()->getNumSamples() - 1)));
+            isPlaying.store (true);
+        }
+    }
     void setGain           (float gainLinear)   { gain.store (gainLinear);                          }
     void setReverse        (bool shouldReverse) { reverse.store (shouldReverse);                    }
     void setStartPoint     (float normalised)   { startPoint.store (juce::jlimit (0.0f, 1.0f, normalised)); }

@@ -10,8 +10,8 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef)
 
     // Playback mode
     playbackModeBox.addItem ("Continuous Loop",        1);
-    playbackModeBox.addItem ("Key Trigger — Start",    2);
-    playbackModeBox.addItem ("Key Trigger — Random",   3);
+    playbackModeBox.addItem ("Key Trigger - Start",    2);
+    playbackModeBox.addItem ("Key Trigger - Random",   3);
     playbackModeBox.setSelectedId (1, juce::dontSendNotification);
     playbackModeBox.onChange = [this]
     {
@@ -105,6 +105,12 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef)
     addAndMakeVisible (loadButton);
 
     updateControlStates();
+
+    if (engine.hasSample())
+    {
+        waveformDisplay.sampleLoaded (engine.getBufferForDisplay());
+        fileNameLabel.setText (engine.getLoadedFileName(), juce::dontSendNotification);
+    }
 }
 
 //==============================================================================

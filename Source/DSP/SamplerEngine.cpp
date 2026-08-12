@@ -11,6 +11,9 @@ SamplerEngine::~SamplerEngine()
     delete buf;
 }
 
+
+
+
 //==============================================================================
 // Message thread
 //==============================================================================
@@ -218,15 +221,15 @@ void SamplerEngine::advance (double sampleRate)
     const bool pastEnd = readPosition >= endSample;
     if (pastEnd)
     {
-        if (playbackMode.load() == PlaybackMode::ContinuousLoop)
-            readPosition = startSample; // loop
-        else
-            isPlaying.store (false);   // one-shot finished
+        // if (playbackMode.load() == PlaybackMode::ContinuousLoop)
+        //     readPosition = startSample; // loop
+        // else
+        //     isPlaying.store (false);   // one-shot finished
+        readPosition = startSample;
     }
 
     // Update normalised position for UI
-    const int range = juce::jmax (1, endSample - startSample);
-    const float normPos = static_cast<float> (readPosition - startSample) / range;
+    const float normPos = static_cast<float> (readPosition) / juce::jmax (1, numSamples - 1);
     normalisedReadPosition.store (juce::jlimit (0.0f, 1.0f, normPos));
 }
 
