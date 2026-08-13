@@ -434,8 +434,8 @@ void AudioPluginAudioProcessorEditor::resized()
         int displayW = panelW - 2 * pad;
         int displayH = available;
         int tabY = panelY - m + 6;
-        const int tabH = 12;
-        const int tabW = 35;
+        const int tabH = 20;
+        const int tabW = 55;
         
 
         legatoButton.setBounds (px + panelW - 2 * (tabW + 6),            tabY, tabW, tabH);
@@ -455,8 +455,8 @@ void AudioPluginAudioProcessorEditor::resized()
     {
         const int px   = m * 2 + panelW;
         int tabY = panelY - m + 6;
-        const int tabH = 12;
-        const int tabW = 30;
+        const int tabH = 20;
+        const int tabW = 40;
 
         chordEnvButton.setBounds (px + panelW - 2 * (tabW + 6),           tabY, tabW, tabH);
         arpEnvButton.setBounds   (px + panelW - tabW - 6, tabY, tabW, tabH);

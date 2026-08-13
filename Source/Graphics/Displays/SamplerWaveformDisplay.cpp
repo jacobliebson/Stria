@@ -233,17 +233,20 @@ void SamplerWaveformDisplay::mouseDrag (const juce::MouseEvent& e)
     if (activeDrag == DragTarget::StartHandle)
     {
         const float clamped = juce::jlimit (0.0f, endHandlePos - 0.01f, normX);
-        engine.setStartPoint (trimmedToFull(clamped));
         startHandlePos = clamped;
 
-        if (onStartPointChanged) onStartPointChanged (trimmedToFull(clamped));
+        // Don't touch the engine directly here — report the change and let
+        // SamplerPanel route it through the APVTS (SAMPLE_TRIM_START), which
+        // both applies it to the engine and persists it. Writing to the
+        // engine directly, as this used to do, meant drags never reached
+        // the parameter and were lost on save/reload.
+        if (onStartPointChanged) onStartPointChanged (trimmedToFull (clamped));
     }
     else if (activeDrag == DragTarget::EndHandle)
     {
         const float clamped = juce::jlimit (startHandlePos + 0.01f, 1.0f, normX);
-        engine.setEndPoint (trimmedToFull(clamped));
         endHandlePos = clamped;
-        if (onEndPointChanged) onEndPointChanged (trimmedToFull(clamped));
+        if (onEndPointChanged) onEndPointChanged (trimmedToFull (clamped));
     }
 
     repaint();
@@ -287,4 +290,3 @@ float SamplerWaveformDisplay::trimmedToFull (float trimmedX)
 {
     return (trimEndPos - trimStartPos) * trimmedX + trimStartPos;
 }
-

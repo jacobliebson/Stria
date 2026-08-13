@@ -8,9 +8,12 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     waveformDisplay.onFileDropped = [this] (juce::File f) { loadFile (f); };
     addAndMakeVisible (waveformDisplay);
 
-    // If/when SamplerWaveformDisplay grows drag-to-trim handles, wire it here
-    // so trim changes flow through the APVTS like every other parameter:
-    //     waveformDisplay.onTrimChanged = [this] (float s, float e) { setTrimFromUI (s, e); };
+    // Trim handle drags are reported one side at a time via these two
+    // callbacks. Route each through the APVTS (SAMPLE_TRIM_START/END) so the
+    // drag is both applied to the engine and persisted — the display no
+    // longer touches the engine directly.
+    waveformDisplay.onStartPointChanged = [this] (float v) { setTrimStartFromUI (v); };
+    waveformDisplay.onEndPointChanged   = [this] (float v) { setTrimEndFromUI (v); };
 
     playbackModeBox.addItem ("Continuous Loop",        1);
     playbackModeBox.addItem ("Key Trigger - Start",    2);
@@ -32,8 +35,8 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     resetButton.onClick = [this]
     {
         waveformDisplay.resetTrim();
-        engine.setStartPoint(0.0f);
-        engine.setEndPoint(1.0f);
+        setTrimStartFromUI (0.0f); // goes through APVTS so it's persisted too
+        setTrimEndFromUI (1.0f);
         waveformDisplay.rebuildWaveformPath();
     };
     addAndMakeVisible (resetButton);
@@ -92,6 +95,8 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     apvts.addParameterListener (pitchParamID,        this);
     apvts.addParameterListener (playbackModeParamID, this);
     apvts.addParameterListener (reverseParamID,      this);
+    apvts.addParameterListener (trimStartParamID,    this);
+    apvts.addParameterListener (trimEndParamID,      this);
 
     // addParameterListener only fires on future changes, so push current
     // values into the engine now (covers a preset already loaded before
@@ -100,6 +105,8 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     parameterChanged (pitchParamID,        *apvts.getRawParameterValue (pitchParamID));
     parameterChanged (playbackModeParamID, *apvts.getRawParameterValue (playbackModeParamID));
     parameterChanged (reverseParamID,      *apvts.getRawParameterValue (reverseParamID));
+    parameterChanged (trimStartParamID,    *apvts.getRawParameterValue (trimStartParamID));
+    parameterChanged (trimEndParamID,      *apvts.getRawParameterValue (trimEndParamID));
 
     updateControlStates();
 
@@ -118,6 +125,8 @@ SamplerPanel::~SamplerPanel()
     apvts.removeParameterListener (pitchParamID,        this);
     apvts.removeParameterListener (playbackModeParamID, this);
     apvts.removeParameterListener (reverseParamID,      this);
+    apvts.removeParameterListener (trimStartParamID,    this);
+    apvts.removeParameterListener (trimEndParamID,      this);
 }
 
 //==============================================================================
@@ -167,6 +176,39 @@ void SamplerPanel::parameterChanged (const juce::String& parameterID, float newV
     else if (parameterID == reverseParamID)
     {
         engine.setReverse (newValue >= 0.5f);
+    }
+    else if (parameterID == trimStartParamID)
+    {
+        engine.setStartPoint (newValue);
+    }
+    else if (parameterID == trimEndParamID)
+    {
+        engine.setEndPoint (newValue);
+    }
+}
+
+//==============================================================================
+void SamplerPanel::setTrimStartFromUI (float startNormalised)
+{
+    // Routed through the APVTS (rather than calling engine.setStartPoint
+    // directly) so the trim is both applied immediately and persisted as
+    // part of the preset via SAMPLE_TRIM_START. parameterChanged() above
+    // applies the value to the engine once the APVTS round-trips it back.
+    if (auto* p = apvts.getParameter (trimStartParamID))
+    {
+        p->beginChangeGesture();
+        p->setValueNotifyingHost (juce::jlimit (0.0f, 1.0f, startNormalised));
+        p->endChangeGesture();
+    }
+}
+
+void SamplerPanel::setTrimEndFromUI (float endNormalised)
+{
+    if (auto* p = apvts.getParameter (trimEndParamID))
+    {
+        p->beginChangeGesture();
+        p->setValueNotifyingHost (juce::jlimit (0.0f, 1.0f, endNormalised));
+        p->endChangeGesture();
     }
 }
 

@@ -21,6 +21,13 @@ private:
     void loadFile (const juce::File& file);
     void updateControlStates();
 
+    // Pushes a new trim start/end from the UI (waveform drag handles, reset
+    // button, etc.) through the APVTS so it's both applied to the engine
+    // and persisted. The display reports each side independently, matching
+    // SamplerWaveformDisplay::onStartPointChanged/onEndPointChanged.
+    void setTrimStartFromUI (float startNormalised);
+    void setTrimEndFromUI (float endNormalised);
+
     // Forwards a parameter change (from the UI, host automation, or a preset
     // load) into the engine. This is the single place engine state gets set
     // from — nothing else should call the engine's setters directly.
@@ -65,6 +72,8 @@ private:
     static constexpr const char* pitchParamID        = "SAMPLE_PITCH";
     static constexpr const char* playbackModeParamID = "SAMPLE_PLAYBACK_MODE";
     static constexpr const char* reverseParamID      = "SAMPLE_REVERSE";
+    static constexpr const char* trimStartParamID    = "SAMPLE_TRIM_START";
+    static constexpr const char* trimEndParamID      = "SAMPLE_TRIM_END";
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SamplerPanel)
 };

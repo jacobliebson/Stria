@@ -73,6 +73,15 @@ public:
     SamplerEngine sampler;
     double sampleRate;
 
+    // Cache of the last base64-encoded sample block written into state, keyed
+    // by SamplerEngine::sampleVersion. getStateInformation() can be called by
+    // the host very frequently (e.g. on every parameter change, for undo
+    // history) — re-encoding the whole sample buffer every time caused
+    // audible lag spikes. We only redo the (expensive) encode when the
+    // sample itself has actually changed.
+    juce::String cachedSampleStateBase64;
+    std::uint32_t cachedSampleVersion = 0xFFFFFFFFu;
+
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)

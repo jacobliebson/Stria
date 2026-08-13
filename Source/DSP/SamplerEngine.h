@@ -49,6 +49,12 @@ public:
 
     bool hasSample() const { return activeBuffer.load() != nullptr; }
 
+    // Bumped every time the active sample buffer is replaced (load/clear).
+    // Lets callers (e.g. the processor's getStateInformation) cheaply detect
+    // whether the sample actually changed since last time, instead of
+    // unconditionally re-encoding the whole buffer on every call.
+    std::uint32_t getSampleVersion() const { return sampleVersion.load(); }
+
     // Returns a read-only pointer to the active buffer for UI use.
     // Only call from the message thread.
     const juce::AudioBuffer<float>* getBufferForDisplay() const { return activeBuffer.load(); }
@@ -148,6 +154,7 @@ private:
     std::atomic<bool>         triggerFromRawMidi { true };
 
     juce::String loadedFileName;
+    std::atomic<std::uint32_t> sampleVersion { 0 };
 
     // Linear interpolation between two samples
     float interpolate (const float* data, int numSamples, double position) const;

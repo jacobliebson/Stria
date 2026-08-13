@@ -480,5 +480,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         false
     ));
 
+    // Sampler trim start/end (normalised 0..1 positions of the trim handles).
+    // Persisting these means the saved sample audio can stay untouched —
+    // trimming is applied on playback rather than baked destructively into
+    // what gets written to the preset.
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("SAMPLE_TRIM_START", 1),
+        "Sample Trim Start",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
+        0.0f
+    ));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("SAMPLE_TRIM_END", 1),
+        "Sample Trim End",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
+        1.0f
+    ));
+
     return layout;
 }

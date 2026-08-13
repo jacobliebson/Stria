@@ -37,21 +37,23 @@ void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData
     auto state = apvts.copyState();
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
 
-    // The saved audio below is already cropped to the current trim, so the
-    // *exported* trim parameters should read as the full extent (0..1).
-    // This only edits the XML copy — the live plugin's own trim values are
-    // untouched, so the UI you're looking at right now doesn't jump.
-    // if (auto* trimStartXml = xml->getChildByAttribute ("id", "SAMPLE_TRIM_START"))
-    //     trimStartXml->setAttribute ("value", 0.0);
-
-    // if (auto* trimEndXml = xml->getChildByAttribute ("id", "SAMPLE_TRIM_END"))
-    //     trimEndXml->setAttribute ("value", 1.0);
-
-    juce::MemoryBlock sampleData;
-    sampler.saveToMemoryBlock (sampleData);
-    if (sampleData.getSize() > 0)
+    // Only re-encode the sample audio when it has actually changed since the
+    // last time we saved state. Some hosts call getStateInformation on every
+    // parameter tweak (for undo history), and base64-encoding the whole
+    // sample buffer every time is what was causing the lag spikes — so we
+    // cache the result and key it off SamplerEngine's version counter.
+    const std::uint32_t currentSampleVersion = sampler.getSampleVersion();
+    if (currentSampleVersion != cachedSampleVersion)
     {
-        xml->setAttribute ("sampleAudioData", sampleData.toBase64Encoding());
+        juce::MemoryBlock sampleData;
+        sampler.saveToMemoryBlock (sampleData);
+        cachedSampleStateBase64 = sampleData.getSize() > 0 ? sampleData.toBase64Encoding() : juce::String();
+        cachedSampleVersion = currentSampleVersion;
+    }
+
+    if (cachedSampleStateBase64.isNotEmpty())
+    {
+        xml->setAttribute ("sampleAudioData", cachedSampleStateBase64);
         xml->setAttribute ("sampleFileName",  sampler.getLoadedFileName());
     }
 
@@ -70,13 +72,34 @@ void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeI
 
     if (xmlState->hasAttribute ("sampleAudioData"))
     {
-        juce::MemoryBlock sampleData;
-        sampleData.fromBase64Encoding (xmlState->getStringAttribute ("sampleAudioData"));
+        const juce::String encodedSample = xmlState->getStringAttribute ("sampleAudioData");
 
+        juce::MemoryBlock sampleData;
+        sampleData.fromBase64Encoding (encodedSample);
+
+        // This is always the full, untrimmed sample (see SamplerEngine::
+        // saveToMemoryBlock) — trimming is no longer baked into the saved
+        // audio, so it's safe to keep reloading and re-saving indefinitely
+        // without the sample shrinking each round trip.
         sampler.loadFromMemoryBlock (sampleData.getData(),
                                       static_cast<int> (sampleData.getSize()),
                                       sampleRate,
                                       xmlState->getStringAttribute ("sampleFileName"));
+
+        // loadFromMemoryBlock() above bumped the sample version; sync the
+        // cache to match so the very next getStateInformation() call (which
+        // some hosts issue right after a load) doesn't needlessly re-encode
+        // what we just decoded.
+        cachedSampleVersion     = sampler.getSampleVersion();
+        cachedSampleStateBase64 = encodedSample;
+
+        // Restore the trim handle positions from the persisted parameters
+        // instead of resetting to 0..1 — the saved audio is untrimmed, so
+        // this is what actually reproduces the trim the user had.
+        if (auto* trimStart = apvts.getRawParameterValue ("SAMPLE_TRIM_START"))
+            sampler.setStartPoint (trimStart->load());
+        if (auto* trimEnd = apvts.getRawParameterValue ("SAMPLE_TRIM_END"))
+            sampler.setEndPoint (trimEnd->load());
     }
 }
 

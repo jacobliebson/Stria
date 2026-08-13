@@ -65,6 +65,7 @@ bool SamplerEngine::loadFile (const juce::File& file, double targetSampleRate)
     // next load so the audio thread isn't left with a dangling pointer.
     auto* newBuf = stagingBuffer.release();
     previousBuffer.reset (activeBuffer.exchange (newBuf));
+    sampleVersion.fetch_add (1, std::memory_order_relaxed);
 
     // Reset playback to the start
     readPosition = 0.0;
@@ -98,6 +99,7 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
                      static_cast<int> (numSamples * sizeof (float)));
 
     previousBuffer.reset (activeBuffer.exchange (newBuf.release()));
+    sampleVersion.fetch_add (1, std::memory_order_relaxed);
 
     if (! fileName.isEmpty())
         loadedFileName = fileName;
@@ -115,6 +117,7 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
 void SamplerEngine::clearSample()
 {
     previousBuffer.reset (activeBuffer.exchange (nullptr));
+    sampleVersion.fetch_add (1, std::memory_order_relaxed);
     isPlaying.store (false);
     readPosition = 0.0;
     normalisedReadPosition.store (0.0f);
@@ -125,28 +128,27 @@ void SamplerEngine::clearSample()
 
 void SamplerEngine::saveToMemoryBlock (juce::MemoryBlock& destData) const
 {
+    // IMPORTANT: this always writes the *entire* loaded buffer, never a
+    // trimmed sub-range. Trim start/end are UI/playback state persisted
+    // separately as APVTS parameters (SAMPLE_TRIM_START/END) — baking the
+    // trim into the saved audio here was the cause of samples getting
+    // progressively shorter across save/reload cycles (each reload treated
+    // the trimmed region as the new "full" buffer, so trimming again and
+    // re-saving compounded the cut).
     const auto* buf = activeBuffer.load();
     if (buf == nullptr)
         return;
 
-    const int totalSamples = buf->getNumSamples();
-    const float start = startPoint.load();
-    const float end   = endPoint.load();
-
-    const int startSample = juce::jlimit (0, totalSamples - 1,
-                                           static_cast<int> (start * (totalSamples - 1)));
-    const int endSampleExclusive = juce::jlimit (startSample + 1, totalSamples,
-                                                  static_cast<int> (end * (totalSamples - 1)) + 1);
-    const int numSamplesToSave = endSampleExclusive - startSample;
+    const int numSamples = buf->getNumSamples();
 
     juce::MemoryOutputStream stream (destData, false);
 
     stream.writeInt (buf->getNumChannels());
-    stream.writeInt (numSamplesToSave);
+    stream.writeInt (numSamples);
 
     for (int ch = 0; ch < buf->getNumChannels(); ++ch)
-        stream.write (buf->getReadPointer (ch, startSample),
-                      static_cast<size_t> (numSamplesToSave) * sizeof (float));
+        stream.write (buf->getReadPointer (ch),
+                      static_cast<size_t> (numSamples) * sizeof (float));
 }
 
 bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
@@ -167,6 +169,7 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
                      static_cast<int> (numSamples * sizeof (float)));
 
     previousBuffer.reset (activeBuffer.exchange (newBuf.release()));
+    sampleVersion.fetch_add (1, std::memory_order_relaxed);
 
     readPosition = 0.0;
     normalisedReadPosition.store (0.0f);
@@ -280,8 +283,16 @@ void SamplerEngine::advance (double sampleRate)
         readPosition = startSample;
     }
 
-    // Update normalised position for UI
-    const float normPos = static_cast<float> (readPosition) / juce::jmax (1, numSamples - 1);
+    // Update normalised position for UI. This mirrors the same
+    // reverse-aware remap used in getNextSampleL/R — readPosition itself
+    // always counts forward from startSample regardless of playback
+    // direction, but the position actually being read (and what a playhead
+    // should visually track) runs the opposite way when reverse is on.
+    const double actualPos = reverse.load()
+                              ? (endSample - (readPosition - startSample))
+                              : readPosition;
+
+    const float normPos = static_cast<float> (actualPos) / juce::jmax (1, numSamples - 1);
     normalisedReadPosition.store (juce::jlimit (0.0f, 1.0f, normPos));
 }
 
