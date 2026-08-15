@@ -426,6 +426,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
     ));
 
     // ============================================= SAMPLER =============================================
+    
+    // Use sampler
+    juce::AudioParameterIntAttributes audioSourceAttributes;
+    audioSourceAttributes = audioSourceAttributes.withStringFromValueFunction([](int value, int maxLen) -> juce::String {
+        switch (value)
+        {
+            case 1:
+                return "Sampler";
+            case 2: 
+                return "Live input";
+        }
+    });
+
+    layout.add(std::make_unique<juce::AudioParameterInt>(
+        juce::ParameterID("AUDIO_SOURCE", 1),
+        "Mode",
+        1, 2, 1,
+        audioSourceAttributes
+    ));
+
 
     // Sampler gain
     juce::NormalisableRange<float> sampleGainRange(0.0f, 2.0f, 0.01f);

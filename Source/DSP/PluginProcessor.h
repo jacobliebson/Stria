@@ -96,6 +96,7 @@ private:
 
     
     std::atomic<bool> useSampler {true};
+    std::atomic<float>* audioSourceParam = nullptr;
 
     // Separate voice pools for arp and chord streams.
     // NOTE: When independent envelopes are added, pass a VoiceRole to
@@ -105,7 +106,7 @@ private:
     HaltonGenerator haltonPanner;
 
     std::atomic<bool> isSustainPressed {false};
-    bool currentSustainState;
+    bool currentSustainState = false;
 
     Arpeggiator arp;
     std::atomic<float>* arpRateIndex        = nullptr;
@@ -138,7 +139,7 @@ private:
     std::atomic<float>* trigHold        = nullptr;
     std::atomic<float>* trigRelease     = nullptr;
     std::atomic<float>* legatoModeParam = nullptr;
-    bool wasAboveThreshold;
+    bool wasAboveThreshold = false;
 
     std::atomic<float>* arpEnvAttack        = nullptr;
     std::atomic<float>* arpEnvDecay         = nullptr;

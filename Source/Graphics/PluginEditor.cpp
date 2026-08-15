@@ -35,6 +35,22 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     samplerPanel = std::make_unique<SamplerPanel>(audioProcessor.sampler, audioProcessor.sampleRate, apvts);
     addAndMakeVisible (*samplerPanel);
 
+    // Audio source selector — lives in the header (outside both panels) so
+    // it stays visible and usable no matter which of the two is showing.
+    // Item IDs match the AUDIO_SOURCE parameter's int values (1 = Sampler,
+    // 2 = Live input), matching the convention used elsewhere for combo
+    // boxes bound directly to int parameters.
+    audioSourceBox.addItem ("Sampler",    1);
+    audioSourceBox.addItem ("Live Input", 2);
+    addAndMakeVisible (audioSourceBox);
+
+    audioSourceLabel.setText ("Source", juce::dontSendNotification);
+    audioSourceLabel.setJustificationType (juce::Justification::centredRight);
+    addAndMakeVisible (audioSourceLabel);
+
+    audioSourceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> (
+        apvts, "AUDIO_SOURCE", audioSourceBox);
+
     // Resonator
     setupKnob (feedbackKnob, feedbackLabel, "Feedback",
                feedbackAttachment, "FEEDBACK");
@@ -178,6 +194,25 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 {
     stopTimer();
     setLookAndFeel (nullptr);
+}
+
+//==============================================================================
+void AudioPluginAudioProcessorEditor::timerCallback()
+{
+    updateAudioSourceVisibility();
+}
+
+//==============================================================================
+void AudioPluginAudioProcessorEditor::updateAudioSourceVisibility()
+{
+    if (resonatorAnalyzer == nullptr || samplerPanel == nullptr)
+        return;
+
+    // AUDIO_SOURCE: 1 = Sampler, 2 = Live input (see Parameters.cpp)
+    const bool sourceIsSampler = audioProcessor.apvts.getRawParameterValue ("AUDIO_SOURCE")->load() < 1.5f;
+
+    samplerPanel->setVisible (sourceIsSampler);
+    resonatorAnalyzer->setVisible (! sourceIsSampler);
 }
 
 //==============================================================================
@@ -364,6 +399,18 @@ void AudioPluginAudioProcessorEditor::resized()
     const int pad    = Layout::panelPadding;
 
     //==========================================================================
+    // Header — audio source selector (top-right corner)
+    {
+        const int boxW    = 110;
+        const int boxH    = 24;
+        const int labelW  = 50;
+        const int y       = (hH - boxH) / 2;
+
+        audioSourceBox.setBounds (w - m - boxW, y, boxW, boxH);
+        audioSourceLabel.setBounds (w - m - boxW - labelW - 6, y, labelW, boxH);
+    }
+
+    //==========================================================================
     // Analyzer panel
     {
         const int resonatorW   = 80;
@@ -371,8 +418,10 @@ void AudioPluginAudioProcessorEditor::resized()
         const int analyzerY    = m + hH;
         const int analyzerW    = getWidth() - analyzerX - m;
         const int analyzerH    = tH;
-        //resonatorAnalyzer->setBounds (analyzerX, analyzerY, analyzerW, analyzerH);
+        resonatorAnalyzer->setBounds (analyzerX, analyzerY, analyzerW, analyzerH);
         samplerPanel->setBounds(analyzerX, analyzerY, analyzerW, analyzerH);
+
+        updateAudioSourceVisibility();
     }
     // Resonator panel — four knobs stacked vertically
     {

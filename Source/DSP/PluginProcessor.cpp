@@ -156,6 +156,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     arpDeviation     = apvts.getRawParameterValue ("ARP_DEVIATION");
     octRange         = apvts.getRawParameterValue("ARP_RANGE");
 
+    audioSourceParam = apvts.getRawParameterValue ("AUDIO_SOURCE");
+
     juce::dsp::ProcessSpec spec;
     spec.sampleRate       = sampleRate;
     spec.maximumBlockSize = static_cast<juce::uint32> (samplesPerBlock);
@@ -216,6 +218,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     wasPlaying        = isPlaying;
     lastProcessorPPQ  = isPlaying ? currentPPQ : -1.0;
+
+    // AUDIO_SOURCE: 1 = Sampler, 2 = Live input (see Parameters.cpp)
+    if (audioSourceParam != nullptr)
+        useSampler.store (audioSourceParam->load() < 1.5f);
 
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();

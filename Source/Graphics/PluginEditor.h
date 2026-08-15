@@ -36,7 +36,7 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
-    void timerCallback() override {}
+    void timerCallback() override;
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -58,6 +58,18 @@ private:
     // Helper to draw a labelled panel background
     void drawPanel (juce::Graphics& g, juce::Rectangle<int> bounds,
                     const juce::String& title);
+
+    // Shows the sampler panel or the resonator analyzer (never both) in the
+    // shared bounds they occupy, depending on the current AUDIO_SOURCE value.
+    void updateAudioSourceVisibility();
+
+    // Audio source selector (sampler vs. live input), sits in the empty area
+    // of the header. Always visible regardless of which panel — sampler
+    // panel or resonator analyzer — is currently shown, since it's the
+    // control used to switch between them.
+    juce::ComboBox audioSourceBox;
+    juce::Label    audioSourceLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> audioSourceAttachment;
 
     AudioPluginAudioProcessor& audioProcessor;
     ResonatorLookAndFeel lookAndFeel;
