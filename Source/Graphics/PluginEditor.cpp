@@ -362,7 +362,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     juce::FontOptions options = juce::FontOptions().withHeight (Layout::headerH);
     g.setFont (juce::Font (options));
 
-    g.drawText ("NAME HERE",
+    g.drawText ("STRIA",
                 m, 0,
                 w - m * 2,
                 hH,

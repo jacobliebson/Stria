@@ -17,7 +17,7 @@ juce_add_plugin(MyJucePlugin
     
     # Formats to build (VST3, AU, Standalone, etc.)
     FORMATS                     VST3 AU Standalone
-    PRODUCT_NAME                "Plugin test"
+    PRODUCT_NAME                "Stria"
     COMPANY_NAME                "Jacob Liebson"
     COPY_PLUGIN_AFTER_BUILD     TRUE
 
@@ -75,7 +75,6 @@ target_compile_features(MyJucePlugin PRIVATE cxx_std_20)
 
 target_compile_definitions(MyJucePlugin PRIVATE
     JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
-    #JUCE_VST3_EMULATE_MIDI_CC_WITH_PARAMETERS=0
     JucePlugin_WantsMidiInput=1
 )
 
