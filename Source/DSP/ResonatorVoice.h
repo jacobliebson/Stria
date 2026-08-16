@@ -71,6 +71,9 @@ private:
     float baseFrequency;
     float currentFrequency;
 
+    float noteVelocity = 1.0f;   // 0–1, captured at startNote, applied as gain
+    float velocityCurve = 1.0f;  // shaping exponent; 1 = linear, <1 = louder low velocities
+
     int detuneMode;
     float detuneAmount;
     int driftCounter;

@@ -35,6 +35,11 @@ void ResonatorVoice::startNote (int midiNoteNumber, float velocity, juce::Synthe
 {
     juce::ignoreUnused(velocity, sound, currentPitchWheelPosition);
 
+    // Store velocity (0-1) for use as an amplitude scalar during excitation.
+    // An optional curve lets you shape response away from linear (e.g. 0.6
+    // makes soft notes come through louder, closer to how ears perceive it).
+    noteVelocity = std::pow (juce::jlimit (0.0f, 1.0f, velocity), velocityCurve);
+
     // 1. Cache the base MIDI note as a float
     float baseMidi = static_cast<float>(midiNoteNumber);
     float processedMidi = baseMidi;
@@ -147,7 +152,7 @@ void ResonatorVoice::processExcitation (float inputL, float inputR, float& outpu
     }
 
     // Standard audio processing
-    float envelopeGain = adsr.getNextSample();
+    float envelopeGain = adsr.getNextSample() * noteVelocity;
 
     float leftGain  = std::cos (currentPan * juce::MathConstants<float>::halfPi);
     float rightGain = std::sin (currentPan * juce::MathConstants<float>::halfPi);
