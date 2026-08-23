@@ -3,6 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "../DSP/SamplerEngine.h"
 #include "Displays/SamplerWaveformDisplay.h"
+#include "IconToggleButton.h"
 #include "ResonatorPalette.h"
 #include "ResonatorLookAndFeel.h"
 
@@ -41,8 +42,15 @@ private:
 
     SamplerWaveformDisplay waveformDisplay;
 
-    juce::ComboBox playbackModeBox;
-    juce::Label    playbackModeLabel;
+    // Three independent icon toggles replace the old playback-mode dropdown:
+    // each is a single bool axis with its own custom vector glyph pair
+    // (see IconToggleButton), bound straight to an AudioParameterBool.
+    IconToggleButton loopToggle    { IconToggleButton::Glyph::LoopVsOneShot,       "Loop",        "One-shot" };
+    // Tooltip order is (true-state, false-state); each button's toggleState
+    // is bound directly to its param via ButtonAttachment, so this must
+    // match the param's actual true/false meaning, not just reading order.
+    IconToggleButton triggerToggle { IconToggleButton::Glyph::KeyTriggerVsFreeRun, "Free Run",     "Key Trigger" };
+    IconToggleButton startToggle   { IconToggleButton::Glyph::StartVsRandom,       "Random Start", "Start" };
 
     juce::ToggleButton triggerSourceButton { "Trigger from raw MIDI" };
     juce::ToggleButton reverseButton { "Reverse" };
@@ -60,17 +68,20 @@ private:
     std::unique_ptr<juce::FileChooser> fileChooser;
 
     using SliderAttachment   = juce::AudioProcessorValueTreeState::SliderAttachment;
-    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
     using ButtonAttachment   = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
     std::unique_ptr<SliderAttachment>   gainAttachment;
     std::unique_ptr<SliderAttachment>   pitchAttachment;
-    std::unique_ptr<ComboBoxAttachment> playbackModeAttachment;
+    std::unique_ptr<ButtonAttachment>   loopAttachment;
+    std::unique_ptr<ButtonAttachment>   freeRunAttachment;
+    std::unique_ptr<ButtonAttachment>   startRandomAttachment;
     std::unique_ptr<ButtonAttachment>   reverseAttachment;
 
     static constexpr const char* gainParamID         = "SAMPLE_GAIN";
     static constexpr const char* pitchParamID        = "SAMPLE_PITCH";
-    static constexpr const char* playbackModeParamID = "SAMPLE_PLAYBACK_MODE";
+    static constexpr const char* loopParamID         = "SAMPLE_LOOP";
+    static constexpr const char* freeRunParamID      = "SAMPLE_FREE_RUN";
+    static constexpr const char* startRandomParamID  = "SAMPLE_START_RANDOM";
     static constexpr const char* reverseParamID      = "SAMPLE_REVERSE";
     static constexpr const char* trimStartParamID    = "SAMPLE_TRIM_START";
     static constexpr const char* trimEndParamID      = "SAMPLE_TRIM_END";

@@ -15,14 +15,9 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     waveformDisplay.onStartPointChanged = [this] (float v) { setTrimStartFromUI (v); };
     waveformDisplay.onEndPointChanged   = [this] (float v) { setTrimEndFromUI (v); };
 
-    playbackModeBox.addItem ("Continuous Loop",        1);
-    playbackModeBox.addItem ("Key Trigger - Start",    2);
-    playbackModeBox.addItem ("Key Trigger - Random",   3);
-    addAndMakeVisible (playbackModeBox);
-
-    playbackModeLabel.setText ("Mode", juce::dontSendNotification);
-    playbackModeLabel.setJustificationType (juce::Justification::centredLeft);
-    addAndMakeVisible (playbackModeLabel);
+    addAndMakeVisible (loopToggle);
+    addAndMakeVisible (triggerToggle);
+    addAndMakeVisible (startToggle);
 
     addAndMakeVisible (reverseButton);
 
@@ -85,28 +80,34 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     // Widget <-> APVTS sync: sets initial value/range from the parameter,
     // updates the parameter on user interaction, and updates the widget on
     // host automation or preset load.
-    gainAttachment         = std::make_unique<SliderAttachment>   (apvts, gainParamID,         gainKnob);
-    pitchAttachment        = std::make_unique<SliderAttachment>   (apvts, pitchParamID,        pitchKnob);
-    playbackModeAttachment = std::make_unique<ComboBoxAttachment> (apvts, playbackModeParamID, playbackModeBox);
-    reverseAttachment      = std::make_unique<ButtonAttachment>   (apvts, reverseParamID,      reverseButton);
+    gainAttachment          = std::make_unique<SliderAttachment> (apvts, gainParamID,        gainKnob);
+    pitchAttachment         = std::make_unique<SliderAttachment> (apvts, pitchParamID,       pitchKnob);
+    loopAttachment          = std::make_unique<ButtonAttachment> (apvts, loopParamID,        loopToggle);
+    freeRunAttachment       = std::make_unique<ButtonAttachment> (apvts, freeRunParamID,     triggerToggle);
+    startRandomAttachment   = std::make_unique<ButtonAttachment> (apvts, startRandomParamID, startToggle);
+    reverseAttachment       = std::make_unique<ButtonAttachment> (apvts, reverseParamID,     reverseButton);
 
     // APVTS -> engine sync, in one place, regardless of what caused the change.
-    apvts.addParameterListener (gainParamID,         this);
-    apvts.addParameterListener (pitchParamID,        this);
-    apvts.addParameterListener (playbackModeParamID, this);
-    apvts.addParameterListener (reverseParamID,      this);
-    apvts.addParameterListener (trimStartParamID,    this);
-    apvts.addParameterListener (trimEndParamID,      this);
+    apvts.addParameterListener (gainParamID,        this);
+    apvts.addParameterListener (pitchParamID,       this);
+    apvts.addParameterListener (loopParamID,        this);
+    apvts.addParameterListener (freeRunParamID,     this);
+    apvts.addParameterListener (startRandomParamID, this);
+    apvts.addParameterListener (reverseParamID,     this);
+    apvts.addParameterListener (trimStartParamID,   this);
+    apvts.addParameterListener (trimEndParamID,     this);
 
     // addParameterListener only fires on future changes, so push current
     // values into the engine now (covers a preset already loaded before
     // this panel existed).
-    parameterChanged (gainParamID,         *apvts.getRawParameterValue (gainParamID));
-    parameterChanged (pitchParamID,        *apvts.getRawParameterValue (pitchParamID));
-    parameterChanged (playbackModeParamID, *apvts.getRawParameterValue (playbackModeParamID));
-    parameterChanged (reverseParamID,      *apvts.getRawParameterValue (reverseParamID));
-    parameterChanged (trimStartParamID,    *apvts.getRawParameterValue (trimStartParamID));
-    parameterChanged (trimEndParamID,      *apvts.getRawParameterValue (trimEndParamID));
+    parameterChanged (gainParamID,        *apvts.getRawParameterValue (gainParamID));
+    parameterChanged (pitchParamID,       *apvts.getRawParameterValue (pitchParamID));
+    parameterChanged (loopParamID,        *apvts.getRawParameterValue (loopParamID));
+    parameterChanged (freeRunParamID,     *apvts.getRawParameterValue (freeRunParamID));
+    parameterChanged (startRandomParamID, *apvts.getRawParameterValue (startRandomParamID));
+    parameterChanged (reverseParamID,     *apvts.getRawParameterValue (reverseParamID));
+    parameterChanged (trimStartParamID,   *apvts.getRawParameterValue (trimStartParamID));
+    parameterChanged (trimEndParamID,     *apvts.getRawParameterValue (trimEndParamID));
 
     updateControlStates();
 
@@ -121,12 +122,14 @@ SamplerPanel::~SamplerPanel()
 {
     engine.removeChangeListener (this);
 
-    apvts.removeParameterListener (gainParamID,         this);
-    apvts.removeParameterListener (pitchParamID,        this);
-    apvts.removeParameterListener (playbackModeParamID, this);
-    apvts.removeParameterListener (reverseParamID,      this);
-    apvts.removeParameterListener (trimStartParamID,    this);
-    apvts.removeParameterListener (trimEndParamID,      this);
+    apvts.removeParameterListener (gainParamID,        this);
+    apvts.removeParameterListener (pitchParamID,       this);
+    apvts.removeParameterListener (loopParamID,        this);
+    apvts.removeParameterListener (freeRunParamID,     this);
+    apvts.removeParameterListener (startRandomParamID, this);
+    apvts.removeParameterListener (reverseParamID,     this);
+    apvts.removeParameterListener (trimStartParamID,   this);
+    apvts.removeParameterListener (trimEndParamID,     this);
 }
 
 //==============================================================================
@@ -141,10 +144,16 @@ void SamplerPanel::loadFile (const juce::File& file)
 
 void SamplerPanel::updateControlStates()
 {
-    const bool isKeyTriggered =
-        (engine.getPlaybackMode() != SamplerEngine::PlaybackMode::ContinuousLoop);
+    // Key-triggered = triggerToggle off (false = "Free Run" state is inactive)
+    const bool isKeyTriggered = ! engine.getFreeRun();
 
     triggerSourceButton.setEnabled (isKeyTriggered);
+
+    // Start-at-start vs. random-start only matters once playback can
+    // (re)start from a trigger, i.e. in key-trigger mode. In free-run mode
+    // it only affects the one-time start position on load, so leave it
+    // enabled either way — but it's most meaningful when key-triggered.
+    startToggle.setAlpha (isKeyTriggered ? 1.0f : 0.55f);
 }
 
 //==============================================================================
@@ -161,17 +170,18 @@ void SamplerPanel::parameterChanged (const juce::String& parameterID, float newV
     {
         engine.setPitchSemitones (newValue);
     }
-    else if (parameterID == playbackModeParamID)
+    else if (parameterID == loopParamID)
     {
-        switch (static_cast<int> (newValue))
-        {
-            case 0: engine.setPlaybackMode (SamplerEngine::PlaybackMode::ContinuousLoop);       break;
-            case 1: engine.setPlaybackMode (SamplerEngine::PlaybackMode::KeyTriggerFromStart);  break;
-            case 2: engine.setPlaybackMode (SamplerEngine::PlaybackMode::KeyTriggerFromRandom); break;
-            default: break;
-        }
-
+        engine.setLoopEnabled (newValue >= 0.5f);
+    }
+    else if (parameterID == freeRunParamID)
+    {
+        engine.setFreeRun (newValue >= 0.5f);
         juce::MessageManager::callAsync ([this] { updateControlStates(); });
+    }
+    else if (parameterID == startRandomParamID)
+    {
+        engine.setStartRandom (newValue >= 0.5f);
     }
     else if (parameterID == reverseParamID)
     {
@@ -261,14 +271,13 @@ namespace SamplerPanelLayout
     constexpr int labelH   = 16;
     constexpr int knobGap  = 8;
 
-    // Mode selector
-    constexpr int modeGap        = 16;
-    constexpr int modeLabelW     = 40;
-    constexpr int modeBoxW       = 180;
-    constexpr int modeControlH   = 24;
+    // Icon toggle group (replaces the old mode dropdown)
+    constexpr int modeGap        = 16;   // gap before the toggle group starts
+    constexpr int iconSize       = 32;
+    constexpr int iconGap        = 10;
 
     // Toggles
-    constexpr int toggleGap      = 16;   // gap before the toggle group starts
+    constexpr int toggleGap      = 16;   // gap before the reverse/trim/reset group starts
     constexpr int toggleH        = 22;
     constexpr int toggleSpacing  = 8;    // gap between toggle buttons
     constexpr int reverseW       = 60;
@@ -313,16 +322,17 @@ void SamplerPanel::resized()
     x += knobW + modeGap;
     int x2 = x;
 
-    // Mode selector
-    const int modeControlY = controlY;
-    playbackModeLabel.setBounds (x, modeControlY, modeLabelW, modeControlH);
-    x += modeLabelW;
-    playbackModeBox.setBounds (x, modeControlY, modeBoxW, modeControlH);
-    x += modeBoxW + toggleGap;
+    // Icon toggle group — vertically centred against the knob height above
+    const int iconY = controlY + (knobH - iconSize) / 2;
+    loopToggle.setBounds    (x, iconY, iconSize, iconSize);
+    x += iconSize + iconGap;
+    triggerToggle.setBounds (x, iconY, iconSize, iconSize);
+    x += iconSize + iconGap;
+    startToggle.setBounds   (x, iconY, iconSize, iconSize);
 
     // Toggle buttons — trigger-source button removed, reverse/trim/reset remain
-    const int toggleY = controlY + modeControlH + toggleSpacing;
-    x = x2; 
+    const int toggleY = iconY + iconSize + toggleSpacing;
+    x = x2;
 
     reverseButton.setBounds (x, toggleY, reverseW, toggleH);
     x += reverseW + toggleSpacing;

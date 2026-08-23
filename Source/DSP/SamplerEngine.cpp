@@ -71,7 +71,7 @@ bool SamplerEngine::loadFile (const juce::File& file, double targetSampleRate)
     readPosition = 0.0;
     normalisedReadPosition.store (0.0f);
 
-    if (playbackMode.load() == PlaybackMode::ContinuousLoop)
+    if (freeRun.load())
         isPlaying.store (true);
 
     sendChangeMessage();
@@ -107,7 +107,7 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
     readPosition = 0.0;
     normalisedReadPosition.store (0.0f);
 
-    if (playbackMode.load() == PlaybackMode::ContinuousLoop)
+    if (freeRun.load())
         isPlaying.store (true);
 
     sendChangeMessage();
@@ -174,7 +174,7 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
     readPosition = 0.0;
     normalisedReadPosition.store (0.0f);
 
-    if (playbackMode.load() == PlaybackMode::ContinuousLoop)
+    if (freeRun.load())
         isPlaying.store (true);
 
     sendChangeMessage();
@@ -188,7 +188,9 @@ bool SamplerEngine::loadFromMemoryBlock (const void* data, int sizeInBytes,
 
 void SamplerEngine::triggerPlayback()
 {
-    if (playbackMode.load() == PlaybackMode::ContinuousLoop)
+    // Free-run ignores note triggers entirely — it's already playing
+    // continuously and doesn't restart on note-on.
+    if (freeRun.load())
         return;
 
     const auto* buf = activeBuffer.load();
@@ -202,7 +204,7 @@ void SamplerEngine::triggerPlayback()
     const int   endSample   = static_cast<int> (end   * (numSamples - 1));
     const int   range       = juce::jmax (1, endSample - startSample);
 
-    if (playbackMode.load() == PlaybackMode::KeyTriggerFromRandom)
+    if (startRandom.load())
         readPosition = startSample + (static_cast<double> (std::rand()) / RAND_MAX) * range;
     else
         readPosition = startSample;
@@ -276,11 +278,10 @@ void SamplerEngine::advance (double sampleRate)
     const bool pastEnd = readPosition >= endSample;
     if (pastEnd)
     {
-        // if (playbackMode.load() == PlaybackMode::ContinuousLoop)
-        //     readPosition = startSample; // loop
-        // else
-        //     isPlaying.store (false);   // one-shot finished
-        readPosition = startSample;
+        if (loopEnabled.load())
+            readPosition = startSample;   // loop back to the trim start
+        else
+            isPlaying.store (false);      // one-shot finished
     }
 
     // Update normalised position for UI. This mirrors the same

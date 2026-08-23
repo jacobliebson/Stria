@@ -67,7 +67,15 @@ void CustomADSR::noteOff() noexcept
     {
         if (parameters.release > 0.0f)
         {
-            releaseRate = (float) (envelopeVal / (parameters.release * sampleRate));
+            // Exponential release: compute a per-sample multiplier so
+            // envelopeVal decays from its current level to releaseFloor
+            // over parameters.release seconds. Multiplicative decay matches
+            // how we perceive loudness (roughly logarithmic), producing a
+            // smooth-sounding fade instead of a hold-then-snap.
+            constexpr float releaseFloor = 0.0001f; // -80 dB, effectively silent
+            float safeStart = juce::jmax (envelopeVal, releaseFloor);
+            releaseRate = std::pow (releaseFloor / safeStart,
+                                     1.0f / (float) (parameters.release * sampleRate));
             state = State::release;
         }
         else
@@ -128,11 +136,11 @@ float CustomADSR::getNextSample() noexcept
 
         case State::release:
         {
-            envelopeVal -= releaseRate;
+            envelopeVal *= releaseRate;   // was: envelopeVal -= releaseRate;
 
-            if (envelopeVal <= 0.0f)
+            if (envelopeVal <= 0.0001f)   // was: envelopeVal <= 0.0f
             {
-                envelopeVal = 0.0f; // clamp before returning
+                envelopeVal = 0.0f;
                 goToNextState();
             }
 

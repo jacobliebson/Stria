@@ -50,6 +50,8 @@ target_sources(MyJucePlugin PRIVATE
     Source/Graphics/ResonatorPalette.h
     Source/Graphics/SamplerPanel.h
     Source/Graphics/SamplerPanel.cpp
+    Source/Graphics/IconToggleButton.h
+    Source/Graphics/IconToggleButton.cpp
 
     # Graphics displays
     Source/Graphics/Displays/ArpDisplay.h

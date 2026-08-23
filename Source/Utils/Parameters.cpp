@@ -468,29 +468,42 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::configureParamet
         samplePitchAttributes
     ));
 
-    // Sampler playback mode
-    juce::AudioParameterIntAttributes samplePlaybackModeAttributes;
-    samplePlaybackModeAttributes = samplePlaybackModeAttributes.withStringFromValueFunction([](float value, int maxLen) -> juce::String {
-        switch (static_cast<int> (value))
-        {
-            case 0:  return "Continuous Loop";
-            case 1:  return "Key Trigger - Start";
-            case 2:  return "Key Trigger - Random";
-            default: return "Unknown";
-        }
+    // Sampler playback mode — three independent toggles instead of one
+    // combined choice parameter, since loop/one-shot, key-trigger/free-run,
+    // and start-at-start/start-random are orthogonal decisions. Defaults
+    // (Loop=true, FreeRun=true, StartRandom=false) reproduce the old
+    // "Continuous Loop" behaviour out of the box.
+    juce::AudioParameterBoolAttributes sampleLoopAttributes;
+    sampleLoopAttributes = sampleLoopAttributes.withStringFromValueFunction ([](bool value, int) -> juce::String {
+        return value ? "Loop" : "One-shot";
     });
-    samplePlaybackModeAttributes = samplePlaybackModeAttributes.withValueFromStringFunction([](const juce::String& text) -> float {
-        if (text.equalsIgnoreCase ("Continuous Loop"))      return 0.0f;
-        if (text.equalsIgnoreCase ("Key Trigger - Start"))  return 1.0f;
-        if (text.equalsIgnoreCase ("Key Trigger - Random")) return 2.0f;
-        return 0.0f;
-    });
+    layout.add (std::make_unique<juce::AudioParameterBool> (
+        juce::ParameterID ("SAMPLE_LOOP", 1),
+        "Sample Loop",
+        true,
+        sampleLoopAttributes
+    ));
 
-    layout.add (std::make_unique<juce::AudioParameterInt> (
-        juce::ParameterID { "SAMPLE_PLAYBACK_MODE", 1 },
-        "Sample Playback Mode",
-        0, 2, 0,  // min, max, default (Continuous Loop)
-        samplePlaybackModeAttributes
+    juce::AudioParameterBoolAttributes sampleFreeRunAttributes;
+    sampleFreeRunAttributes = sampleFreeRunAttributes.withStringFromValueFunction ([](bool value, int) -> juce::String {
+        return value ? "Free Run" : "Key Trigger";
+    });
+    layout.add (std::make_unique<juce::AudioParameterBool> (
+        juce::ParameterID ("SAMPLE_FREE_RUN", 1),
+        "Sample Free Run",
+        true,
+        sampleFreeRunAttributes
+    ));
+
+    juce::AudioParameterBoolAttributes sampleStartRandomAttributes;
+    sampleStartRandomAttributes = sampleStartRandomAttributes.withStringFromValueFunction ([](bool value, int) -> juce::String {
+        return value ? "Random" : "Start";
+    });
+    layout.add (std::make_unique<juce::AudioParameterBool> (
+        juce::ParameterID ("SAMPLE_START_RANDOM", 1),
+        "Sample Start Random",
+        false,
+        sampleStartRandomAttributes
     ));
 
     // Sampler reverse
