@@ -21,6 +21,7 @@ void SamplerWaveformDisplay::sampleLoaded (const juce::AudioBuffer<float>* buffe
     endHandlePos = 1.0f;
 
     waveformPeaks.clear();
+    sourceBuffer.setSize (0, 0);
 
     if (buffer == nullptr || buffer->getNumSamples() == 0)
     {
@@ -29,36 +30,57 @@ void SamplerWaveformDisplay::sampleLoaded (const juce::AudioBuffer<float>* buffe
         return;
     }
 
-    // Downsample to a fixed number of peaks for drawing
-    const int numPeaks   = 512;
-    const int numSamples = buffer->getNumSamples();
-    const int blockSize  = juce::jmax (1, numSamples / numPeaks);
-
-    waveformPeaks.reserve (numPeaks);
-
-    for (int i = 0; i < numPeaks; ++i)
-    {
-        const int startSample = i * blockSize;
-        const int endSample   = juce::jmin (startSample + blockSize, numSamples);
-
-        float peak = 0.0f;
-        for (int ch = 0; ch < buffer->getNumChannels(); ++ch)
-        {
-            const float* data = buffer->getReadPointer (ch);
-            for (int s = startSample; s < endSample; ++s)
-                peak = juce::jmax (peak, std::abs (data[s]));
-        }
-
-        waveformPeaks.push_back (peak);
-    }
+    // Keep a copy of the full-resolution audio. We deliberately do NOT
+    // decimate here — rebuildWaveformPath() re-decimates from this buffer
+    // for whatever range is currently trimmed/visible, so zooming into a
+    // small region still yields numDisplayPeaks worth of detail instead of
+    // reusing a coarse whole-file decimation.
+    sourceBuffer = *buffer;
 
     waveformDirty = true;
     repaint();
 }
 
+//==============================================================================
+std::vector<float> SamplerWaveformDisplay::computePeaks (int startSample, int endSample, int numPeaksWanted) const
+{
+    std::vector<float> peaks;
+
+    const int rangeSamples = endSample - startSample;
+    if (rangeSamples <= 0 || sourceBuffer.getNumSamples() == 0)
+        return peaks;
+
+    // Don't ask for more peaks than there are samples in the range
+    const int numPeaks = juce::jmax (1, juce::jmin (numPeaksWanted, rangeSamples));
+    peaks.reserve (numPeaks);
+
+    const int numChannels = sourceBuffer.getNumChannels();
+    const int totalSamples = sourceBuffer.getNumSamples();
+
+    for (int i = 0; i < numPeaks; ++i)
+    {
+        // Use 64-bit intermediate math so this stays accurate on long files
+        const int blockStart = startSample + (int) ((juce::int64) i * rangeSamples / numPeaks);
+        const int blockEnd   = startSample + (int) ((juce::int64) (i + 1) * rangeSamples / numPeaks);
+        const int clampedEnd = juce::jmin (juce::jmax (blockStart + 1, blockEnd), totalSamples);
+        const int clampedStart = juce::jmin (blockStart, totalSamples);
+
+        float peak = 0.0f;
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            const float* data = sourceBuffer.getReadPointer (ch);
+            for (int s = clampedStart; s < clampedEnd; ++s)
+                peak = juce::jmax (peak, std::abs (data[s]));
+        }
+
+        peaks.push_back (peak);
+    }
+
+    return peaks;
+}
+
 void SamplerWaveformDisplay::rebuildWaveformPath()
 {
-
     trimStartPos = engine.getStartPoint();
     trimEndPos = engine.getEndPoint();
 
@@ -66,33 +88,50 @@ void SamplerWaveformDisplay::rebuildWaveformPath()
     endHandlePos = 1.0f;
 
     waveformPath.clear();
+    waveformPeaks.clear();
+
+    const int totalSamples = sourceBuffer.getNumSamples();
+    if (totalSamples == 0)
+    {
+        waveformDirty = false;
+        return;
+    }
+
+    const int startSample = juce::jlimit (0, totalSamples, (int) (totalSamples * trimStartPos.load()));
+    const int endSample   = juce::jlimit (startSample, totalSamples, (int) (totalSamples * trimEndPos.load()));
+
+    // Re-decimate from the raw buffer for just the currently trimmed range,
+    // so zoomed-in views get full peak resolution rather than a handful of
+    // points sliced out of a whole-file decimation.
+    waveformPeaks = computePeaks (startSample, endSample, numDisplayPeaks);
 
     if (waveformPeaks.empty())
+    {
+        waveformDirty = false;
         return;
+    }
 
     auto inner = getInnerBounds();
     const float midY  = inner.getCentreY();
     const float halfH = inner.getHeight() * 0.45f;
     const int   n     = static_cast<int> (waveformPeaks.size());
-
-    
-
-    int startIndex = (int)(n * trimStartPos);
-    int endIndex = (int)(n * trimEndPos);
+    const float denom = juce::jmax (1, n - 1); // avoid divide-by-zero when n == 1
 
     waveformPath.startNewSubPath (inner.getX(), midY);
 
-    // Top half
-    for (int i = startIndex; i < endIndex; ++i)
+    // Top half — waveformPeaks now spans exactly the visible/trimmed range,
+    // so we map its indices straight across the full width, no more
+    // startIndex/endIndex slicing needed.
+    for (int i = 0; i < n; ++i)
     {
-        const float x = inner.getX() + (inner.getWidth() * (i - startIndex) / (endIndex - startIndex));
+        const float x = inner.getX() + (inner.getWidth() * i / denom);
         waveformPath.lineTo (x, midY - waveformPeaks[i] * halfH);
     }
 
     // Bottom half (mirror)
-    for (int i = endIndex; i >= startIndex; --i)
+    for (int i = n - 1; i >= 0; --i)
     {
-        const float x = inner.getX() + (inner.getWidth() * (i - startIndex) / (endIndex - startIndex));
+        const float x = inner.getX() + (inner.getWidth() * i / denom);
         waveformPath.lineTo (x, midY + waveformPeaks[i] * halfH);
     }
 
@@ -109,7 +148,7 @@ void SamplerWaveformDisplay::paint (juce::Graphics& g)
     g.setColour (ResonatorPalette::backgroundWidget());
     g.fillRoundedRectangle (bounds, 4.0f);
 
-    if (waveformPeaks.empty())
+    if (sourceBuffer.getNumSamples() == 0)
     {
         // Empty state — show drop hint
         g.setColour (ResonatorPalette::textSecondary());
@@ -208,7 +247,7 @@ void SamplerWaveformDisplay::filesDropped (const juce::StringArray& files, int, 
 
 void SamplerWaveformDisplay::mouseDown (const juce::MouseEvent& e)
 {
-    if (waveformPeaks.empty())
+    if (sourceBuffer.getNumSamples() == 0)
         return;
 
     const float startX = normalisedXToPixel (startHandlePos);
@@ -225,7 +264,7 @@ void SamplerWaveformDisplay::mouseDown (const juce::MouseEvent& e)
 
 void SamplerWaveformDisplay::mouseDrag (const juce::MouseEvent& e)
 {
-    if (activeDrag == DragTarget::None || waveformPeaks.empty())
+    if (activeDrag == DragTarget::None || sourceBuffer.getNumSamples() == 0)
         return;
 
     const float normX = pixelToNormalisedX (static_cast<float> (e.x));
@@ -256,7 +295,8 @@ void SamplerWaveformDisplay::mouseDrag (const juce::MouseEvent& e)
 void SamplerWaveformDisplay::mouseUp (const juce::MouseEvent&)
 {
     activeDrag = DragTarget::None;
-    //waveformDirty = true;
+
+    repaint();
 }
 
 //==============================================================================

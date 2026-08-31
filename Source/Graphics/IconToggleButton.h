@@ -17,7 +17,8 @@
 // whichever state is CURRENTLY ACTIVE, with the active/inactive
 // pair drawn via drawGlyphFor().
 // ============================================================
-class IconToggleButton : public juce::Button
+class IconToggleButton : public juce::Button,
+                          private juce::Value::Listener
 {
 public:
     enum class Glyph
@@ -31,20 +32,54 @@ public:
         : juce::Button ({}), glyph (glyphIn), onTip (std::move (tooltipOn)), offTip (std::move (tooltipOff))
     {
         setClickingTogglesState (true);
-        setTooltip (onTip);
+
+        // The toggle state can change two ways: a direct click (caught by
+        // clicked() below) or a host/preset-driven change coming through the
+        // APVTS ButtonAttachment, which sets the state via getToggleStateValue()
+        // without going through clicked(). Listening to the Value itself
+        // covers both, so the tooltip (and optional live caption) never goes
+        // stale regardless of what drove the change.
+        getToggleStateValue().addListener (this);
+        refreshTooltip();
+    }
+
+    ~IconToggleButton() override
+    {
+        getToggleStateValue().removeListener (this);
     }
 
     void paintButton (juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 
+    // Short label describing whichever state is currently active, e.g.
+    // "Loop" or "One-shot" — handy for an on-screen caption underneath the
+    // icon, in addition to the hover tooltip.
+    juce::String getCurrentStateLabel() const
+    {
+        return getToggleState() ? onTip : offTip;
+    }
+
+    // Fired whenever the active state (and therefore the tooltip/label)
+    // changes, from a click or from an external attachment. Lets a parent
+    // component keep a caption label in sync.
+    std::function<void()> onStateLabelChanged;
+
 private:
     void refreshTooltip()
     {
-        setTooltip (getToggleState() ? onTip : offTip);
+        setTooltip (getCurrentStateLabel());
+
+        if (onStateLabelChanged != nullptr)
+            onStateLabelChanged();
     }
 
     void clicked() override
     {
         juce::Button::clicked();
+        refreshTooltip();
+    }
+
+    void valueChanged (juce::Value&) override
+    {
         refreshTooltip();
     }
 

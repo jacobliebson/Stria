@@ -20,6 +20,34 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     addAndMakeVisible (triggerToggle);
     addAndMakeVisible (startToggle);
 
+    // Icon toggles already show their meaning on hover via tooltip; these
+    // per-icon captions keep that meaning visible at a glance too, each
+    // centred under its own button rather than as one combined line.
+    loopToggle.onStateLabelChanged    = [this] { updateModeStateLabels(); };
+    triggerToggle.onStateLabelChanged = [this] { updateModeStateLabels(); };
+    startToggle.onStateLabelChanged   = [this] { updateModeStateLabels(); };
+
+    for (auto* stateLabel : { &loopStateLabel, &triggerStateLabel, &startStateLabel })
+    {
+        stateLabel->setJustificationType (juce::Justification::centred);
+        stateLabel->setColour (juce::Label::textColourId, ResonatorPalette::textSecondary());
+        stateLabel->setFont (juce::Font (juce::FontOptions().withHeight (11.0f)));
+        stateLabel->setMinimumHorizontalScale (0.7f);
+        addAndMakeVisible (*stateLabel);
+    }
+    updateModeStateLabels();
+
+    for (auto* groupLabel : { &sampleGroupLabel, &modeGroupLabel, &editGroupLabel })
+    {
+        groupLabel->setJustificationType (juce::Justification::centred);
+        groupLabel->setColour (juce::Label::textColourId, ResonatorPalette::textSecondary().withAlpha (0.7f));
+        groupLabel->setFont (juce::Font (juce::FontOptions().withHeight (10.0f)));
+        addAndMakeVisible (*groupLabel);
+    }
+    sampleGroupLabel.setText ("SAMPLE", juce::dontSendNotification);
+    modeGroupLabel.setText   ("MODE",   juce::dontSendNotification);
+    editGroupLabel.setText   ("EDIT",   juce::dontSendNotification);
+
     addAndMakeVisible (reverseButton);
 
     trimButton.onClick = [this]
@@ -165,6 +193,13 @@ void SamplerPanel::updateControlStates()
     startToggle.setAlpha (isKeyTriggered ? 1.0f : 0.55f);
 }
 
+void SamplerPanel::updateModeStateLabels()
+{
+    loopStateLabel.setText    (loopToggle.getCurrentStateLabel(),    juce::dontSendNotification);
+    triggerStateLabel.setText (triggerToggle.getCurrentStateLabel(), juce::dontSendNotification);
+    startStateLabel.setText   (startToggle.getCurrentStateLabel(),   juce::dontSendNotification);
+}
+
 //==============================================================================
 void SamplerPanel::parameterChanged (const juce::String& parameterID, float newValue)
 {
@@ -263,6 +298,15 @@ void SamplerPanel::paint (juce::Graphics& g)
     g.setColour (ResonatorPalette::borderPanel());
     g.drawRoundedRectangle (b.reduced (0.5f), 8.0f, 1.0f);
 
+    // Thin dividers between the Sample / Mode / Edit clusters in the
+    // bottom control strip, so the three groups read as distinct without
+    // needing boxes or extra panels.
+    if (controlStripBottom > controlStripTop)
+    {
+        g.setColour (ResonatorPalette::borderPanel());
+        g.drawLine ((float) dividerX1, (float) controlStripTop, (float) dividerX1, (float) controlStripBottom, 1.0f);
+        g.drawLine ((float) dividerX2, (float) controlStripTop, (float) dividerX2, (float) controlStripBottom, 1.0f);
+    }
 }
 
 
@@ -279,28 +323,41 @@ namespace SamplerPanelLayout
     // Gap between top row and waveform
     constexpr int waveformTopGap = 6;
 
-    // Bottom control strip
-    constexpr int controlHeight  = 80;
+    // Bottom control strip is organised into three clusters — Sample
+    // (gain/pitch), Mode (the three icon toggles), and Edit (reverse/trim/
+    // reset) — each with its own small uppercase header, separated by thin
+    // vertical dividers (drawn in paint()) instead of being one undivided
+    // row of controls.
     constexpr int controlTopGap  = 6;
+    constexpr int groupLabelH    = 12;   // "SAMPLE" / "MODE" / "EDIT" headers
+    constexpr int rowGap         = 4;    // gap above/below the main control row
+    constexpr int captionH       = 16;   // knob value labels / mode status line
+    constexpr int groupGap       = 32;   // total horizontal gap between clusters
 
     // Knobs
     constexpr int knobW    = 64;
     constexpr int knobH    = 50;
-    constexpr int labelH   = 16;
+    constexpr int labelH   = captionH;
     constexpr int knobGap  = 8;
 
-    // Icon toggle group (replaces the old mode dropdown)
-    constexpr int modeGap        = 16;   // gap before the toggle group starts
-    constexpr int iconSize       = 32;
-    constexpr int iconGap        = 10;
+    // Main row height is set by the tallest control (the knobs); icons and
+    // toggle buttons are vertically centred within it.
+    constexpr int mainRowH  = knobH;
 
-    // Toggles
-    constexpr int toggleGap      = 16;   // gap before the reverse/trim/reset group starts
-    constexpr int toggleH        = 22;
-    constexpr int toggleSpacing  = 8;    // gap between toggle buttons
-    constexpr int reverseW       = 60;
-    constexpr int trimW          = 60;
-    constexpr int resetW         = 60;
+    constexpr int controlHeight = groupLabelH + rowGap + mainRowH + rowGap + captionH;
+
+    // Icon toggle group (Loop/One-shot, Key Trigger/Free Run, Start/Random).
+    // Spaced out generously — there's room for it, and it keeps each icon's
+    // hit target and status caption from crowding its neighbours.
+    constexpr int iconSize = 32;
+    constexpr int iconGap  = 34;
+
+    // Reverse / Trim / Reset buttons
+    constexpr int toggleH       = 22;
+    constexpr int toggleSpacing = 8;
+    constexpr int reverseW      = 60;
+    constexpr int trimW         = 60;
+    constexpr int resetW        = 60;
 }
 
 void SamplerPanel::resized()
@@ -325,33 +382,71 @@ void SamplerPanel::resized()
                                               - controlHeight - controlTopGap;
     waveformDisplay.setBounds (left, waveformY, bounds.getWidth(), waveformH);
 
-    // ---- Bottom control row ----
-    const int controlY = waveformY + waveformH + controlTopGap;
+    // ---- Bottom control strip: Sample | Mode | Edit ----
+    const int stripY = waveformY + waveformH + controlTopGap;
+    controlStripTop    = stripY;
+    controlStripBottom = stripY + controlHeight;
+
+    const int groupLabelY = stripY;
+    const int mainRowY    = groupLabelY + groupLabelH + rowGap;
+    const int captionY    = mainRowY + mainRowH + rowGap;
+
     int x = left;
 
-    // Gain knob
-    gainKnob.setBounds  (x, controlY, knobW, knobH);
-    gainLabel.setBounds (x, controlY + knobH, knobW, labelH);
+    // -- Sample cluster: gain + pitch knobs --
+    const int sampleGroupW = knobW * 2 + knobGap;
+    sampleGroupLabel.setBounds (x, groupLabelY, sampleGroupW, groupLabelH);
+
+    gainKnob.setBounds  (x, mainRowY, knobW, knobH);
+    gainLabel.setBounds (x, captionY, knobW, labelH);
     x += knobW + knobGap;
 
-    // Pitch knob
-    pitchKnob.setBounds  (x, controlY, knobW, knobH);
-    pitchLabel.setBounds (x, controlY + knobH, knobW, labelH);
-    x += knobW + modeGap;
-    int x2 = x;
+    pitchKnob.setBounds  (x, mainRowY, knobW, knobH);
+    pitchLabel.setBounds (x, captionY, knobW, labelH);
+    x += knobW;
 
-    // Icon toggle group — vertically centred against the knob height above
-    const int iconY = controlY + (knobH - iconSize) / 2;
-    loopToggle.setBounds    (x, iconY, iconSize, iconSize);
+    x += groupGap / 2;
+    dividerX1 = x;
+    x += groupGap / 2;
+
+    // -- Mode cluster: icon toggles, each with its own live caption
+    // underneath spelling out what it currently means (backs up its
+    // tooltip) — centred on that icon specifically, not the group as a
+    // whole, so the caption reads as clearly belonging to its button.
+    const int modeGroupW = iconSize * 3 + iconGap * 2;
+    modeGroupLabel.setBounds (x, groupLabelY, modeGroupW, groupLabelH);
+
+    const int iconY = mainRowY + (mainRowH - iconSize) / 2;
+
+    // Each caption gets the icon's own width plus half the gap on either
+    // side, so neighbouring captions can grow toward each other without
+    // touching, and each stays centred under its own icon.
+    const int capW = iconSize + iconGap - 6;
+
+    const int loopX    = x;
+    loopToggle.setBounds (loopX, iconY, iconSize, iconSize);
+    loopStateLabel.setBounds (loopX + iconSize / 2 - capW / 2, captionY, capW, captionH);
     x += iconSize + iconGap;
-    triggerToggle.setBounds (x, iconY, iconSize, iconSize);
+
+    const int triggerX = x;
+    triggerToggle.setBounds (triggerX, iconY, iconSize, iconSize);
+    triggerStateLabel.setBounds (triggerX + iconSize / 2 - capW / 2, captionY, capW, captionH);
     x += iconSize + iconGap;
-    startToggle.setBounds   (x, iconY, iconSize, iconSize);
 
-    // Toggle buttons — trigger-source button removed, reverse/trim/reset remain
-    const int toggleY = iconY + iconSize + toggleSpacing;
-    x = x2;
+    const int startX = x;
+    startToggle.setBounds (startX, iconY, iconSize, iconSize);
+    startStateLabel.setBounds (startX + iconSize / 2 - capW / 2, captionY, capW, captionH);
+    x += iconSize;
 
+    x += groupGap / 2;
+    dividerX2 = x;
+    x += groupGap / 2;
+
+    // -- Edit cluster: reverse / trim / reset --
+    const int editGroupW = reverseW + trimW + resetW + toggleSpacing * 2;
+    editGroupLabel.setBounds (x, groupLabelY, editGroupW, groupLabelH);
+
+    const int toggleY = mainRowY + (mainRowH - toggleH) / 2;
     reverseButton.setBounds (x, toggleY, reverseW, toggleH);
     x += reverseW + toggleSpacing;
 

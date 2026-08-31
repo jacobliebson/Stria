@@ -126,24 +126,33 @@ void IconToggleButton::drawKeyGlyph (juce::Graphics& g, juce::Rectangle<float> r
     g.fillRect (blackKey);
 }
 
-// Free run: a continuous wave/infinity glyph — "always playing, ignores MIDI".
+// Free run: a double chevron — "fast-forward" reads as continuous, running
+// on its own without waiting for a key, and stays visually distinct from
+// the single-arrow One-shot glyph (no shared shape between the two).
 void IconToggleButton::drawFreeRunGlyph (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour c)
 {
     g.setColour (c);
 
-    juce::Path infinity;
     const float w = r.getWidth();
     const float h = r.getHeight();
-    const float loopR = h * 0.42f;
+    const float thickness = h * 0.16f;
+    const auto  centre = r.getCentre();
 
-    infinity.addCentredArc (r.getX() + w * 0.28f, r.getCentreY(), loopR, loopR, 0.0f,
-                            juce::MathConstants<float>::pi * 0.5f,
-                            juce::MathConstants<float>::pi * 2.5f, true);
-    infinity.addCentredArc (r.getRight() - w * 0.28f, r.getCentreY(), loopR, loopR, 0.0f,
-                            juce::MathConstants<float>::pi * -0.5f,
-                            juce::MathConstants<float>::pi * 1.5f, true);
+    auto strokeChevron = [&] (float offsetX)
+    {
+        const float chevW = w * 0.24f;
+        const float chevH = h * 0.34f;
+        const float x = centre.x + offsetX;
 
-    g.strokePath (infinity, juce::PathStrokeType (h * 0.14f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        juce::Path chevron;
+        chevron.startNewSubPath (x - chevW * 0.5f, centre.y - chevH);
+        chevron.lineTo (x + chevW * 0.5f, centre.y);
+        chevron.lineTo (x - chevW * 0.5f, centre.y + chevH);
+        g.strokePath (chevron, juce::PathStrokeType (thickness, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+    };
+
+    strokeChevron (-w * 0.16f);
+    strokeChevron ( w * 0.16f);
 }
 
 // Start-at-start: a playhead marker sitting flush against the left edge.

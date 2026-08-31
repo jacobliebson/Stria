@@ -25,6 +25,19 @@ ResonatorLookAndFeel::ResonatorLookAndFeel()
     setColour (juce::ToggleButton::textColourId,          ResonatorPalette::textSecondary());
     setColour (juce::ToggleButton::tickColourId,          ResonatorPalette::accentPrimary());
     setColour (juce::ToggleButton::tickDisabledColourId,  ResonatorPalette::textSecondary());
+
+    // Text button defaults — individual buttons (tabs, etc.) can still
+    // override buttonColourId/buttonOnColourId per-instance as before.
+    setColour (juce::TextButton::buttonColourId,   ResonatorPalette::backgroundWidget());
+    setColour (juce::TextButton::buttonOnColourId, ResonatorPalette::accentPrimary().withAlpha (0.3f));
+    setColour (juce::TextButton::textColourOnId,   ResonatorPalette::textSecondary());
+    setColour (juce::TextButton::textColourOffId,  ResonatorPalette::textSecondary());
+
+    // Combo box
+    setColour (juce::ComboBox::backgroundColourId, ResonatorPalette::backgroundWidget());
+    setColour (juce::ComboBox::outlineColourId,    ResonatorPalette::knobOutline());
+    setColour (juce::ComboBox::textColourId,       ResonatorPalette::textSecondary());
+    setColour (juce::ComboBox::arrowColourId,      ResonatorPalette::textSecondary());
 }
 
 void ResonatorLookAndFeel::drawRotarySlider (juce::Graphics& g,
@@ -251,22 +264,31 @@ void ResonatorLookAndFeel::drawLabel (juce::Graphics& g, juce::Label& label)
 void ResonatorLookAndFeel::drawToggleButton (juce::Graphics& g,
                                               juce::ToggleButton& button,
                                               bool shouldDrawButtonAsHighlighted,
-                                              bool /*shouldDrawButtonAsDown*/)
+                                              bool shouldDrawButtonAsDown)
 {
-    juce::ignoreUnused (shouldDrawButtonAsHighlighted);
-
-    const auto bounds  = button.getLocalBounds().toFloat().reduced (2.0f);
-    const float corner = 8.0f; //bounds.getHeight() * 0.5f;
+    // Deliberately shares its metrics and flat-fill treatment with
+    // drawButtonBackground() below (same inset, same corner radius, no
+    // gradient) so a ToggleButton like Reverse reads as the same family of
+    // control as the plain TextButtons next to it (Trim/Reset), differing
+    // only in that its "on" state fills with the accent colour — the same
+    // language the icon toggles use to show they're active.
+    const auto bounds  = button.getLocalBounds().toFloat().reduced (0.75f);
+    const float corner = juce::jmin (6.0f, bounds.getHeight() * 0.32f);
     const bool  isOn   = button.getToggleState();
 
-    // Pill background
-    g.setColour (ResonatorPalette::backgroundWidget());
+    juce::Colour bg = isOn ? ResonatorPalette::accentPrimary().withAlpha (0.35f)
+                           : ResonatorPalette::backgroundWidget();
+    if (shouldDrawButtonAsDown)
+        bg = bg.darker (0.25f);
+    else if (shouldDrawButtonAsHighlighted)
+        bg = bg.brighter (0.12f);
+
+    g.setColour (bg);
     g.fillRoundedRectangle (bounds, corner);
 
-    // Outline
-    g.setColour (isOn ? ResonatorPalette::accentPrimary().darker(0.4f)
-                      : ResonatorPalette::knobOutline());
-    g.drawRoundedRectangle (bounds, corner, 1.5f);
+    g.setColour (isOn ? ResonatorPalette::accentPrimary().darker (0.3f)
+                      : ResonatorPalette::borderPanel());
+    g.drawRoundedRectangle (bounds, corner, 1.0f);
 
     // Label
     g.setColour (ResonatorPalette::textSecondary());
@@ -276,9 +298,87 @@ void ResonatorLookAndFeel::drawToggleButton (juce::Graphics& g,
                       juce::Justification::centred, 1);
 }
 
+//==============================================================================
+void ResonatorLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& button,
+                                                  const juce::Colour& backgroundColour,
+                                                  bool shouldDrawButtonAsHighlighted,
+                                                  bool shouldDrawButtonAsDown)
+{
+    auto bounds = button.getLocalBounds().toFloat().reduced (0.75f);
+    const float corner = juce::jmin (6.0f, bounds.getHeight() * 0.32f);
 
+    // backgroundColour is whatever JUCE resolved from the button's own
+    // buttonColourId/buttonOnColourId — so "selected tab" colours set in
+    // application code (Legato/Retrigger, Chord/Arp) pass straight through.
+    juce::Colour bg = backgroundColour;
+    if (shouldDrawButtonAsDown)
+        bg = bg.darker (0.25f);
+    else if (shouldDrawButtonAsHighlighted)
+        bg = bg.brighter (0.12f);
 
+    g.setColour (bg);
+    g.fillRoundedRectangle (bounds, corner);
 
+    g.setColour (ResonatorPalette::borderPanel());
+    g.drawRoundedRectangle (bounds, corner, 1.0f);
+}
 
+void ResonatorLookAndFeel::drawButtonText (juce::Graphics& g, juce::TextButton& button,
+                                            bool /*shouldDrawButtonAsHighlighted*/,
+                                            bool /*shouldDrawButtonAsDown*/)
+{
+    const bool useOnColour = button.getToggleState();
+    g.setColour (button.findColour (useOnColour ? juce::TextButton::textColourOnId
+                                                 : juce::TextButton::textColourOffId)
+                       .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
+    g.setFont (juce::Font (juce::FontOptions().withHeight (12.0f)));
+    g.drawFittedText (button.getButtonText(),
+                      button.getLocalBounds(),
+                      juce::Justification::centred, 1);
+}
 
+//==============================================================================
+void ResonatorLookAndFeel::drawComboBox (juce::Graphics& g,
+                                          int width, int height,
+                                          bool /*isButtonDown*/,
+                                          int /*buttonX*/, int /*buttonY*/,
+                                          int /*buttonW*/, int /*buttonH*/,
+                                          juce::ComboBox& box)
+{
+    auto bounds = juce::Rectangle<int> (0, 0, width, height).toFloat().reduced (0.75f);
+    const float corner = juce::jmin (6.0f, bounds.getHeight() * 0.32f);
 
+    g.setColour (ResonatorPalette::backgroundWidget());
+    g.fillRoundedRectangle (bounds, corner);
+
+    g.setColour (box.isPopupActive() ? ResonatorPalette::accentPrimary().darker (0.2f)
+                                     : ResonatorPalette::knobOutline());
+    g.drawRoundedRectangle (bounds, corner, 1.2f);
+
+    // Chevron
+    const float arrowBoxW = bounds.getHeight() * 0.9f;
+    juce::Rectangle<float> arrowZone (bounds.getRight() - arrowBoxW, bounds.getY(), arrowBoxW, bounds.getHeight());
+    juce::Path arrow;
+    const float aw = arrowZone.getWidth() * 0.32f;
+    const float ah = aw * 0.55f;
+    const auto  ac = arrowZone.getCentre();
+    arrow.startNewSubPath (ac.x - aw, ac.y - ah * 0.5f);
+    arrow.lineTo (ac.x,       ac.y + ah * 0.5f);
+    arrow.lineTo (ac.x + aw,  ac.y - ah * 0.5f);
+    g.setColour (ResonatorPalette::textSecondary());
+    g.strokePath (arrow, juce::PathStrokeType (1.6f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+}
+
+void ResonatorLookAndFeel::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
+{
+    // Default JUCE positioning butts the text right up against the left
+    // edge of the box; give it a little breathing room, and keep it clear
+    // of the chevron drawn in drawComboBox() on the right.
+    const int leftPad  = 8;
+    const int rightPad = juce::roundToInt (box.getHeight() * 0.9f) + 4;
+
+    label.setBounds (leftPad, 1,
+                     juce::jmax (0, box.getWidth() - leftPad - rightPad),
+                     box.getHeight() - 2);
+    label.setFont (getComboBoxFont (box));
+}

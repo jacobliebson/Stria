@@ -50,11 +50,16 @@ public:
 
 private:
     void timerCallback() override;
-    
 
     juce::Rectangle<float> getInnerBounds() const;
     float normalisedXToPixel (float normX) const;
     float pixelToNormalisedX (float pixelX) const;
+
+    // Re-decimates the *currently visible* [startSample, endSample) range of
+    // sourceBuffer into numPeaksWanted peaks. Called on every rebuild so
+    // zoomed-in (trimmed) views get full detail instead of reusing a fixed
+    // whole-file decimation.
+    std::vector<float> computePeaks (int startSample, int endSample, int numPeaksWanted) const;
 
     enum class DragTarget { None, StartHandle, EndHandle };
 
@@ -70,10 +75,17 @@ private:
 
     float trimmedToFull (float trimmedX);
 
-    // Downsampled peak data for drawing — rebuilt on load
+    // Full-resolution source audio, kept so the waveform can be re-decimated
+    // at full detail whenever the trim/zoom range changes.
+    juce::AudioBuffer<float> sourceBuffer;
+
+    // Downsampled peak data for the *currently displayed* (trimmed) range —
+    // rebuilt every time rebuildWaveformPath() runs, not just on load.
     std::vector<float> waveformPeaks;
     juce::Path         waveformPath;
     bool               waveformDirty = true;
+
+    static constexpr int numDisplayPeaks = 512;
 
     DragTarget activeDrag = DragTarget::None;
 

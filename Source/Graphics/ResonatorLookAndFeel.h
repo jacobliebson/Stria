@@ -33,23 +33,39 @@ public:
     void drawToggleButton (juce::Graphics&, juce::ToggleButton&,
                            bool shouldDrawButtonAsHighlighted,
                            bool shouldDrawButtonAsDown) override;
-    
-    // void drawButtonBackground (juce::Graphics& g, juce::Button& button,
-    //                         const juce::Colour& /*backgroundColour*/,
-    //                         bool shouldDrawButtonAsHighlighted,
-    //                         bool shouldDrawButtonAsDown) override;
 
-    // void drawButtonText (juce::Graphics& g,
-    //                         juce::TextButton& button,
-    //                         bool /*shouldDrawButtonAsHighlighted*/,
-    //                         bool /*shouldDrawButtonAsDown*/) override;
+    // Text buttons.
+    //
+    // NB: this ONLY changes the background/border chrome and font — it still
+    // reads the colour supplied by JUCE (which itself comes from whatever
+    // buttonColourId/buttonOnColourId the button currently has set). Buttons
+    // like Legato/Retrigger and Chord/Arp pick their "selected" look by
+    // swapping buttonColourId in application code (see
+    // PluginEditor::switchTriggerModeTo/switchEnvelopeTo), not by relying on
+    // this LookAndFeel, so that behaviour is untouched — this just makes
+    // whatever colour they hand us render as a calmer, more consistent pill
+    // instead of the stock JUCE gradient button.
+    void drawButtonBackground (juce::Graphics& g, juce::Button& button,
+                            const juce::Colour& backgroundColour,
+                            bool shouldDrawButtonAsHighlighted,
+                            bool shouldDrawButtonAsDown) override;
 
-    // void drawComboBox (juce::Graphics& g,
-    //                         int width, int height,
-    //                         bool /*isButtonDown*/,
-    //                         int buttonX, int buttonY,
-    //                         int buttonW, int buttonH,
-    //                         juce::ComboBox& box) override;
+    void drawButtonText (juce::Graphics& g,
+                            juce::TextButton& button,
+                            bool shouldDrawButtonAsHighlighted,
+                            bool shouldDrawButtonAsDown) override;
+
+    // Combo box
+    void drawComboBox (juce::Graphics& g,
+                            int width, int height,
+                            bool isButtonDown,
+                            int buttonX, int buttonY,
+                            int buttonW, int buttonH,
+                            juce::ComboBox& box) override;
+
+    // Keeps the combo box's text label inset from the left edge instead of
+    // sitting flush against it.
+    void positionComboBoxText (juce::ComboBox& box, juce::Label& label) override;
 
     // Scrollbars etc. — kept minimal
     int getSliderThumbRadius (juce::Slider&) override { return 0; }

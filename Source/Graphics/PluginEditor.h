@@ -74,6 +74,13 @@ private:
     AudioPluginAudioProcessor& audioProcessor;
     ResonatorLookAndFeel lookAndFeel;
 
+    // Without an owned TooltipWindow, none of the tooltips set on components
+    // (e.g. the icon toggles' hover text describing what each glyph means)
+    // actually appear. Give it the editor as its parent so it's clipped to
+    // the plugin window, and a short delay so it doesn't flash up on every
+    // incidental mouse pass.
+    juce::TooltipWindow tooltipWindow { this, 500 };
+
     //==========================================================================
     // Resonator panel
     juce::Slider feedbackKnob,  dampingKnob, detuneKnob, detuneModeKnob;

@@ -50,7 +50,7 @@ private:
     // is bound directly to its param via ButtonAttachment, so this must
     // match the param's actual true/false meaning, not just reading order.
     IconToggleButton triggerToggle { IconToggleButton::Glyph::KeyTriggerVsFreeRun, "Free Run",     "Key Trigger" };
-    IconToggleButton startToggle   { IconToggleButton::Glyph::StartVsRandom,       "Random Start", "Start" };
+    IconToggleButton startToggle   { IconToggleButton::Glyph::StartVsRandom,       "Random", "Start" };
 
     juce::ToggleButton triggerSourceButton { "Trigger from raw MIDI" };
     juce::ToggleButton reverseButton { "Reverse" };
@@ -64,6 +64,21 @@ private:
 
     juce::Label fileNameLabel;
     juce::TextButton loadButton { "Load File" };
+
+    // Small uppercase headers over each control cluster in the bottom
+    // strip (Sample / Mode / Edit), matching the panel-title styling used
+    // elsewhere in the plugin, plus a per-icon caption underneath the Mode
+    // cluster that spells out what each toggle currently means (in
+    // addition to its hover tooltip) so their function reads at a glance.
+    juce::Label sampleGroupLabel, modeGroupLabel, editGroupLabel;
+    juce::Label loopStateLabel, triggerStateLabel, startStateLabel;
+    void updateModeStateLabels();
+
+    // Cached x-positions of the divider lines between control-strip groups
+    // and the vertical extent to draw them over, set in resized() and used
+    // by paint().
+    int dividerX1 = 0, dividerX2 = 0;
+    int controlStripTop = 0, controlStripBottom = 0;
 
     std::unique_ptr<juce::FileChooser> fileChooser;
 
