@@ -1,4 +1,5 @@
 #include "SamplerPanel.h"
+#include "ResonatorPalette.h"
 
 SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::AudioProcessorValueTreeState& apvtsRef)
     : engine (eng), sampleRate (sampleRateRef), apvts (apvtsRef), waveformDisplay (eng)
@@ -59,6 +60,14 @@ SamplerPanel::SamplerPanel (SamplerEngine& eng, double& sampleRateRef, juce::Aud
     fileNameLabel.setColour (juce::Label::textColourId, ResonatorPalette::textSecondary());
     addAndMakeVisible (fileNameLabel);
 
+    trimButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
+    trimButton.setColour (juce::TextButton::textColourOffId,  ResonatorPalette::textSecondary());
+    trimButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textSecondary());
+
+    resetButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
+    resetButton.setColour (juce::TextButton::textColourOffId,  ResonatorPalette::textSecondary());
+    resetButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textSecondary());
+    
     loadButton.onClick = [this]
     {
         fileChooser = std::make_unique<juce::FileChooser> (
@@ -244,7 +253,16 @@ void SamplerPanel::changeListenerCallback (juce::ChangeBroadcaster* source)
 //==============================================================================
 void SamplerPanel::paint (juce::Graphics& g)
 {
-    g.fillAll (ResonatorPalette::backgroundPanel());
+    juce::Rectangle<float> b = getLocalBounds().toFloat();
+
+    // Panel background
+    g.setColour (ResonatorPalette::backgroundPanel());
+    g.fillRoundedRectangle (b, 8.0f);
+
+    // Panel border
+    g.setColour (ResonatorPalette::borderPanel());
+    g.drawRoundedRectangle (b.reduced (0.5f), 8.0f, 1.0f);
+
 }
 
 

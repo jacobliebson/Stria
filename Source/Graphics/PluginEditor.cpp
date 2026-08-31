@@ -1,5 +1,6 @@
 // Source/PluginEditor.cpp
 #include "PluginEditor.h"
+#include "ResonatorPalette.h"
 #include "SamplerPanel.h"
 
 
@@ -163,21 +164,21 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     // Initialise tab button and knob colours — Chord selected by default
     chordEnvButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary().withAlpha(0.3f));
-    chordEnvButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
-    chordEnvButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    chordEnvButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textSecondary());
+    chordEnvButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textSecondary());
     arpEnvButton.setColour   (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
-    arpEnvButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
-    arpEnvButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    arpEnvButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textSecondary());
+    arpEnvButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textSecondary());
     chordEnvButton.setColour (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
     arpEnvButton.setColour   (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
     
     // Initialise trigger mode selector - legato selected by default
     legatoButton.setColour (juce::TextButton::buttonColourId,  ResonatorPalette::accentPrimary().withAlpha(0.3f));
-    legatoButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
-    legatoButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    legatoButton.setColour (juce::TextButton::textColourOnId,  ResonatorPalette::textSecondary());
+    legatoButton.setColour (juce::TextButton::textColourOffId, ResonatorPalette::textSecondary());
     retriggerButton.setColour   (juce::TextButton::buttonColourId,  ResonatorPalette::backgroundWidget());
-    retriggerButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textPrimary());
-    retriggerButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textPrimary());
+    retriggerButton.setColour   (juce::TextButton::textColourOnId,  ResonatorPalette::textSecondary());
+    retriggerButton.setColour   (juce::TextButton::textColourOffId, ResonatorPalette::textSecondary());
     legatoButton.setColour (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
     retriggerButton.setColour   (juce::ComboBox::outlineColourId, ResonatorPalette::borderPanel());
 

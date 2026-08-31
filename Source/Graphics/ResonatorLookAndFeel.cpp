@@ -1,5 +1,6 @@
 // Source/ResonatorLookAndFeel.cpp
 #include "ResonatorLookAndFeel.h"
+#include "ResonatorPalette.h"
 
 
 ResonatorLookAndFeel::ResonatorLookAndFeel()
@@ -9,7 +10,7 @@ ResonatorLookAndFeel::ResonatorLookAndFeel()
     setColour (juce::DocumentWindow::backgroundColourId,  ResonatorPalette::backgroundDeep());
 
     // Label colours
-    setColour (juce::Label::textColourId, ResonatorPalette::textPrimary());
+    setColour (juce::Label::textColourId, ResonatorPalette::textSecondary());
 
     // Slider colours (used as fallback; drawRotarySlider overrides visuals)
     setColour (juce::Slider::rotarySliderFillColourId,    ResonatorPalette::accentPrimary());
@@ -21,7 +22,7 @@ ResonatorLookAndFeel::ResonatorLookAndFeel()
     setColour (juce::Slider::textBoxHighlightColourId,    ResonatorPalette::accentPrimary().withAlpha (0.3f));
 
     // Toggle button
-    setColour (juce::ToggleButton::textColourId,          ResonatorPalette::textPrimary());
+    setColour (juce::ToggleButton::textColourId,          ResonatorPalette::textSecondary());
     setColour (juce::ToggleButton::tickColourId,          ResonatorPalette::accentPrimary());
     setColour (juce::ToggleButton::tickDisabledColourId,  ResonatorPalette::textSecondary());
 }
@@ -255,21 +256,20 @@ void ResonatorLookAndFeel::drawToggleButton (juce::Graphics& g,
     juce::ignoreUnused (shouldDrawButtonAsHighlighted);
 
     const auto bounds  = button.getLocalBounds().toFloat().reduced (2.0f);
-    const float corner = bounds.getHeight() * 0.5f;
+    const float corner = 8.0f; //bounds.getHeight() * 0.5f;
     const bool  isOn   = button.getToggleState();
 
     // Pill background
-    g.setColour (isOn ? ResonatorPalette::accentPrimary()
-                      : ResonatorPalette::backgroundWidget());
+    g.setColour (ResonatorPalette::backgroundWidget());
     g.fillRoundedRectangle (bounds, corner);
 
     // Outline
-    g.setColour (isOn ? ResonatorPalette::accentPrimary()
+    g.setColour (isOn ? ResonatorPalette::accentPrimary().darker(0.4f)
                       : ResonatorPalette::knobOutline());
     g.drawRoundedRectangle (bounds, corner, 1.5f);
 
     // Label
-    g.setColour (ResonatorPalette::textPrimary());
+    g.setColour (ResonatorPalette::textSecondary());
     g.setFont (juce::Font (juce::FontOptions().withHeight (12.0f)));
     g.drawFittedText (button.getButtonText(),
                       button.getLocalBounds(),
@@ -278,99 +278,6 @@ void ResonatorLookAndFeel::drawToggleButton (juce::Graphics& g,
 
 
 
-// ============================================================================
-// TextButton (Load File, Trim, Reset)
-// ============================================================================
-// void ResonatorLookAndFeel::drawButtonBackground (juce::Graphics& g,
-//                                                   juce::Button& button,
-//                                                   const juce::Colour& /*backgroundColour*/,
-//                                                   bool shouldDrawButtonAsHighlighted,
-//                                                   bool shouldDrawButtonAsDown)
-// {
-//     const auto bounds  = button.getLocalBounds().toFloat().reduced (2.0f);
-//     const float corner = bounds.getHeight() * 0.5f;
-
-//     // Toggle-style buttons (Trim, Reverse) use their toggle state as "on" colour;
-//     // plain action buttons (Load File) just use highlighted/down for feedback.
-//     const bool isOn = button.getClickingTogglesState() && button.getToggleState();
-
-//     auto fillColour = isOn ? ResonatorPalette::accentPrimary()
-//                             : ResonatorPalette::backgroundWidget();
-
-//     if (! isOn)
-//     {
-//         if (shouldDrawButtonAsDown)
-//             fillColour = fillColour.brighter (0.12f);
-//         else if (shouldDrawButtonAsHighlighted)
-//             fillColour = fillColour.brighter (0.06f);
-//     }
-//     else if (shouldDrawButtonAsDown)
-//     {
-//         fillColour = fillColour.darker (0.15f);
-//     }
-
-//     g.setColour (fillColour);
-//     g.fillRoundedRectangle (bounds, corner);
-
-//     g.setColour (isOn ? ResonatorPalette::accentPrimary()
-//                        : ResonatorPalette::knobOutline());
-//     //g.drawRoundedRectangle (bounds, corner, 1.5f);
-// }
-
-// void ResonatorLookAndFeel::drawButtonText (juce::Graphics& g,
-//                                             juce::TextButton& button,
-//                                             bool /*shouldDrawButtonAsHighlighted*/,
-//                                             bool /*shouldDrawButtonAsDown*/)
-// {
-//     g.setColour (ResonatorPalette::textSecondary());
-//     g.setFont (juce::Font (juce::FontOptions().withHeight (12.0f)));
-//     g.drawFittedText (button.getButtonText(),
-//                        button.getLocalBounds(),
-//                        juce::Justification::centred, 1);
-// }
-
-// ============================================================================
-// ComboBox (Mode selector)
-// ============================================================================
-// void ResonatorLookAndFeel::drawComboBox (juce::Graphics& g,
-//                                           int width, int height,
-//                                           bool /*isButtonDown*/,
-//                                           int buttonX, int buttonY,
-//                                           int buttonW, int buttonH,
-//                                           juce::ComboBox& box)
-// {
-//     juce::ignoreUnused (buttonX, buttonY, buttonW, buttonH);
-
-//     const auto bounds  = juce::Rectangle<int> (0, 0, width, height).toFloat().reduced (2.0f);
-//     const float corner = bounds.getHeight() * 0.5f;
-
-//     g.setColour (ResonatorPalette::backgroundWidget());
-//     g.fillRoundedRectangle (bounds, corner);
-
-//     g.setColour (box.isPopupActive() ? ResonatorPalette::accentPrimary()
-//                                       : ResonatorPalette::knobOutline());
-//     g.drawRoundedRectangle (bounds, corner, 1.5f);
-
-//     // Dropdown arrow
-//     const float arrowBoxWidth = juce::jmin (24.0f, bounds.getHeight());
-//     juce::Rectangle<float> arrowZone (bounds.getRight() - arrowBoxWidth,
-//                                        bounds.getY(),
-//                                        arrowBoxWidth,
-//                                        bounds.getHeight());
-
-//     juce::Path arrow;
-//     const float arrowW = 8.0f;
-//     const float arrowH = 5.0f;
-//     const auto  centre = arrowZone.getCentre();
-
-//     arrow.startNewSubPath (centre.x - arrowW * 0.5f, centre.y - arrowH * 0.5f);
-//     arrow.lineTo           (centre.x,                centre.y + arrowH * 0.5f);
-//     arrow.lineTo           (centre.x + arrowW * 0.5f, centre.y - arrowH * 0.5f);
-
-//     g.setColour (ResonatorPalette::textPrimary());
-//     g.strokePath (arrow, juce::PathStrokeType (1.5f, juce::PathStrokeType::curved,
-//                                                 juce::PathStrokeType::rounded));
-// }
 
 
 
